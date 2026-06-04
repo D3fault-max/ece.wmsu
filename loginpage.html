@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electronics and Communication Engineering</title>
+  <style>
+    body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    min-height: 100vh; 
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    background-image: url("bgloginpage.png");
+    background-size: cover;
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from tiling */
+  
+    overflow: hidden;
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.444);
+      padding: 40px;
+      border-radius: 20px;
+      width: 500px;
+      max-width: 90%;
+      display: flex;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      position: absolute;
+      z-index: 1;
+    }
+ 
+    .login-info h1 {
+      margin-bottom: 15px;
+    }
+
+    .login-info p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Right side: Form */
+    .login-form {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .login-form h2 {
+      margin-bottom: 20px;
+      color: #6a11cb;
+      text-align: center;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #444;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .extra-links {
+      margin-top: 15px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .extra-links a {
+      color: #6a11cb;
+      text-decoration: none;
+    }
+
+    .extra-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="login-form">
+      <h2>Sign In</h2>
+      <form id="loginForm" autocomplete="off">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter your username" required autocomplete="off">
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div class="extra-links">
+          <p>Don't have an account? <a href="registration.html">Sign up</a></p>
+          <p><a href="#">Forgot password?</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const { createClient } = supabase;
+  const supabaseClient = createClient(
+    "https://xxzbuhvilxapebzzkmla.supabase.co",
+    "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+  );
+
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // MODIFIED: Read raw text string, drop spacing, and normalize to lower case
+    let usernameInput = document.getElementById("username").value.trim().toLowerCase();
+    const password = document.getElementById("password").value.trim();
+
+    // MODIFIED: Bulletproof check. If they type an '@', strip it out and throw it away!
+    if (usernameInput.includes('@')) {
+      usernameInput = usernameInput.split('@')[0];
+    }
+
+    // Safely structure our internal synthetic string for auth validation processing
+    const syntheticEmail = `${usernameInput}@ece.com`;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: syntheticEmail,
+      password: password,
+    });
+
+    if (error) {
+      alert("Login failed: " + error.message);
+    } else {
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.href = "dashboard.html";
+    }
+  });
+</script>
+
+</body>
+</html>

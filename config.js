@@ -1,0 +1,4 @@
+window.supabase = Supabase.createClient(
+  "https://xxzbuhvilxapebzzkmla.supabase.co", 
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmemRsd2Rsd2Z3a3FrZXVpa3VxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyODEyMDAsImV4cCI6MjA3Mzg1NzIwMH0.Ux0sa6Yzr2wFgef_I3U2rRGE4xIub0rEn7ScjNXdXB0sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+);
