@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Student Portal - My Profile</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-image: url('background.png');
+      background-color: #f4f6f9;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center; 
+      background-attachment: fixed;
+      color: #111111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- NAVIGATION NAVBAR TRAY --- */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 5%;
+      background-color: #ffffff; 
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0f41cae6;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      color: #555555;
+      font-size: 15px;
+      font-weight: 500;
+      position: relative;
+      padding: 5px 0;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #111111;
+      transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a:hover { color: #111111; }
+
+    .nav-profile-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-profile-widget {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background-color: #f8f9fa;
+      padding: 6px 14px 6px 8px;
+      border-radius: 30px;
+      border: 1px solid #eaeaea;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .user-profile-widget:hover {
+      background-color: #f1f3f5;
+      transform: translateY(-1px);
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(15, 65, 202, 0.15);
+    }
+
+    .user-meta-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .profile-name-string {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .badge-pill {
+      font-family: 'Inter', sans-serif;
+      background-color: #e91e63;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-top: 2px;
+    }
+
+    .logout-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #ffffff;
+      background-color: #111111;
+      padding: 9px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .logout-btn:hover { background-color: #333333; }
+
+    /* --- PROFILE WORKSPACE CONTAINER --- */
+    .profile-wrapper {
+      flex: 1;
+      max-width: 800px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .profile-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #eaeaea;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+    }
+
+    .profile-header-banner {
+      background: linear-gradient(135deg, #0f41cae6 0%, #06aad3 100%);
+      height: 140px;
+      position: relative;
+    }
+
+    .profile-avatar-stack {
+      position: absolute;
+      bottom: -50px;
+      left: 40px;
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+    }
+
+    .large-avatar-circle {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
+      color: #ffffff;
+      font-size: 36px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid #ffffff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .profile-body {
+      padding: 70px 40px 40px 40px;
+    }
+
+    .user-identity h2 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .user-identity p {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #666666;
+      margin-top: 2px;
+    }
+
+    /* --- FORM WORKSPACE LAYOUT --- */
+    .profile-form {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      border-top: 1px solid #f0f2f5;
+      padding-top: 30px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444444;
+    }
+
+    .form-group input, .form-group select {
+      font-family: 'Poppins', sans-serif;
+      padding: 12px 16px;
+      border-radius: 6px;
+      border: 1px solid #cccccc;
+      font-size: 15px;
+      color: #111111;
+      background-color: #fafafa;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: #0f41cae6;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(15, 65, 202, 0.1);
+    }
+
+    .form-group input:disabled {
+      background-color: #f0f2f5;
+      color: #888888;
+      cursor: not-allowed;
+      border-color: #e0e0e0;
+    }
+
+    .save-profile-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background-color: #111111;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 10px;
+      transition: background-color 0.2s ease;
+    }
+
+    .save-profile-btn:hover { background-color: #333333; }
+
+    /* Alert Toast Status Box */
+    .status-toast {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      display: none;
+      margin-top: 15px;
+      text-align: center;
+    }
+    .status-toast.success { background-color: #e2fced; color: #146c3a; border: 1px solid #bbf7d0; }
+    .status-toast.error { background-color: #fce8e6; color: #b91c1c; border: 1px solid #fecaca; }
+
+    @media (max-width: 768px) {
+      .profile-body { padding: 70px 20px 30px 20px; }
+      .profile-avatar-stack { left: 20px; }
+      .profile-name-string { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-area">
+      <a href="dashboard.html" class="logo">ECE</a>
+    </div>
+    
+    <div class="nav-container">
+      <nav>
+        <ul class="nav-links">
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="https://www.facebook.com/JIECEPWMSU" target="_blank">Social Media</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-profile-controls">
+        <a href="profile.html" class="user-profile-widget" id="topNavWidget">
+          <div class="avatar-circle" id="navAvatarLetter">U</div>
+          <div class="user-meta-text">
+            <span class="profile-name-string" id="navProfileName">Loading...</span>
+            <span class="badge-pill" id="navRoleBadge">Student</span>
+          </div>
+        </a>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="profile-wrapper">
+    <div class="profile-card">
+      <div class="profile-header-banner">
+        <div class="profile-avatar-stack">
+          <div class="large-avatar-circle" id="bigAvatarLetter">U</div>
+        </div>
+      </div>
+
+      <div class="profile-body">
+        <div class="user-identity">
+          <h2 id="profileBlockName">Loading Student profile...</h2>
+          <p id="profileBlockMeta">Department of Electronics Engineering</p>
+        </div>
+
+        <form class="profile-form" id="profileUpdateForm">
+          <div class="form-group">
+            <label>Account Email (Read-Only)</label>
+            <input type="email" id="profileEmail" disabled>
+          </div>
+
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="formFullName" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="form-group">
+            <label>Year Level Selection</label>
+            <select id="formYearLevel">
+              <option value="">Select Year Level</option>
+              <option value="First Year">First Year</option>
+              <option value="Second Year">Second Year</option>
+              <option value="Third Year">Third Year</option>
+              <option value="Fourth Year">Fourth Year</option>
+            </select>
+          </div>
+
+          <button type="submit" class="save-profile-btn" id="saveBtn">Save Profile Changes</button>
+          <div class="status-toast" id="statusToast"></div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    let currentUser = null;
+
+    // ==========================================
+    // ROUTE PROTECTION & DATA POPULATION ENGINE
+    // ==========================================
+    function initializeProfileWorkspace() {
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if ((event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') && !session) {
+          window.location.href = "loginpage.html";
+          return;
+        }
+
+        if (session) {
+          currentUser = session.user;
+          document.getElementById('profileEmail').value = currentUser.email;
+
+          let displayedName = "ECE Student";
+          let inferredRole = "Student";
+          let yearLevel = "";
+
+          try {
+            // Pull the profile columns from the database
+            const { data: profile, error: profileError } = await supabaseClient
+              .from('profiles')
+              .select('*')
+              .eq('id', currentUser.id)
+              .maybeSingle();
+
+            if (currentUser.user_metadata && currentUser.user_metadata.role) {
+              inferredRole = currentUser.user_metadata.role;
+            }
+
+            if (profile && !profileError) {
+              displayedName = profile.full_name || "ECE Student";
+              yearLevel = profile.year_level || "";
+            } else if (currentUser.user_metadata?.full_name) {
+              displayedName = currentUser.user_metadata.full_name;
+            }
+
+          } catch (err) {
+            console.error("Profile payload stream exception:", err);
+          }
+
+          // Hydrate DOM Fields
+          document.getElementById("navProfileName").textContent = displayedName;
+          document.getElementById("profileBlockName").textContent = displayedName;
+          document.getElementById("formFullName").value = displayedName === "ECE Student" ? "" : displayedName;
+          document.getElementById("formYearLevel").value = yearLevel;
+          document.getElementById("navRoleBadge").textContent = inferredRole;
+          
+          // Render Initials Letter Box
+          const initial = displayedName.charAt(0).toUpperCase();
+          document.getElementById("navAvatarLetter").textContent = initial;
+          document.getElementById("bigAvatarLetter").textContent = initial;
+
+          if (inferredRole.toLowerCase() === 'professor' || inferredRole.toLowerCase() === 'admin') {
+            document.getElementById("navRoleBadge").style.backgroundColor = "#0f41cae6";
+            document.getElementById("profileBlockMeta").textContent = "Faculty Staff / Administration Access Handle";
+          } else if (yearLevel) {
+            document.getElementById("profileBlockMeta").textContent = `BS ECE — ${yearLevel}`;
+          }
+        }
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", initializeProfileWorkspace);
+
+    // ==========================================
+    // FORM SUBMIT HANDLER (UPDATE PROFILE)
+    // ==========================================
+    document.getElementById('profileUpdateForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const saveBtn = document.getElementById('saveBtn');
+      const toast = document.getElementById('statusToast');
+      
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+      toast.style.display = "none";
+
+      const updatedName = document.getElementById('formFullName').value.trim();
+      const updatedYear = document.getElementById('formYearLevel').value;
+
+      try {
+        // Upsert standard database columns cleanly
+        const { error } = await supabaseClient
+          .from('profiles')
+          .upsert({
+            id: currentUser.id,
+            full_name: updatedName,
+            year_level: updatedYear,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+
+        // Display Success Notification
+        toast.className = "status-toast success";
+        toast.textContent = "Profile changes saved successfully!";
+        toast.style.display = "block";
+
+        // Refresh Navigation Elements
+        document.getElementById("navProfileName").textContent = updatedName;
+        document.getElementById("profileBlockName").textContent = updatedName;
+        const initial = updatedName.charAt(0).toUpperCase();
+        document.getElementById("navAvatarLetter").textContent = initial;
+        document.getElementById("bigAvatarLetter").textContent = initial;
+        
+        if (updatedYear) {
+          document.getElementById("profileBlockMeta").textContent = `BS ECE — ${updatedYear}`;
+        }
+
+      } catch (err) {
+        console.error("Profile updates save transaction failure:", err);
+        toast.className = "status-toast error";
+        toast.textContent = `Error: ${err.message || 'Could not save profile changes.'}`;
+        toast.style.display = "block";
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Profile Changes";
+      }
+    });
+
+    // ==========================================
+    // LOGOUT ACTION PROCESSOR
+    // ==========================================
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "loginpage.html";
+      } catch (error) {
+        console.error("Logout runtime context failure forced baseline fallback route redirection:", error);
+        window.location.href = "loginpage.html";
+      }
+    });
+  </script>
+</body>
+</html>
