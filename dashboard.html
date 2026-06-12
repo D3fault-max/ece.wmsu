@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Student Portal - Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-image: url('background.png');
+      background-color: #f4f6f9;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center; 
+      background-attachment: fixed;
+      color: #111111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- NAVIGATION TOP TRAY DESIGN --- */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 5%;
+      background-color: #ffffff; 
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0f41cae6;
+      cursor: pointer;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      color: #555555;
+      font-size: 15px;
+      font-weight: 500;
+      position: relative;
+      padding: 5px 0;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #111111;
+      transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-links a:hover {
+      color: #111111;
+    }
+
+    /* Consolidated Right Side Controls Header */
+    .nav-profile-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* TURNED INTO INTERACTIVE ACTION BUTTON PILL CONTAINER */
+    .user-profile-widget {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background-color: #f8f9fa;
+      padding: 6px 14px 6px 8px;
+      border-radius: 30px;
+      border: 1px solid #eaeaea;
+      cursor: pointer;
+      outline: none;
+      font-family: inherit;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .user-profile-widget:hover {
+      background-color: #f1f3f5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      border-color: #dcdcdc;
+    }
+
+    .user-profile-widget:active {
+      transform: translateY(0);
+      background-color: #e9ecef;
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(15, 65, 202, 0.15);
+    }
+
+    .user-meta-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+      text-align: left; /* Maintains neat internal left alignment */
+    }
+
+    .profile-name-string {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .badge-pill {
+      font-family: 'Inter', sans-serif;
+      background-color: #e91e63;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-top: 2px;
+    }
+
+    .logout-btn {
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: #ffffff;
+      background-color: #111111;
+      padding: 9px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #333333;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .mobile-menu-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: #111111;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    /* --- EXPANDED MAIN LAYOUT HOUSING --- */
+    .dashboard-wrapper {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 5%;
+      display: block; 
+    }
+
+    .dashboard-content {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      width: 100%;
+    }
+
+    /* --- HERO GREETING BANNER LAYOUT --- */
+    .hero-section {
+      text-align: center;
+      padding: 60px 5%;
+      background: linear-gradient(135deg, #0f41cae6 0%, #06aad3 100%);
+      border-radius: 12px;
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(15, 65, 202, 0.15);
+    }
+
+    .hero-section h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 40px;
+      font-weight: 600; 
+      color: #ffffff;
+      margin-bottom: 15px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-section .student-meta {
+      font-size: 18px;
+      color: #fdd835;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .hero-section p {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: #e0e0e0;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* --- DYNAMIC 3D CAROUSEL COMPONENT SHUFFLE --- */
+    .carousel-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 0 40px 0;
+      overflow: hidden;
+    }
+
+    .carousel-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 480px; 
+      width: 100%;
+    }
+
+    .showcase-card {
+      position: absolute;
+      width: 380px; 
+      background-color: #ffffff; 
+      border-radius: 4px;
+      overflow: hidden; 
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease, z-index 0.5s;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .image-container {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden; 
+      background-color: #f7f7f7;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .showcase-card:hover .image-container img {
+      transform: scale(1.08); 
+    }
+
+    .card-meta {
+      padding: 25px 15px;
+      text-align: center;
+    }
+
+    .card-meta h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #111111;
+      margin-bottom: 6px;
+    }
+
+    .card-meta p {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #888888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .showcase-card.active {
+      transform: translateX(0) scale(1.1);
+      opacity: 1;
+      z-index: 10;
+      pointer-events: auto; 
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    .showcase-card.prev-1 {
+      transform: translateX(-350px) scale(0.9);
+      opacity: 0.8;
+      z-index: 5;
+      pointer-events: auto; 
+    }
+
+    .showcase-card.next-1 {
+      transform: translateX(350px) scale(0.9);
+      opacity: 0.8;
+      z-index: 5;
+      pointer-events: auto; 
+    }
+
+    .showcase-card.prev-2 {
+      transform: translateX(-650px) scale(0.75);
+      opacity: 0.4;
+      z-index: 2;
+    }
+
+    .showcase-card.next-2 {
+      transform: translateX(650px) scale(0.75);
+      opacity: 0.4;
+      z-index: 2;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #ffffff;
+      border: 1px solid #eaeaea;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .carousel-btn:hover {
+      background-color: #111111;
+      border-color: #111111;
+    }
+
+    .carousel-btn:hover svg {
+      stroke: #ffffff;
+    }
+
+    .carousel-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: #111111;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.2s ease;
+    }
+
+    .left-btn { left: 4%; }
+    .right-btn { right: 4%; }
+
+    /* --- INTEGRATED COMPACT MANAGEMENT HUB --- */
+    .management-section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px 40px 50px 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      border: 1px solid #eaeaea;
+      text-align: center;
+    }
+
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 40px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .management-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .management-card {
+      background-color: #ffffff;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 6px;
+      border: 1px solid #eaeaea;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .management-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #111111;
+    }
+
+    .management-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      border-color: #0f41cae6;
+    }
+
+    /* --- BUNDLES CONTAINER STYLES --- */
+    .bundles-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+
+    .bundle-box {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 10px;
+      border: 1px solid #eaeaea;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .bundle-box h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: #111111;
+    }
+
+    .bundle-box p {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: #666666;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .bundle-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e91e63;
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .bundle-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background-color: #e91e63;
+      transition: width 0.3s ease;
+    }
+
+    .bundle-box:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .bundle-box:hover .bundle-link::after {
+      width: 100%;
+    }
+
+    /* --- RESPONSIVE WORKSPACE MEDIA STATIONS --- */
+    @media (max-width: 1024px) {
+      .carousel-container { height: 400px; }
+      .showcase-card { width: 280px; }
+      .showcase-card.prev-1 { transform: translateX(-240px) scale(0.85); }
+      .showcase-card.next-1 { transform: translateX(240px) scale(0.85); }
+      .showcase-card.prev-2 { transform: translateX(-460px) scale(0.7); }
+      .showcase-card.next-2 { transform: translateX(460px) scale(0.7); }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 5%;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        padding: 20px 5%;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+        gap: 15px;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .nav-links.mobile-active {
+        display: flex;
+      }
+
+      .nav-container {
+        gap: 15px;
+      }
+
+      .profile-name-string {
+        display: none; 
+      }
+      
+      .dashboard-wrapper {
+        padding: 20px 15px;
+      }
+
+      .hero-section {
+        padding: 50px 5% 40px 5%;
+      }
+
+      .hero-section h1 { 
+        font-size: 28px; 
+      }
+
+      .hero-section p {
+        font-size: 14px;
+      }
+
+      /* Stack Carousel Cards into 2D linear stream layout */
+      .carousel-wrapper {
+        padding: 20px 15px;
+      }
+
+      .carousel-container {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .showcase-card {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        transform: none !important;
+        opacity: 1 !important;
+        pointer-events: auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      }
+
+      .carousel-btn {
+        display: none; 
+      }
+
+      .management-section {
+        padding: 20px 15px 30px 15px;
+      }
+
+      .management-grid {
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px;
+      }
+
+      .management-card {
+        padding: 20px 10px;
+      }
+
+      .bundles-container { 
+        grid-template-columns: 1fr; 
+      }
+
+      .bundle-box {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-area">
+      <div class="logo">ECE</div>
+    </div>
+    
+    <div class="nav-container">
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#">Home</a></li>
+          <li><a href="https://www.facebook.com/JIECEPWMSU">Social Media</a></li>
+          <li><a href="#">Admin</a></li>
+          <li><a href="#">Shop</a></li>
+          <li><a href="#">News</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-profile-controls">
+        <a href="profile.html" class="user-profile-widget" id="profileWidget" style="text-decoration: none;">
+          <div class="avatar-circle" id="avatarLetter">U</div>
+          <div class="user-meta-text">
+            <span class="profile-name-string" id="profileName">Loading...</span>
+            <span class="badge-pill" id="roleBadge">Student</span>
+          </div>
+        </a>
+        <button class="logout-btn" href="homepage.html" id="logoutBtn">Logout</button>
+      </div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">
+        <svg viewBox="0 0 24 24">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-wrapper">
+    <section class="dashboard-content">
+      
+      <div class="hero-section">
+        <h1 id="welcome-name">Welcome, Student!</h1>
+        <div id="welcome-year" class="student-meta">Accessing Engineering Portal...</div>
+        <p>This is the official portal workspace environment of the Department of Electronics Engineering - WMSU</p>
+      </div>
+
+      <div class="carousel-wrapper">
+        <button class="carousel-btn left-btn" id="prevBtn" aria-label="Previous Slide">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+
+        <div class="carousel-container" id="carouselContainer">
+          <a href="#" class="showcase-card">
+            <div class="image-container">
+              <img src="4thyears.JPG" alt="Senior">
+            </div>
+            <div class="card-meta">
+              <h3>Senior Students</h3>
+              <p>BS ECE</p>
+            </div>
+          </a>
+
+          <a href="#" class="showcase-card">
+            <div class="image-container">
+              <img src="3rdyears.jpg" alt="Junior">
+            </div>
+            <div class="card-meta">
+              <h3>Junior Students</h3>
+              <p>BS ECE</p>
+            </div>
+          </a>
+
+          <a href="#" class="showcase-card">
+            <div class="image-container">
+              <img src="2ndyears.JPG" alt="Sophomore">
+            </div>
+            <div class="card-meta">
+              <h3>Sophomore Students</h3>
+              <p>BS ECE</p>
+            </div>
+          </a>
+
+          <a href="#" class="showcase-card">
+            <div class="image-container">
+              <img src="1styears.JPG" alt="Freshman">
+            </div>
+            <div class="card-meta">
+              <h3>Freshman Students</h3>
+              <p>BS ECE</p>
+            </div>
+          </a>
+
+          <a href="#" class="showcase-card">
+            <div class="image-container">
+              <img src="JIECEP.JPG" alt="JIECEP Officers">
+            </div>
+            <div class="card-meta">
+              <h3>JIECEP-WMSU Officers</h3>
+              <p>BS ECE</p>
+            </div>
+          </a>
+        </div>
+
+        <button class="carousel-btn right-btn" id="nextBtn" aria-label="Next Slide">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="management-section">
+        <h2 class="section-title">Management</h2>
+        <div class="management-grid">
+          <div class="management-card"><h3>First Year</h3></div>
+          <div class="management-card"><h3>Second Year</h3></div>
+          <div class="management-card"><h3>Third Year</h3></div>
+          <div class="management-card"><h3>Alumni</h3></div>
+          <div class="management-card"><h3>Faculty</h3></div>
+          <div class="management-card" onclick="window.location.href='https://www.facebook.com/JIECEPWMSU'">
+            <h3>JIECEP Officers</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="bundles-container">
+        <div class="bundle-box">
+          <h3>DevCraft</h3>
+          <p>Discover innovative projects, engineering solutions, and academic events in the ECE department community portal.</p>
+          <a href="#" class="bundle-link">More About Electronics Engineering</a>
+        </div>
+        <div class="bundle-box">
+          <h3>Robotics</h3>
+          <p>Meet with professional coders and hardware builders in WMSU BS ECE who design and create world-class automated inventions.</p>
+          <a href="#" class="bundle-link">More About Robotics</a>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <script>
+    // 2. Initialize the Supabase client directly inside the dashboard using your credentials
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    // ==========================================
+    // RESPONSIVE MOBILE DRAWER SLIDE-PANEL SETUP
+    // ==========================================
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('mobile-active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!mobileMenuBtn.contains(e.target) && !navLinks.contains(e.target)) {
+        navLinks.classList.remove('mobile-active');
+      }
+    });
+
+    // ==========================================
+    // 3D CAROUSEL TRANSLATION LOGIC SYSTEM
+    // ==========================================
+    const cards = document.querySelectorAll('.showcase-card');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    let currentIndex = 2; 
+
+    function updateCarousel() {
+      if (window.innerWidth <= 768) return;
+
+      const totalCards = cards.length;
+
+      cards.forEach((card, i) => {
+        card.className = 'showcase-card';
+        let offset = i - currentIndex;
+
+        if (offset < -2) offset += totalCards;
+        if (offset > 2) offset -= totalCards;
+
+        if (offset === 0) {
+          card.classList.add('active');
+        } else if (offset === -1) {
+          card.classList.add('prev-1');
+        } else if (offset === 1) {
+          card.classList.add('next-1');
+        } else if (offset === -2) {
+          card.classList.add('prev-2');
+        } else if (offset === 2) {
+          card.classList.add('next-2');
+        }
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex === 0) ? cards.length - 1 : currentIndex - 1;
+      updateCarousel();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex === cards.length - 1) ? 0 : currentIndex + 1;
+      updateCarousel();
+    });
+
+    updateCarousel();
+    window.addEventListener('resize', updateCarousel);
+
+    // ==========================================
+    // REALTIME ROUTE SECURITY AND AUTH CONTROLLER
+    // ==========================================
+    function initializeDashboardProtection() {
+      if (typeof supabaseClient === 'undefined') {
+        console.error("Critical Engine missing: 'supabaseClient' definition model trace unavailable.");
+        window.location.href = "loginpage.html";
+        return;
+      }
+
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'INITIAL_SESSION' && !session) {
+          window.location.href = "loginpage.html";
+          return;
+        }
+        
+        if (event === 'SIGNED_OUT') {
+          window.location.href = "loginpage.html";
+          return;
+        }
+
+        if (session) {
+          const activeUser = session.user;
+          
+          let displayedName = "ECE Student";
+          let displayedYear = "ECE Department Portal";
+          let inferredRole = "Student";
+
+          try {
+            const { data: profile, error: profileError } = await supabaseClient
+              .from('profiles')
+              .select('*')
+              .eq('id', activeUser.id)
+              .maybeSingle();
+
+            if (activeUser.user_metadata && activeUser.user_metadata.role) {
+              inferredRole = activeUser.user_metadata.role;
+            }
+
+            if (profile && !profileError) {
+              displayedName = profile.full_name || "ECE Student";
+              displayedYear = profile.year_level ? `Enrolled: ${profile.year_level}` : "ECE Department";
+            } else {
+              console.warn("No database profile found. Attempting user_metadata fallback rendering strategy.");
+              if (activeUser.user_metadata?.full_name) {
+                displayedName = activeUser.user_metadata.full_name;
+              }
+            }
+
+            if (inferredRole.toLowerCase() === 'professor' || inferredRole.toLowerCase() === 'admin') {
+              displayedYear = `Faculty Staff / Admin Access Granted`;
+            }
+
+          } catch (err) {
+            console.error("Non-blocking profile retrieval crash caught:", err);
+          }
+
+          try {
+            document.getElementById("profileName").textContent = displayedName;
+            document.getElementById("welcome-name").textContent = `Welcome, ${displayedName}!`;
+            document.getElementById("roleBadge").textContent = inferredRole;
+            document.getElementById("avatarLetter").textContent = displayedName.charAt(0).toUpperCase();
+            
+            const yearBadge = document.getElementById("welcome-year");
+            if (yearBadge) {
+              yearBadge.textContent = displayedYear;
+            }
+
+            if (inferredRole.toLowerCase() === 'professor' || inferredRole.toLowerCase() === 'admin') {
+              document.getElementById("roleBadge").style.backgroundColor = "#0f41cae6";
+            }
+          } catch (domError) {
+            console.error("DOM Rendering Error (Check your layout element IDs):", domError);
+          }
+        }
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", initializeDashboardProtection);
+
+    // ==========================================================
+    // ACTION HANDLER FOR THE INTERACTIVE PROFILE CONTAINER BUTTON
+    // ==========================================================
+    document.getElementById('profileWidget').addEventListener('click', () => {
+      console.log("Profile context control container activated.");
+      // You can add logic here later (e.g., toggle custom popup menus, redirect to user profiles setup page, etc.)
+    });
+
+    // ==========================================
+    // LOGOUT PROCESS ROUTER
+    // ==========================================
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "loginpage.html";
+      } catch (error) {
+        console.error("Logout error forced fallback redirection:", error);
+        window.location.href = "homepage.html";
+      }
+    });
+  </script>
+</body>
+</html>
