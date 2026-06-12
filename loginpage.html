@@ -4,168 +4,297 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Electronics and Communication Engineering</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-    margin: 0;
-    padding: 0;
-    font-family: "Poppins", sans-serif;
-    min-height: 100vh; 
-  
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  
-    background-image: url("bgloginpage.png");
-    background-size: cover;
-    background-position: center; /* Centers the image */
-    background-repeat: no-repeat; /* Prevents the image from tiling */
-  
-    overflow: hidden;
-    }
-    .login-container {
-      background: rgba(255, 255, 255, 0.444);
-      padding: 40px;
-      border-radius: 20px;
-      width: 500px;
-      max-width: 90%;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", "Poppins", sans-serif;
+      min-height: 100vh; 
       display: flex;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-      position: absolute;
-      z-index: 1;
-    }
- 
-    .login-info h1 {
-      margin-bottom: 15px;
-    }
-
-    .login-info p {
-      font-size: 14px;
-      line-height: 1.6;
+      justify-content: center;
+      align-items: center;
+      background-image: url("bgloginpage.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
     }
 
-    /* Right side: Form */
-    .login-form {
-      flex: 1;
-      padding: 20px;
+    /* Split Screen Box Layout Container */
+    .login-container {
+      background: #ffffff7e;
+      width: 950px;
+      max-width: 95%;
+      min-height: 550px;
+      display: flex;
+      border-radius: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      /* Smoothly handles changes when resizing */
+      transition: all 0.3s ease; 
     }
 
-    .login-form h2 {
-      margin-bottom: 20px;
-      color: #6a11cb;
+    /* Left Side: Form */
+    .login-form-section {
+      flex: 1.1;
+      padding: 50px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-form-section h2 {
+      font-family: "Poppins", sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #111111;
       text-align: center;
+      margin-bottom: 35px;
+      letter-spacing: -0.5px;
+    }
+
+    #loginForm {
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
     }
 
     .input-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-      color: #444;
+      position: relative;
+      margin-bottom: 25px;
     }
 
     .input-group input {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 14px;
+      padding: 20px 20px 12px 20px;
+      border: none;
+      background-color: #f0f0f0;
+      border-radius: 6px;
+      font-size: 15px;
+      font-family: "Inter", sans-serif;
+      color: #333333;
+      outline: none;
+      transition: background-color 0.2s ease;
     }
 
+    .input-group input:focus {
+      background-color: #e8e8e8;
+    }
+
+    .input-group label {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #8c8c8c;
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.2, 0, 0.03, 1);
+      font-family: "Inter", sans-serif;
+    }
+
+    .input-group input:focus ~ label,
+    .input-group input:valid ~ label {
+      top: 12px;
+      font-size: 11px;
+      color: #0f41cae6;
+      font-weight: 600;
+    }
+
+    /* Clean Emerald Green Action Button */
     .btn {
       width: 100%;
-      padding: 12px;
+      padding: 16px;
       border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      border-radius: 6px;
+      background-color: #0f41cae6;
       color: white;
       font-size: 16px;
+      font-weight: 500;
       cursor: pointer;
-      transition: 0.3s;
+      margin-top: 10px;
+      transition: background-color 0.2s ease;
     }
 
     .btn:hover {
-      opacity: 0.9;
+      background-color: #2157ebe6;
     }
-
-    .extra-links {
-      margin-top: 15px;
-      font-size: 13px;
+    
+    .welcome-panel {
+      flex: 0.9;
+      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
+      color: white;
     }
 
-    .extra-links a {
-      color: #6a11cb;
+    .welcome-panel h3 {
+      font-family: "Poppins", sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .welcome-panel p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 300px;
+      margin-bottom: 35px;
+    }
+
+    .outline-nav-btn {
+      padding: 12px 35px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .outline-nav-btn:hover {
+      background-color: #ffffff;
+      color: #0f41cae6;
+      border-color: #ffffff;
+    }
+
+    .forgot-link-box {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .forgot-link-box a {
+      font-size: 12px;
+      color: #000000;
       text-decoration: none;
     }
 
-    .extra-links a:hover {
+    .forgot-link-box a:hover {
       text-decoration: underline;
+    }
+
+    /* --- MOBILE RESPONSIVE ENGINE REBOOT --- */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px; /* Adds space around the container on small screens */
+        overflow-y: auto; /* Ensures users can scroll if screen height is tiny */
+      }
+
+      .login-container {
+        flex-direction: column; /* Stack left and right sections vertically */
+        min-height: auto;
+        width: 100%;
+        max-width: 450px; /* Forces it to look like a clean single card */
+        border-radius: 20px; /* Reduced huge corner curves for better mobile edge alignment */
+      }
+
+      /* Login form on top */
+      .login-form-section {
+        padding: 40px 25px; /* Tighter padding so inputs take up comfortable phone width */
+        order: 1; /* Puts sign-in section first */
+      }
+
+      .login-form-section h2 {
+        font-size: 28px; /* Scales down header text to prevent clipping */
+        margin-bottom: 25px;
+      }
+
+      /* Welcome/Signup section on bottom */
+      .welcome-panel {
+        padding: 40px 25px;
+        order: 2; /* Puts info section below the form */
+      }
+
+      .welcome-panel h3 {
+        font-size: 24px;
+      }
+      
+      .welcome-panel p {
+        margin-bottom: 25px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="login-container">
-    <div class="login-form">
-      <h2>Sign In</h2>
+    <div class="login-form-section">
+      <h2>Signin</h2>
+      
       <form id="loginForm" autocomplete="off">
         <div class="input-group">
+          <input type="text" id="username" required autocomplete="off">
           <label for="username">Username</label>
-          <input type="text" id="username" placeholder="Enter your username" required autocomplete="off">
         </div>
+        
         <div class="input-group">
+          <input type="password" id="password" required autocomplete="new-password">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter your password" required autocomplete="new-password">
         </div>
-        <button type="submit" class="btn">Login</button>
-        <div class="extra-links">
-          <p>Don't have an account? <a href="registration.html">Sign up</a></p>
-          <p><a href="#">Forgot password?</a></p>
+        
+        <button type="submit" class="btn">Signin</button>
+        
+        <div class="forgot-link-box">
+          <a href="#">Forgot password?</a>
         </div>
       </form>
+    </div>
+
+    <div class="welcome-panel">
+      <h3>Welcome back!</h3>
+      <p>Login with your username and password to continue.</p>
+      <a href="registration.html" class="outline-nav-btn">No account yet? Signup.</a>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-  const { createClient } = supabase;
-  const supabaseClient = createClient(
-    "https://xxzbuhvilxapebzzkmla.supabase.co",
-    "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
-  );
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
 
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    // MODIFIED: Read raw text string, drop spacing, and normalize to lower case
-    let usernameInput = document.getElementById("username").value.trim().toLowerCase();
-    const password = document.getElementById("password").value.trim();
+      let usernameInput = document.getElementById("username").value.trim().toLowerCase();
+      const password = document.getElementById("password").value.trim();
 
-    // MODIFIED: Bulletproof check. If they type an '@', strip it out and throw it away!
-    if (usernameInput.includes('@')) {
-      usernameInput = usernameInput.split('@')[0];
-    }
+      if (usernameInput.includes('@')) {
+        usernameInput = usernameInput.split('@')[0];
+      }
 
-    // Safely structure our internal synthetic string for auth validation processing
-    const syntheticEmail = `${usernameInput}@ece.com`;
+      const syntheticEmail = `${usernameInput}@ece.com`;
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: syntheticEmail,
-      password: password,
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: syntheticEmail,
+        password: password,
+      });
+
+      if (error) {
+        alert("Login failed: " + error.message);
+      } else {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.location.href = "dashboard.html";
+      }
     });
-
-    if (error) {
-      alert("Login failed: " + error.message);
-    } else {
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "dashboard.html";
-    }
-  });
-</script>
+  </script>
 
 </body>
 </html>
