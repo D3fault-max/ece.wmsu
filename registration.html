@@ -171,8 +171,8 @@
       <form id="registerForm" autocomplete="off">
         
         <div class="input-group">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" placeholder="First Name, M.I., Last Name" required>
+          <label for="full_name">Full Name</label>
+          <input type="text" id="full_name" placeholder="First Name, M.I., Last Name" required>
         </div>
 
         <div class="form-row">
@@ -182,7 +182,6 @@
               <option value="" disabled selected>Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
-              <option value="Other">Prefer not to say</option>
             </select>
           </div>
           
@@ -251,25 +250,29 @@
     document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // Collect data fields from UI inputs
       const usernameInput = document.getElementById("username").value.trim().toLowerCase();
       const personalEmail = document.getElementById("personal_email").value.trim();
       const password = document.getElementById("password").value.trim();
       
-      const fullName = document.getElementById("name").value.trim();
+      const fullName = document.getElementById("full_name").value.trim();
       const gender = document.getElementById("gender").value;
       const birthdate = document.getElementById("birthdate").value; 
       const yearLevel = document.getElementById("year_level").value;
       const contactNumber = document.getElementById("contact").value.trim();
       const address = document.getElementById("address").value.trim();
 
-      // Background Engineering: Translate username into pseudo-email format for Supabase engine authorization compatibility
       const syntheticEmail = `${usernameInput}@ece.com`;
 
-      // Pass 1: Sign up user into Supabase's login ledger using our background pseudo-email format
+      // Pass 1: Handle secure account auth profile compilation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: syntheticEmail,
-        password: password
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+            personal_email: personalEmail
+          }
+        }
       });
 
       if (authError) {
@@ -283,21 +286,18 @@
         return;
       }
 
-      // Pass 2: Write all details, INCLUDING their real personal email, into the profile information table
       const { error: profileError } = await supabase
         .from('profiles')
-        .insert([
-          {
-            id: user.id, 
-            full_name: fullName,
-            gender: gender,
-            birthdate: birthdate, 
-            address: address,
-            year_level: yearLevel,
-            contact_number: contactNumber,
-            personal_email: personalEmail // Saves their real email cleanly here!
-          }
-        ]);
+        .update({
+          full_name: fullName,
+          gender: gender, 
+          birthdate: birthdate, 
+          address: address,
+          year_level: yearLevel,
+          contact_number: contactNumber,
+          personal_email: personalEmail
+        })
+        .eq('id', user.id);
 
       if (profileError) {
         alert("Account created, but Profile Setup Failed: " + profileError.message);
