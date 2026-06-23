@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // --- AUTHENTICATION SESSION GUARD & IMMEDIATE REDIRECT ---
+    (function() {
+      const storageKey = "sb-xxzbuhvilxapebzzkmla-auth-token"; 
+      const sessionData = localStorage.getItem(storageKey);
+      if (!sessionData) {
+        // Instantly throw back to loginpage if token doesn't exist
+        window.location.replace("loginpage.html");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Control Panel - Admin Management Console</title>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-image: url('background.png');
+      background-color: #f4f6f9;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center; 
+      background-attachment: fixed;
+      color: #111111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- STICKY NAVBAR --- */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 4%;
+      background-color: #ffffff; 
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
+    }
+
+    .logo-area { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0f41cae6;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-profile-widget {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background-color: #f8f9fa;
+      padding: 6px 14px 6px 8px;
+      border-radius: 30px;
+      border: 1px solid #eaeaea;
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      background: #111111;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .user-meta-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .profile-name-string { font-size: 14px; font-weight: 600; color: #111111; }
+    .badge-pill {
+      background-color: #0f41cae6;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    /* --- TOP HEADER NAVBAR LOGOUT BUTTON --- */
+    .logout-top-btn {
+      padding: 10px 18px;
+      background-color: transparent;
+      border: 1px solid #fca5a5;
+      border-radius: 20px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #dc2626;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .logout-top-btn:hover {
+      background-color: #fef2f2;
+      border-color: #ef4444;
+    }
+
+    /* --- LAYOUT CONTAINER --- */
+    .dashboard-container {
+      flex: 1;
+      max-width: 1500px;
+      width: 94%;
+      margin: 40px auto;
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 35px;
+    }
+
+    .sidebar-tabs {
+      background-color: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #eaeaea;
+      padding: 24px 18px;
+      height: fit-content;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888888;
+      margin-bottom: 20px;
+      padding-left: 10px;
+      font-weight: 600;
+    }
+
+    .tab-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #555555;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    }
+
+    .tab-btn.active {
+      background-color: #111111;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background-color: #f1f5f9;
+      color: #111111;
+    }
+
+    .content-panel {
+      background-color: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #eaeaea;
+      padding: 45px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.03);
+      min-height: 600px;
+    }
+
+    .panel-header {
+      border-bottom: 1px solid #f0f2f5;
+      padding-bottom: 22px;
+      margin-bottom: 35px;
+    }
+
+    .panel-header h2 { font-size: 26px; font-weight: 600; color: #111111; }
+    .panel-header p { font-size: 14px; color: #666666; margin-top: 5px; }
+
+    /* --- VIEW SECTIONS CONTROLLER --- */
+    .view-section {
+      display: none; 
+    }
+    .view-section.active-view {
+      display: block;
+    }
+
+    /* --- UTILITY FILTER TOOLBAR --- */
+    .toolbar-wrapper {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .search-input {
+      flex: 1;
+      font-family: 'Poppins', sans-serif;
+      padding: 13px 18px;
+      border-radius: 6px;
+      border: 1px solid #cccccc;
+      font-size: 14px;
+      outline: none;
+      background-color: #fafafa;
+    }
+    .search-input:focus {
+      border-color: #0f41cae6;
+      background-color: #ffffff;
+    }
+
+    .filter-select {
+      font-family: 'Poppins', sans-serif;
+      padding: 13px 18px;
+      border-radius: 6px;
+      border: 1px solid #cccccc;
+      font-size: 14px;
+      background-color: #fafafa;
+      outline: none;
+      min-width: 200px;
+    }
+
+    /* --- DATA MATRIX ROSTER TABLE --- */
+    .table-container {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      padding: 16px;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+      color: #334155;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .student-profile-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .student-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .student-fallback-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .inspect-action-btn {
+      background-color: #0f41cae6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .inspect-action-btn:hover { background-color: #0a32a3; }
+
+    /* --- INSPECTOR GLASS MODAL WINDOW --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-card {
+      background-color: #ffffff;
+      width: 90%;
+      max-width: 850px;
+      max-height: 85vh;
+      border-radius: 12px;
+      overflow-y: auto;
+      padding: 40px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .close-modal-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .modal-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 30px 0 15px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f1f5f9;
+      color: #0f41cae6;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .info-item label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .info-item span {
+      font-size: 15px;
+      color: #111111;
+      font-weight: 500;
+    }
+
+    .req-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .req-thumb-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+      background-color: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .req-thumb-card h4 { font-size: 13px; color: #334155; font-weight: 600; }
+    .req-thumb-card a { font-size: 12px; color: #0f41cae6; text-decoration: none; font-weight: 500; }
+    .req-thumb-card a:hover { text-decoration: underline; }
+
+    @media(max-width: 950px) {
+      .dashboard-container { grid-template-columns: 1fr; }
+      .toolbar-wrapper { flex-direction: column; }
+      .navbar { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-area">
+      <a href="#" class="logo">ECE Admin Panel</a>
+    </div>
+    
+    <div class="nav-right-actions">
+      <div class="user-profile-widget">
+        <div class="avatar-circle">A</div>
+        <div class="user-meta-text">
+          <span class="profile-name-string">System Admin</span>
+          <span class="badge-pill">Administrator</span>
+        </div>
+      </div>
+      <button class="logout-top-btn" onclick="executeAdminSignOut()">Logout</button>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    
+    <aside class="sidebar-tabs">
+      <div class="sidebar-title">Admin Controls</div>
+      <button class="tab-btn active" id="tabRoster" onclick="switchAdminView('roster')">Student Records</button>
+      <button class="tab-btn" id="tabFreshmen" onclick="switchAdminView('freshmen')">Freshmen Students</button>
+    </aside>
+
+    <section class="content-panel">
+      <div class="toolbar-wrapper">
+        <input type="text" id="adminSearch" class="search-input" placeholder="Search by full name, contact number, or email address...">
+        <select id="adminYearFilter" class="filter-select">
+          <option value="">All Year Levels</option>
+          <option value="First Year" id="optFirstYear" style="display:none;">First Year</option>
+          <option value="Second Year" class="roster-opt">Second Year</option>
+          <option value="Third Year" class="roster-opt">Third Year</option>
+          <option value="Fourth Year" class="roster-opt">Fourth Year</option>
+        </select>
+      </div>
+
+      <div id="viewRoster" class="view-section active-view">
+        <div class="panel-header" style="border-bottom:none; margin-bottom:15px; padding-bottom:0;">
+          <h2>Student Record</h2>
+          <p>Monitor identity student details for 2nd, 3rd, and 4th year tracking paths.</p>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Student Profile Name</th>
+                <th>Year Status</th>
+                <th>Contact Phone</th>
+                <th>Personal Email</th>
+                <th>Action Panel</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: #666666; padding: 40px;">Syncing upperclassmen details...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="viewFreshmen" class="view-section">
+        <div class="panel-header" style="border-bottom:none; margin-bottom:15px; padding-bottom:0;">
+          <h2>Freshmen Student Records</h2>
+          <p>Review admissions track records, forms, and profiles for incoming first-year students</p>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Freshman Profile Name</th>
+                <th>Year Status</th>
+                <th>Contact Phone</th>
+                <th>Personal Email</th>
+                <th>Action Panel</th>
+              </tr>
+            </thead>
+            <tbody id="freshmenTableBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: #666666; padding: 40px;">Syncing incoming freshmen logs...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="inspectorModal">
+    <div class="modal-card">
+      <button class="close-modal-btn" onclick="closeInspectorModal()">&times;</button>
+      
+      <h2>Student Workspace Payload Details</h2>
+      <p style="color: #666666; font-size: 13px; margin-top: 4px;">Comprehensive extraction of primary metadata records.</p>
+
+      <div class="modal-section-title">Profile Parameters</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Full Identity Name</label>
+          <span id="mName">---</span>
+        </div>
+        <div class="info-item">
+          <label>Year Classification</label>
+          <span id="mYear">---</span>
+        </div>
+        <div class="info-item">
+          <label>Date of Birth</label>
+          <span id="mBirth">---</span>
+        </div>
+        <div class="info-item">
+          <label>Mobile Number</label>
+          <span id="mContact">---</span>
+        </div>
+        <div class="info-item" style="grid-column: span 2;">
+          <label>Personal Email Address</label>
+          <span id="mEmail">---</span>
+        </div>
+        <div class="info-item" style="grid-column: span 2;">
+          <label>Complete Home Address Log</label>
+          <span id="mAddress">---</span>
+        </div>
+      </div>
+
+      <div class="modal-section-title">Submitted Requirement Payloads</div>
+      <div class="req-preview-grid" id="mRequirementsGrid">
+        </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    let comprehensiveRosterArray = [];
+    let currentActiveView = 'roster'; 
+
+    // PRIVILEGE GUARD CHECK: Kicks unauthorized or logged-out users to login page
+    async function enforceAdminPrivilegeGuard() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      
+      if (error || !session) {
+        window.location.href = "loginpage.html";
+        return;
+      }
+
+      const { data: profile, error: pErr } = await supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (pErr || !profile || profile.role !== 'admin') {
+        alert("Access Denied: Administrative security privileges required.");
+        window.location.href = "dashboard.html";
+      }
+    }
+
+    async function bootstrapAdminInterface() {
+      await enforceAdminPrivilegeGuard();
+      await fetchMasterDatabaseRows();
+
+      document.getElementById('adminSearch').addEventListener('input', applyMatrixFiltering);
+      document.getElementById('adminYearFilter').addEventListener('change', applyMatrixFiltering);
+    }
+
+    // TAB SWITCHER LOGIC
+    function switchAdminView(targetView) {
+      currentActiveView = targetView;
+      
+      document.getElementById('tabRoster').classList.remove('active');
+      document.getElementById('tabFreshmen').classList.remove('active');
+      
+      document.getElementById('viewRoster').classList.remove('active-view');
+      document.getElementById('viewFreshmen').classList.remove('active-view');
+
+      document.getElementById('adminYearFilter').value = "";
+
+      const rosterOpts = document.querySelectorAll('.roster-opt');
+      const firstYearOpt = document.getElementById('optFirstYear');
+
+      if (targetView === 'roster') {
+        document.getElementById('tabRoster').classList.add('active');
+        document.getElementById('viewRoster').classList.add('active-view');
+        
+        firstYearOpt.style.display = 'none';
+        rosterOpts.forEach(o => o.style.display = 'block');
+      } else {
+        document.getElementById('tabFreshmen').classList.add('active');
+        document.getElementById('viewFreshmen').classList.add('active-view');
+        
+        firstYearOpt.style.display = 'block';
+        rosterOpts.forEach(o => o.style.display = 'none');
+      }
+
+      applyMatrixFiltering();
+    }
+
+    async function fetchMasterDatabaseRows() {
+      try {
+        const { data: profiles, error: pErr } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .order('full_name', { ascending: true });
+
+        if (pErr) throw pErr;
+
+        const { data: details, error: dErr } = await supabaseClient
+          .from('student_details')
+          .select('*');
+
+        if (dErr) throw dErr;
+
+        comprehensiveRosterArray = (profiles || [])
+          .filter(p => p.role !== 'admin') 
+          .map(p => {
+            const detailMatch = (details || []).find(d => d.user_id === p.id) || {};
+            return {
+              ...p,
+              birthdate: detailMatch.birthdate || "",
+              contact_info: detailMatch.contact_info || "",
+              personal_email: detailMatch.personal_email || p.personal_email || "",
+              address: detailMatch.address || ""
+            };
+          });
+
+        switchAdminView('roster'); 
+      } catch (err) {
+        alert("Error mapping cloud relational schema matrices: " + err.message);
+      }
+    }
+
+    function renderMatrixRows(dataset, tbodyElement, fallbackMessage) {
+      tbodyElement.innerHTML = '';
+
+      if (dataset.length === 0) {
+        tbodyElement.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888888; padding: 30px;">${fallbackMessage}</td></tr>`;
+        return;
+      }
+
+      dataset.forEach(student => {
+        const row = document.createElement('tr');
+        
+        let avatarContainer = `<div class="student-fallback-avatar">${(student.full_name || 'U').charAt(0).toUpperCase()}</div>`;
+        if (student.avatar_url) {
+          avatarContainer = `<img src="${student.avatar_url}" class="student-avatar" alt="Profile View">`;
+        }
+
+        row.innerHTML = `
+          <td>
+            <div class="student-profile-cell">
+              ${avatarContainer}
+              <div style="font-weight: 600; color: #111111;">${student.full_name || 'New Student Record'}</div>
+            </div>
+          </td>
+          <td><span style="font-weight: 500;">${student.year_level || 'Not Configured'}</span></td>
+          <td><span>${student.contact_info || 'N/A'}</span></td>
+          <td><span>${student.personal_email || 'N/A'}</span></td>
+          <td>
+            <button class="inspect-action-btn" onclick="triggerProfileInspection('${student.id}')">Inspect Workspace</button>
+          </td>
+        `;
+        tbodyElement.appendChild(row);
+      });
+    }
+
+    function applyMatrixFiltering() {
+      const query = document.getElementById('adminSearch').value.toLowerCase().trim();
+      const filterYear = document.getElementById('adminYearFilter').value;
+
+      const globallyFiltered = comprehensiveRosterArray.filter(student => {
+        const matchesQuery = 
+          (student.full_name || '').toLowerCase().includes(query) ||
+          (student.personal_email || '').toLowerCase().includes(query) ||
+          (student.address || '').toLowerCase().includes(query);
+        
+        const matchesYear = filterYear === "" || student.year_level === filterYear;
+        return matchesQuery && matchesYear;
+      });
+
+      if (currentActiveView === 'roster') {
+        const rosterUpperClassmen = globallyFiltered.filter(s => s.year_level !== 'First Year');
+        renderMatrixRows(rosterUpperClassmen, document.getElementById('studentTableBody'), 'No matching upperclassmen records located.');
+      } else {
+        const rosterFreshmen = globallyFiltered.filter(s => s.year_level === 'First Year');
+        renderMatrixRows(rosterFreshmen, document.getElementById('freshmenTableBody'), 'No matching freshmen records located.');
+      }
+    }
+
+    // SUPABASE SIGNOUT ROUTINE PIPELINE
+    async function executeAdminSignOut() {
+      const confirmation = confirm("Are you sure you want to sign out of the administrative workspace console?");
+      if (!confirmation) return;
+      
+      try {
+        await supabaseClient.auth.signOut();
+        window.location.href = "loginpage.html";
+      } catch (err) {
+        alert("Failed to securely terminate system session: " + err.message);
+      }
+    }
+
+    async function triggerProfileInspection(userId) {
+      const student = comprehensiveRosterArray.find(item => item.id === userId);
+      if (!student) return;
+
+      document.getElementById('mName').textContent = student.full_name || 'N/A';
+      document.getElementById('mYear').textContent = student.year_level || 'N/A';
+      document.getElementById('mBirth').textContent = student.birthdate || 'N/A';
+      document.getElementById('mContact').textContent = student.contact_info || 'N/A';
+      document.getElementById('mEmail').textContent = student.personal_email || 'N/A';
+      document.getElementById('mAddress').textContent = student.address || 'N/A';
+
+      const reqGrid = document.getElementById('mRequirementsGrid');
+      reqGrid.innerHTML = '<p style="color: #666666; font-size: 13px;">Extracting document pointer links...</p>';
+      
+      document.getElementById('inspectorModal').style.display = 'flex';
+
+      try {
+        const { data: requirements, error } = await supabaseClient
+          .from('student_requirements')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (error) throw error;
+        reqGrid.innerHTML = '';
+
+        if (!requirements || requirements.length === 0) {
+          reqGrid.innerHTML = '<p style="color: #666666; font-size: 13px; grid-column: span 2;">No document payloads submitted by this user.</p>';
+          return;
+        }
+
+        const explicitLabels = {
+          birth_cert: "PSA Birth Certificate",
+          transcript: "Report Card (Form 138)",
+          good_moral: "Good Moral Certificate",
+          cetirr: "CET IRR Form Document",
+          eat: "Engineering Aptitude Test",
+          medcert: "Medical Certification",
+          xray: "Chest X-Ray Digital Asset"
+        };
+
+        requirements.forEach(doc => {
+          const block = document.createElement('div');
+          block.className = 'req-thumb-card';
+          const cleanName = explicitLabels[doc.requirement_type] || doc.requirement_type.toUpperCase();
+          
+          block.innerHTML = `
+            <h4>${cleanName}</h4>
+            <a href="${doc.file_url}" target="_blank">View Asset &nearr;</a>
+          `;
+          reqGrid.appendChild(block);
+        });
+
+      } catch (err) {
+        reqGrid.innerHTML = `<p style="color: #b91c1c; font-size: 13px; grid-column: span 2;">Sync Failure: ${err.message}</p>`;
+      }
+    }
+
+    function closeInspectorModal() {
+      document.getElementById('inspectorModal').style.display = 'none';
+    }
+
+    window.addEventListener('DOMContentLoaded', bootstrapAdminInterface);
+  </script>
+</body>
+</html>
