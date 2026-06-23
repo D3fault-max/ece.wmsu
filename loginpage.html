@@ -282,6 +282,7 @@
 
       const syntheticEmail = `${usernameInput}@ece.com`;
 
+      // 1. Authenticate user via Supabase
       const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: syntheticEmail,
         password: password,
@@ -289,8 +290,32 @@
 
       if (error) {
         alert("Login failed: " + error.message);
-      } else {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        return;
+      }
+
+      // Cache structural user variables safely
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // 2. Safely look up user role within profiles matrix
+      try {
+        const { data: profile, error: profileError } = await supabaseClient
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        // 3. Evaluate identity parameters and route targets accordingly
+        if (profile && profile.role === 'admin') {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "dashboard.html";
+        }
+
+      } catch (dbErr) {
+        console.error("Failed to safely load authorization details:", dbErr);
+        // Fallback redirection logic
         window.location.href = "dashboard.html";
       }
     });
