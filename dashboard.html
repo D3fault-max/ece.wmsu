@@ -959,6 +959,42 @@
         window.location.href = "homepage.html";
       }
     });
+    // --- AUTO LOGOUT AFTER 1 HOUR OF INACTIVITY ---
+
+let idleTimeout;
+
+// 1 hour in milliseconds = 60 minutes * 60 seconds * 1000 ms
+const IDLE_TIME_LIMIT = 3600000; 
+
+function logoutUser() {
+  console.log("User idle for 1 hour. Triggering automatic logout...");
+  
+  // 1. Clear session from Supabase auth engine
+  supabase.auth.signOut().then(() => {
+    alert("You have been automatically logged out due to inactivity.");
+    // 2. Redirect back to your login page
+    window.location.href = "loginpage.html";
+  });
+}
+
+function resetIdleTimer() {
+  // Clear the old running countdown timer
+  clearTimeout(idleTimeout);
+  
+  // Start a fresh 1-hour countdown timer
+  idleTimeout = setTimeout(logoutUser, IDLE_TIME_LIMIT);
+}
+
+// Events that prove the user is actively using the device
+const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
+
+// Attach the listener to every single user action event
+activityEvents.forEach(event => {
+  window.addEventListener(event, resetIdleTimer, { passive: true });
+});
+
+// Fire the timer instantly when the page first loads up
+resetIdleTimer();
   </script>
 </body>
 </html>
