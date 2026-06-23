@@ -39,7 +39,6 @@
       flex-direction: column;
     }
 
-    /* --- STICKY NAVBAR --- */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -60,7 +59,6 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       color: #0f41cae6;
-      cursor: pointer;
       text-decoration: none;
     }
 
@@ -113,7 +111,6 @@
       width: fit-content;
     }
 
-    /* --- LAYOUT CONTAINER --- */
     .enrollment-container {
       flex: 1;
       max-width: 1500px;
@@ -193,7 +190,6 @@
     .panel-header h2 { font-size: 26px; font-weight: 600; color: #111111; }
     .panel-header p { font-size: 14px; color: #666666; margin-top: 5px; }
 
-    /* --- PROFILE PIC DESIGN --- */
     .profile-pic-container {
       display: flex;
       flex-direction: column;
@@ -278,7 +274,6 @@
       background-color: #ffffff;
       box-shadow: 0 0 0 3px rgba(15, 65, 202, 0.08);
     }
-    .form-group input:disabled { background-color: #ededed; color: #777; cursor: not-allowed; }
     .form-group textarea { resize: vertical; min-height: 90px; }
 
     .action-btn {
@@ -296,7 +291,6 @@
     }
     .action-btn:hover { background-color: #333333; }
 
-    /* --- REQUIREMENTS DYNAMIC GRID MATRIX --- */
     .req-grid { 
       display: grid; 
       grid-template-columns: repeat(2, 1fr);
@@ -310,12 +304,12 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-height: 400px;
     }
-    .req-card.full-width { grid-column: span 2; }
     .req-title { font-size: 16px; font-weight: 600; color: #111111; margin-bottom: 6px; }
-    .req-desc { font-size: 13px; color: #666666; margin-bottom: 20px; line-height: 1.4; }
+    .req-desc { font-size: 13px; color: #666666; margin-bottom: 20px; line-height: 1.4; height: 36px; overflow: hidden; }
 
-    .upload-box { display: flex; flex-direction: column; gap: 12px; }
+    .upload-box { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
     .file-input-wrapper { display: flex; gap: 10px; align-items: center; }
     .file-input-wrapper input[type="file"] { flex: 1; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; font-family: 'Inter', sans-serif; font-size: 13px; }
     
@@ -333,14 +327,29 @@
     .upload-sub-btn:hover { background-color: #0a32a3; }
 
     .preview-box {
-      margin-top: 18px;
-      padding: 14px;
+      margin-top: 14px;
+      padding: 12px;
       border: 1px solid #e2e8f0;
       border-radius: 6px;
-      background-color: #ffffff;
-      display: none;
+      background-color: #f8fafc;
+      text-align: center;
     }
-    .preview-box img { max-width: 100%; max-height: 220px; border-radius: 4px; object-fit: contain; display: block; margin-top: 10px; }
+    .preview-frame {
+      width: 100%;
+      height: 150px;
+      margin-top: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background-color: #eaeaea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview-frame img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
+    }
     .status-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
     .status-badge.verified { background-color: #d1fae5; color: #065f46; }
 
@@ -411,14 +420,11 @@
             <p class="upload-hint-text">Upload 1x1 image with nametag. Filesize must be under 1MB</p>
           </div>
 
-          <div class="form-group full-width">
-            <label>Registered Email</label>
-            <input type="email" id="profileEmail" disabled>
-          </div>
           <div class="form-group">
-            <label>Full Name String</label>
-            <input type="text" id="formFullName" placeholder="Enter full name identity" required>
+            <label>Full Name</label>
+            <input type="text" id="formFullName" placeholder="Full Name" required>
           </div>
+          
           <div class="form-group">
             <label>Year Level Context</label>
             <select id="formYearLevel">
@@ -434,14 +440,15 @@
             <label>Birthdate</label>
             <input type="date" id="formBirthdate" required style="min-height: 50px;">
           </div>
+          
           <div class="form-group">
-            <label>Contact Info (Mobile/Phone)</label>
-            <input type="text" id="formContact" placeholder="e.g., 09123456789" required>
+            <label>Contact Number</label>
+            <input type="text" id="formContact" placeholder="Contact Number" required>
           </div>
           
           <div class="form-group full-width">
-            <label>Personal Email Address (Contact Backup)</label>
-            <input type="email" id="formPersonalEmail" placeholder="e.g., student.personal@gmail.com" required>
+            <label>Personal Email Address</label>
+            <input type="email" id="formPersonalEmail" placeholder="Email Address" required>
           </div>
 
           <div class="form-group full-width">
@@ -461,18 +468,20 @@
         </div>
 
         <div class="req-grid">
+          
           <div class="req-card">
             <div>
-              <div class="req-title">PSA Birth Certificate</div> 
-              </div>
+              <div class="req-title">PSA Birth Certificate</div>
+              <div class="req-desc">Rename your file to surname_firstname_birthcertificate.jpg before uploading.</div>
+            </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-birth_cert" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('birth_cert')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-birth_cert">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="Birth Certificate Asset">
+              <div class="preview-box" id="preview-birth_cert" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="Birth Certificate Asset"></div>
               </div>
             </div>
           </div>
@@ -480,15 +489,16 @@
           <div class="req-card">
             <div>
               <div class="req-title">Report Card (Form 138)</div>
+              <div class="req-desc">Rename your file to surname_firstname_form138.jpg before uploading.</div>
             </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-transcript" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('transcript')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-transcript">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="Transcript Asset">
+              <div class="preview-box" id="preview-transcript" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="Transcript Asset"></div>
               </div>
             </div>
           </div>
@@ -496,15 +506,16 @@
           <div class="req-card">
             <div>
               <div class="req-title">Certificate of Good Moral Character</div>
+              <div class="req-desc">Rename your file to surname_firstname_goodmoral.jpg before uploading.</div> 
             </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-good_moral" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('good_moral')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-good_moral">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="Good Moral Asset">
+              <div class="preview-box" id="preview-good_moral" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="Good Moral Asset"></div>
               </div>
             </div>
           </div>
@@ -512,15 +523,16 @@
           <div class="req-card">
             <div>
               <div class="req-title">CET IRR</div>
+              <div class="req-desc">Rename your file to surname_firstname_cetirr.jpg before uploading.</div> 
             </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-cetirr" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('cetirr')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-cetirr">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="CET IRR View">
+              <div class="preview-box" id="preview-cetirr" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="CET IRR View"></div>
               </div>
             </div>
           </div>
@@ -528,15 +540,16 @@
           <div class="req-card">
             <div>
               <div class="req-title">Engineering Aptitude Test Result</div>
+              <div class="req-desc">Rename your file to surname_firstname_eat.jpg before uploading.</div>
             </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-eat" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('eat')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-eat">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="Engineering Aptitude Test Result View">
+              <div class="preview-box" id="preview-eat" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="Engineering Aptitude Test Result View"></div>
               </div>
             </div>
           </div>
@@ -544,15 +557,16 @@
           <div class="req-card">
             <div>
               <div class="req-title">Medical Certificate</div>
+              <div class="req-desc">Rename your file to surname_firstname_medicalcertificate.jpg before uploading.</div>
             </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-medcert" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('medcert')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-medcert">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="Medical Certificate View">
+              <div class="preview-box" id="preview-medcert" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="Medical Certificate View"></div>
               </div>
             </div>
           </div>
@@ -560,18 +574,20 @@
           <div class="req-card">
             <div>
               <div class="req-title">X-Ray Result</div>
+              <div class="req-desc">Rename your file to surname_firstname_xray.jpg before uploading.</div>
             </div>
             <div class="upload-box">
               <div class="file-input-wrapper">
                 <input type="file" id="file-xray" accept="image/*">
                 <button class="upload-sub-btn" onclick="uploadRequirementAsset('xray')">Upload</button>
               </div>
-              <div class="preview-box" id="preview-xray">
-                <span class="status-badge verified">Verified Active</span><br>
-                <img src="" alt="X-Ray Result View">
+              <div class="preview-box" id="preview-xray" style="display: none;">
+                <span class="status-badge verified">Verified Active</span>
+                <div class="preview-frame"><img src="" alt="X-Ray Result View"></div>
               </div>
             </div>
-          </div>
+          </div> 
+
         </div>
         <div class="toast-box" id="reqToast"></div>
       </div>
@@ -587,8 +603,19 @@
       "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
     );
 
+    async function checkUserSession() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (error || !session) {
+        alert("Access Denied: Please log in to view this page.");
+        window.location.href = "loginpage.html";
+        return;
+      }
+    }
+
+    checkUserSession();
+
     let currentUser = null;
-    const MAX_FILE_SIZE = 1024 * 1024; // Standardized: Exactly 1MB guard threshold limit
+    const MAX_FILE_SIZE = 1024 * 1024; // Exactly 1MB guard threshold limit
 
     function switchEnrollmentTab(tabId, buttonElement) {
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -602,7 +629,6 @@
     }
 
     function initializeEnrollmentWorkspace() {
-      // Secondary logic validation wrapper to catch edge navigation anomalies
       supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if ((event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') && !session) {
           window.location.href = "loginpage.html";
@@ -611,8 +637,6 @@
 
         if (session) {
           currentUser = session.user;
-          document.getElementById('profileEmail').value = currentUser.email;
-          
           await loadProfileData();
           await loadUploadedRequirements();
         }
@@ -623,9 +647,8 @@
       let displayedName = "ECE Student";
       let yearLevel = "";
       let avatarUrl = "";
-      
       let birthdate = "";
-      let contact = "";
+      let contactNumber = "";
       let personalEmail = ""; 
       let address = "";
 
@@ -640,31 +663,20 @@
           displayedName = profile.full_name || "ECE Student";
           yearLevel = profile.year_level || "";
           avatarUrl = profile.avatar_url || "";
+          birthdate = profile.birthdate || "";
+          contactNumber = profile.contact_number || "";
+          personalEmail = profile.personal_email || "";
+          address = profile.address || "";
         }
-
-        const { data: details, error: dError } = await supabaseClient
-          .from('student_details')
-          .select('*')
-          .eq('user_id', currentUser.id)
-          .maybeSingle();
-
-        if (details && !dError) {
-          birthdate = details.birthdate || "";
-          contact = details.contact_info || "";
-          personalEmail = details.personal_email || ""; 
-          address = details.address || "";
-        }
-
       } catch (err) {
-        console.error("Profile cross-table sync failure:", err);
+        console.error("Profile cache fetch failure:", err);
       }
 
       document.getElementById("navProfileName").textContent = displayedName;
       document.getElementById("formFullName").value = displayedName === "ECE Student" ? "" : displayedName;
       document.getElementById("formYearLevel").value = yearLevel;
-      
       document.getElementById("formBirthdate").value = birthdate;
-      document.getElementById("formContact").value = contact;
+      document.getElementById("formContact").value = contactNumber;
       document.getElementById("formPersonalEmail").value = personalEmail; 
       document.getElementById("formAddress").value = address;
 
@@ -696,11 +708,10 @@
 
       const name = document.getElementById('formFullName').value.trim();
       const year = document.getElementById('formYearLevel').value;
-      
       const bday = document.getElementById('formBirthdate').value;
-      const contact = document.getElementById('formContact').value.trim();
+      const contactNo = document.getElementById('formContact').value.trim();
       const personalEmailVal = document.getElementById('formPersonalEmail').value.trim(); 
-      const address = document.getElementById('formAddress').value.trim();
+      const addressVal = document.getElementById('formAddress').value.trim();
 
       try {
         const { error: profileError } = await supabaseClient
@@ -709,26 +720,17 @@
             id: currentUser.id,
             full_name: name,
             year_level: year,
+            birthdate: bday,
+            contact_number: contactNo,
+            personal_email: personalEmailVal,
+            address: addressVal,
             updated_at: new Date().toISOString()
           });
 
         if (profileError) throw profileError;
 
-        const { error: detailsError } = await supabaseClient
-          .from('student_details')
-          .upsert({
-            user_id: currentUser.id,
-            birthdate: bday,
-            contact_info: contact,
-            personal_email: personalEmailVal, 
-            address: address,
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'user_id' });
-
-        if (detailsError) throw detailsError;
-
         toast.className = "toast-box profile-toast success";
-        toast.textContent = "All profile and deep table updates saved successfully!";
+        toast.textContent = "All profile updates saved successfully!";
         toast.style.display = "block";
         
         await loadProfileData();
@@ -890,6 +892,29 @@
     }
 
     window.addEventListener("DOMContentLoaded", initializeEnrollmentWorkspace);
+
+
+    let idleTimeout;
+    const IDLE_TIME_LIMIT = 3600000; 
+
+    function logoutUser() {
+      supabaseClient.auth.signOut().then(() => {
+        alert("You have been automatically logged out due to inactivity.");
+        window.location.href = "loginpage.html";
+      });
+    }
+
+    function resetIdleTimer() {
+      clearTimeout(idleTimeout);
+      idleTimeout = setTimeout(logoutUser, IDLE_TIME_LIMIT);
+    }
+
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
+    activityEvents.forEach(event => {
+      window.addEventListener(event, resetIdleTimer, { passive: true });
+    });
+
+    resetIdleTimer();
   </script>
 </body>
 </html>
