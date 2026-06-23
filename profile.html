@@ -4,548 +4,887 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ECE Student Portal - My Profile</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Poppins', 'Inter', sans-serif;
       background-image: url('background.png');
       background-color: #f4f6f9;
       background-repeat: no-repeat;
       background-size: cover;
-      background-position: center; 
+      background-position: center;
       background-attachment: fixed;
-      color: #111111;
+      color: #111;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
     }
 
-    /* --- NAVIGATION NAVBAR TRAY --- */
+    /* ── NAVBAR ── */
     .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 5%;
-      background-color: #ffffff; 
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 5%; background: #fff;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+    .logo { font-size: 22px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #0f41ca; text-decoration: none; }
+    .nav-links { display: flex; list-style: none; gap: 30px; }
+    .nav-links a { text-decoration: none; color: #555; font-size: 15px; font-weight: 500; }
+    .nav-links a:hover { color: #111; }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .user-widget { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 6px 14px 6px 8px; border-radius: 30px; border: 1px solid #eaeaea; text-decoration: none; }
+    .avatar { width: 36px; height: 36px; background: linear-gradient(135deg,#06aad3,#0f41ca); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+    .user-meta { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-name { font-size: 14px; font-weight: 600; color: #111; }
+    .badge { background: #e91e63; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; text-transform: uppercase; width: fit-content; margin-top: 2px; }
+    .logout-btn { font-size: 13px; font-weight: 500; color: #fff; background: #111; padding: 9px 18px; border-radius: 6px; border: none; cursor: pointer; }
+
+    /* ── PROFILE PAGE ── */
+    .page-wrap { flex: 1; max-width: 820px; width: 100%; margin: 40px auto; padding: 0 20px; }
+    .card { background: #fff; border-radius: 14px; border: 1px solid #eaeaea; box-shadow: 0 8px 30px rgba(0,0,0,.04); overflow: hidden; margin-bottom: 28px; }
+    .banner { background: linear-gradient(135deg,#0f41ca,#06aad3); height: 140px; position: relative; }
+    .avatar-stack { position: absolute; bottom: -50px; left: 40px; }
+    .big-avatar { width: 100px; height: 100px; background: linear-gradient(135deg,#06aad3,#0f41ca); color: #fff; font-size: 36px; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid #fff; }
+    .card-body { padding: 70px 40px 40px; }
+    .user-id h2 { font-size: 26px; font-weight: 600; }
+    .user-id p  { font-size: 14px; color: #666; margin-top: 3px; }
+
+    .profile-form { margin-top: 36px; display: flex; flex-direction: column; gap: 22px; border-top: 1px solid #f0f2f5; padding-top: 28px; }
+    .fg { display: flex; flex-direction: column; gap: 7px; }
+    .fg label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #444; letter-spacing: .5px; }
+    .fg input, .fg select { padding: 11px 14px; border-radius: 7px; border: 1px solid #d0d5dd; font-size: 15px; background: #fafafa; outline: none; font-family: inherit; }
+    .fg input:focus, .fg select:focus { border-color: #0f41ca; background: #fff; }
+    .save-btn { font-size: 14px; font-weight: 600; color: #fff; background: #111; border: none; padding: 13px; border-radius: 7px; cursor: pointer; letter-spacing: .3px; margin-top: 6px; transition: background .15s; }
+    .save-btn:hover { background: #333; }
+    .save-btn:disabled { background: #888; cursor: not-allowed; }
+
+    /* ── DOCUMENT CARDS ── */
+    .section-title { font-size: 17px; font-weight: 700; margin: 32px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #eaeaea; color: #0f41ca; }
+    .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 10px; }
+    .doc-card { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,.03); display: flex; flex-direction: column; gap: 10px; }
+    .doc-card h3 { font-size: 15px; font-weight: 700; color: #111; }
+    .doc-card p  { font-size: 13px; color: #667; line-height: 1.5; flex: 1; }
+    .doc-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .btn-edit { background: #0f41ca; color: #fff; border: none; padding: 11px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .btn-edit:hover { background: #0c35a8; }
+    .btn-dl { background: transparent; color: #111; border: 1.5px solid #cbd0d8; padding: 10px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color .15s, background .15s; }
+    .btn-dl:hover { border-color: #111; background: #f6f7f9; }
+    .btn-dl svg { flex-shrink: 0; }
+    .doc-status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; width: fit-content; }
+    .status-saved { background: #d1fae5; color: #065f46; }
+    .status-empty { background: #fef3c7; color: #92400e; }
+
+    /* ── PDF EDITOR MODAL ── */
+    #pdfModal {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      flex-direction: column; background: #1e293b;
     }
 
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    /* Top toolbar */
+    .pdf-toolbar {
+      background: #fff; border-bottom: 1px solid #e2e8f0;
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; gap: 16px;
     }
-
-    .logo {
-      font-family: 'Poppins', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #0f41cae6;
-      cursor: pointer;
-      text-decoration: none;
+    .pdf-toolbar-left  { display: flex; align-items: center; gap: 14px; }
+    .pdf-toolbar-right { display: flex; align-items: center; gap: 10px; }
+    .pdf-doc-title { font-size: 15px; font-weight: 700; color: #111; }
+    .pdf-doc-hint  { font-size: 12px; color: #64748b; }
+    .tb-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 7px; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all .15s; white-space: nowrap;
     }
+    .tb-btn-save    { background: #16a34a; color: #fff; }
+    .tb-btn-save:hover { background: #15803d; }
+    .tb-btn-save:disabled { background: #86efac; cursor: not-allowed; }
+    .tb-btn-dl      { background: #0f41ca; color: #fff; }
+    .tb-btn-dl:hover { background: #0c35a8; }
+    .tb-btn-dl:disabled { background: #93c5fd; cursor: not-allowed; }
+    .tb-btn-close   { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .tb-btn-close:hover { background: #e2e8f0; }
 
-    .nav-container {
-      display: flex;
-      align-items: center;
-      gap: 30px;
+    /* Zoom controls */
+    .zoom-ctrl { display: flex; align-items: center; gap: 4px; background: #f1f5f9; border-radius: 7px; padding: 3px; }
+    .zoom-btn { background: transparent; border: none; width: 28px; height: 28px; border-radius: 5px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: #334155; transition: background .1s; }
+    .zoom-btn:hover { background: #e2e8f0; }
+    .zoom-label { font-size: 12px; font-weight: 600; color: #475569; min-width: 38px; text-align: center; }
+
+    /* PDF canvas area */
+    .pdf-canvas-area {
+      flex: 1; overflow: auto; background: #334155;
+      display: flex; justify-content: center;
+      padding: 32px 24px;
     }
+    .pdf-pages-col { display: flex; flex-direction: column; gap: 24px; align-items: center; }
 
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 30px;
+    /* Each rendered page */
+    .pdf-page-wrap {
+      position: relative; background: #fff;
+      box-shadow: 0 8px 40px rgba(0,0,0,.45);
+      border-radius: 3px; flex-shrink: 0; overflow: visible;
     }
+    .pdf-page-wrap canvas { display: block; }
 
-    .nav-links a {
-      font-family: 'Inter', sans-serif;
-      text-decoration: none;
-      color: #555555;
-      font-size: 15px;
-      font-weight: 500;
-      position: relative;
-      padding: 5px 0;
-      transition: color 0.3s ease;
+    /* Overlay inputs rendered on top of the canvas */
+    .field-overlay {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; /* children opt back in */
+      z-index: 5;
     }
-
-    .nav-links a::after {
-      content: '';
+    .pdf-field {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background-color: #111111;
-      transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .nav-links a:hover::after { width: 100%; }
-    .nav-links a:hover { color: #111111; }
-
-    .nav-profile-controls {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .user-profile-widget {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background-color: #f8f9fa;
-      padding: 6px 14px 6px 8px;
-      border-radius: 30px;
-      border: 1px solid #eaeaea;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .user-profile-widget:hover {
-      background-color: #f1f3f5;
-      transform: translateY(-1px);
-    }
-
-    .avatar-circle {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 3px 8px rgba(15, 65, 202, 0.15);
-    }
-
-    .user-meta-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
-    .profile-name-string {
-      font-size: 14px;
-      font-weight: 600;
-      color: #111111;
-    }
-
-    .badge-pill {
-      font-family: 'Inter', sans-serif;
-      background-color: #e91e63;
-      color: white;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      width: fit-content;
-      margin-top: 2px;
-    }
-
-    .logout-btn {
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: #ffffff;
-      background-color: #111111;
-      padding: 9px 18px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .logout-btn:hover { background-color: #333333; }
-
-    /* --- PROFILE WORKSPACE CONTAINER --- */
-    .profile-wrapper {
-      flex: 1;
-      max-width: 800px;
-      width: 100%;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .profile-card {
-      background-color: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #eaeaea;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
-      overflow: hidden;
-    }
-
-    .profile-header-banner {
-      background: linear-gradient(135deg, #0f41cae6 0%, #06aad3 100%);
-      height: 140px;
-      position: relative;
-    }
-
-    .profile-avatar-stack {
-      position: absolute;
-      bottom: -50px;
-      left: 40px;
-      display: flex;
-      align-items: flex-end;
-      gap: 20px;
-    }
-
-    .large-avatar-circle {
-      width: 100px;
-      height: 100px;
-      background: linear-gradient(135deg, #06aad3 0%, #0f41cae6 100%);
-      color: #ffffff;
-      font-size: 36px;
-      font-weight: 700;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 4px solid #ffffff;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .profile-body {
-      padding: 70px 40px 40px 40px;
-    }
-
-    .user-identity h2 {
-      font-size: 26px;
-      font-weight: 600;
-      color: #111111;
-    }
-
-    .user-identity p {
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      color: #666666;
-      margin-top: 2px;
-    }
-
-    /* --- FORM WORKSPACE LAYOUT --- */
-    .profile-form {
-      margin-top: 40px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      border-top: 1px solid #f0f2f5;
-      padding-top: 30px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #444444;
-    }
-
-    .form-group input, .form-group select {
-      font-family: 'Poppins', sans-serif;
-      padding: 12px 16px;
-      border-radius: 6px;
-      border: 1px solid #cccccc;
-      font-size: 15px;
-      color: #111111;
-      background-color: #fafafa;
-      transition: all 0.2s ease;
+      pointer-events: all;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      color: #111;
+      background: rgba(219, 234, 254, 0.45);
+      border: 1px solid rgba(59, 130, 246, 0.6);
+      border-radius: 2px;
       outline: none;
+      padding: 1px 3px;
+      box-sizing: border-box;
+      resize: none;
+      overflow: hidden;
+      z-index: 6;
+      transition: background .1s, border-color .1s;
+    }
+    .pdf-field:focus {
+      background: rgba(254, 249, 195, 0.95);
+      border-color: #0f41ca;
+      border-width: 1.5px;
+      z-index: 10;
+    }
+    .pdf-field-check {
+      position: absolute; pointer-events: all;
+      cursor: pointer; width: 14px; height: 14px;
+      accent-color: #0f41ca;
+      z-index: 6;
     }
 
-    .form-group input:focus, .form-group select:focus {
-      border-color: #0f41cae6;
-      background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(15, 65, 202, 0.1);
+    /* Status bar at bottom of modal */
+    .pdf-statusbar {
+      height: 32px; background: #1e293b; border-top: 1px solid #334155;
+      display: flex; align-items: center; padding: 0 20px; gap: 16px;
+      flex-shrink: 0;
     }
+    .sb-item { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 5px; }
+    .sb-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+    .sb-dot.unsaved { background: #f59e0b; }
 
-    .form-group input:disabled {
-      background-color: #f0f2f5;
-      color: #888888;
-      cursor: not-allowed;
-      border-color: #e0e0e0;
+    /* Loading overlay inside modal */
+    .pdf-loading {
+      position: absolute; inset: 60px 0 32px 0;
+      background: #334155; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px; z-index: 5;
     }
+    .pdf-loading p { color: #e2e8f0; font-size: 14px; font-weight: 500; }
+    .ld-bar { width: 220px; height: 4px; background: #475569; border-radius: 2px; overflow: hidden; }
+    .ld-fill { height: 100%; background: linear-gradient(90deg,#0f41ca,#06aad3); border-radius: 2px; animation: ldslide 1.4s ease-in-out infinite; }
+    @keyframes ldslide { 0%{width:0;margin-left:0} 50%{width:60%;margin-left:20%} 100%{width:0;margin-left:100%} }
 
-    .save-profile-btn {
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: #ffffff;
-      background-color: #111111;
-      border: none;
-      padding: 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 10px;
-      transition: background-color 0.2s ease;
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: #1e293b; color: #f1f5f9; padding: 12px 24px;
+      border-radius: 9px; font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0,0,0,.3); z-index: 99999;
+      display: flex; align-items: center; gap: 8px;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
     }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: #14532d; }
+    .toast.error   { background: #7f1d1d; }
 
-    .save-profile-btn:hover { background-color: #333333; }
-
-    /* Alert Toast Status Box */
-    .status-toast {
-      padding: 12px 16px;
-      border-radius: 6px;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      display: none;
-      margin-top: 15px;
-      text-align: center;
-    }
-    .status-toast.success { background-color: #e2fced; color: #146c3a; border: 1px solid #bbf7d0; }
-    .status-toast.error { background-color: #fce8e6; color: #b91c1c; border: 1px solid #fecaca; }
-
-    @media (max-width: 768px) {
-      .profile-body { padding: 70px 20px 30px 20px; }
-      .profile-avatar-stack { left: 20px; }
-      .profile-name-string { display: none; }
+    @media (max-width: 600px) {
+      .doc-grid { grid-template-columns: 1fr; }
+      .card-body { padding: 70px 20px 30px; }
+      .pdf-toolbar { padding: 0 12px; }
+      .tb-btn { padding: 7px 10px; font-size: 12px; }
+      .pdf-doc-hint { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <header class="navbar">
-    <div class="logo-area">
-      <a href="dashboard.html" class="logo">ECE</a>
-    </div>
-    
-    <div class="nav-container">
-      <nav>
-        <ul class="nav-links">
-          <li><a href="dashboard.html">Dashboard</a></li>
-          <li><a href="https://www.facebook.com/JIECEPWMSU" target="_blank">Social Media</a></li>
-        </ul>
-      </nav>
+<header class="navbar">
+  <a href="dashboard.html" class="logo">ECE</a>
+  <nav><ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="https://www.facebook.com/JIECEPWMSU" target="_blank">Social Media</a></li>
+  </ul></nav>
+  <div class="nav-right">
+    <a href="profile.html" class="user-widget">
+      <div class="avatar" id="navAvatar">U</div>
+      <div class="user-meta">
+        <span class="user-name" id="navName">Loading…</span>
+        <span class="badge">Student</span>
+      </div>
+    </a>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </div>
+</header>
 
-      <div class="nav-profile-controls">
-        <a href="profile.html" class="user-profile-widget" id="topNavWidget">
-          <div class="avatar-circle" id="navAvatarLetter">U</div>
-          <div class="user-meta-text">
-            <span class="profile-name-string" id="navProfileName">Loading...</span>
-            <span class="badge-pill" id="navRoleBadge">Student</span>
-          </div>
-        </a>
-        <button class="logout-btn" id="logoutBtn">Logout</button>
+<main class="page-wrap">
+  <div class="card">
+    <div class="banner">
+      <div class="avatar-stack">
+        <div class="big-avatar" id="bigAvatar">U</div>
       </div>
     </div>
-  </header>
+    <div class="card-body">
+      <div class="user-id">
+        <h2 id="profileName">Loading…</h2>
+        <p  id="profileMeta">Department of Electronics Engineering</p>
+      </div>
 
-  <main class="profile-wrapper">
-    <div class="profile-card">
-      <div class="profile-header-banner">
-        <div class="profile-avatar-stack">
-          <div class="large-avatar-circle" id="bigAvatarLetter">U</div>
+      <form class="profile-form" id="profileForm">
+        <div class="fg"><label>Email / Username</label><input type="email" id="fEmail" disabled></div>
+        <div class="fg"><label>Full Name</label><input type="text" id="fName" required placeholder="e.g. Juan dela Cruz"></div>
+        <div class="fg">
+          <label>Year Level</label>
+          <select id="fYear">
+            <option value="">— Select Year Level —</option>
+            <option value="First Year">First Year</option>
+            <option value="Second Year">Second Year</option>
+            <option value="Third Year">Third Year</option>
+            <option value="Fourth Year">Fourth Year</option>
+          </select>
         </div>
-      </div>
+        <button type="submit" class="save-btn" id="saveProfileBtn">Save Profile</button>
+      </form>
 
-      <div class="profile-body">
-        <div class="user-identity">
-          <h2 id="profileBlockName">Loading Student profile...</h2>
-          <p id="profileBlockMeta">Department of Electronics Engineering</p>
+      <div class="section-title">Required Program Documents</div>
+      <div class="doc-grid">
+
+        <div class="doc-card">
+          <h3>Student White Form</h3>
+          <span class="doc-status status-empty" id="whiteStatus">Not yet filled</span>
+          <p>Fill out your student information directly on the form. Your progress saves automatically to the cloud.</p>
+          <div class="doc-actions">
+            <button class="btn-edit" onclick="openEditor('white')">✏️ Open & Edit Form</button>
+            <button class="btn-dl" onclick="downloadDoc('white')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </button>
+          </div>
         </div>
 
-        <form class="profile-form" id="profileUpdateForm">
-          <div class="form-group">
-            <label>Account Email (Read-Only)</label>
-            <input type="email" id="profileEmail" disabled>
+        <div class="doc-card">
+          <h3>Course Evaluation Prospectus</h3>
+          <span class="doc-status status-empty" id="prospectusStatus">Not yet filled</span>
+          <p>Select your course tracks and fill evaluation details. Saves to your student record anytime.</p>
+          <div class="doc-actions">
+            <button class="btn-edit" onclick="openEditor('prospectus')">✏️ Open & Edit Form</button>
+            <button class="btn-dl" onclick="downloadDoc('prospectus')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </button>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="formFullName" placeholder="Enter your full name" required>
-          </div>
-
-          <div class="form-group">
-            <label>Year Level Selection</label>
-            <select id="formYearLevel">
-              <option value="">Select Year Level</option>
-              <option value="First Year">First Year</option>
-              <option value="Second Year">Second Year</option>
-              <option value="Third Year">Third Year</option>
-              <option value="Fourth Year">Fourth Year</option>
-            </select>
-          </div>
-
-          <button type="submit" class="save-profile-btn" id="saveBtn">Save Profile Changes</button>
-          <div class="status-toast" id="statusToast"></div>
-        </form>
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<div id="pdfModal">
 
-  <script>
-    const { createClient } = supabase;
-    const supabaseClient = createClient(
-      "https://xxzbuhvilxapebzzkmla.supabase.co",
-      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
-    );
+  <div class="pdf-toolbar">
+    <div class="pdf-toolbar-left">
+      <div>
+        <div class="pdf-doc-title" id="modalTitle">PDF Form Editor</div>
+        <div class="pdf-doc-hint" id="modalHint">Click any field on the document to edit it</div>
+      </div>
+    </div>
+    <div class="pdf-toolbar-right">
+      <div class="zoom-ctrl">
+        <button class="zoom-btn" onclick="zoom(-0.15)" title="Zoom out">−</button>
+        <span class="zoom-label" id="zoomLabel">100%</span>
+        <button class="zoom-btn" onclick="zoom(+0.15)" title="Zoom in">+</button>
+      </div>
+      <button class="tb-btn tb-btn-save" id="saveBtn" onclick="saveForm()">
+        Save
+      </button>
+      <button class="tb-btn tb-btn-dl" id="dlBtn" onclick="downloadCurrent()">
+        ⬇ Download
+      </button>
+      <button class="tb-btn tb-btn-close" onclick="closeEditor()">✕ Close</button>
+    </div>
+  </div>
 
-    let currentUser = null;
+  <div class="pdf-loading" id="pdfLoading">
+    <div class="ld-bar"><div class="ld-fill"></div></div>
+    <p id="loadingMsg">Loading document…</p>
+  </div>
 
-    // ==========================================
-    // ROUTE PROTECTION & DATA POPULATION ENGINE
-    // ==========================================
-    function initializeProfileWorkspace() {
-      supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        if ((event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') && !session) {
-          window.location.href = "loginpage.html";
-          return;
-        }
+  <div class="pdf-canvas-area" id="pdfCanvasArea">
+    <div class="pdf-pages-col" id="pdfPagesCol"></div>
+  </div>
 
-        if (session) {
-          currentUser = session.user;
-          document.getElementById('profileEmail').value = currentUser.email;
+  <div class="pdf-statusbar">
+    <div class="sb-item"><div class="sb-dot" id="sbDot"></div><span id="sbText">Saved</span></div>
+    <div class="sb-item"><span id="sbPages">—</span></div>
+    <div class="sb-item"><span id="sbFields">—</span></div>
+  </div>
 
-          let displayedName = "ECE Student";
-          let inferredRole = "Student";
-          let yearLevel = "";
+</div>
 
-          try {
-            // Pull the profile columns from the database
-            const { data: profile, error: profileError } = await supabaseClient
-              .from('profiles')
-              .select('*')
-              .eq('id', currentUser.id)
-              .maybeSingle();
+<div class="toast" id="toast"></div>
 
-            if (currentUser.user_metadata && currentUser.user_metadata.role) {
-              inferredRole = currentUser.user_metadata.role;
-            }
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-            if (profile && !profileError) {
-              displayedName = profile.full_name || "ECE Student";
-              yearLevel = profile.year_level || "";
-            } else if (currentUser.user_metadata?.full_name) {
-              displayedName = currentUser.user_metadata.full_name;
-            }
+<script>
+/* ─────────────────────────────────────────────────────────────
+   SETUP
+───────────────────────────────────────────────────────────── */
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-          } catch (err) {
-            console.error("Profile payload stream exception:", err);
-          }
+const { createClient } = supabase;
+const sb = createClient(
+  'https://xxzbuhvilxapebzzkmla.supabase.co',
+  'sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb'
+);
 
-          // Hydrate DOM Fields
-          document.getElementById("navProfileName").textContent = displayedName;
-          document.getElementById("profileBlockName").textContent = displayedName;
-          document.getElementById("formFullName").value = displayedName === "ECE Student" ? "" : displayedName;
-          document.getElementById("formYearLevel").value = yearLevel;
-          document.getElementById("navRoleBadge").textContent = inferredRole;
-          
-          // Render Initials Letter Box
-          const initial = displayedName.charAt(0).toUpperCase();
-          document.getElementById("navAvatarLetter").textContent = initial;
-          document.getElementById("bigAvatarLetter").textContent = initial;
+const BUCKET = 'enrollment';
+const TEMPLATES = {
+  white:      'templates/NEW-WHITEFORM-TEMPLATE.pdf',
+  prospectus: 'templates/NEW-PROSPECTUS-FINAL.pdf'
+};
 
-          if (inferredRole.toLowerCase() === 'professor' || inferredRole.toLowerCase() === 'admin') {
-            document.getElementById("navRoleBadge").style.backgroundColor = "#0f41cae6";
-            document.getElementById("profileBlockMeta").textContent = "Faculty Staff / Administration Access Handle";
-          } else if (yearLevel) {
-            document.getElementById("profileBlockMeta").textContent = `BS ECE — ${yearLevel}`;
-          }
-        }
-      });
+let currentUser  = null;
+let editorType   = null;   
+let pdfBytes     = null;   
+let currentScale = 1.0;
+let isDirty      = false;  
+let usingBlankTemplate = false; // true if this editing session fell back to a blank template
+const docExistsMap = { white: false, prospectus: false }; // last known "saved copy exists" status
+
+/* ─────────────────────────────────────────────────────────────
+   AUTH
+───────────────────────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'loginpage.html'; return; }
+  currentUser = session.user;
+  loadProfile();
+  checkDocStatuses();
+});
+
+/* ─────────────────────────────────────────────────────────────
+   PROFILE
+───────────────────────────────────────────────────────────── */
+async function loadProfile() {
+  document.getElementById('fEmail').value = currentUser.email;
+  const { data: p } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+  const name = p?.full_name || '';
+  const yr   = p?.year_level || '';
+  document.getElementById('fName').value  = name;
+  document.getElementById('fYear').value  = yr;
+  const display = name || 'ECE Student';
+  document.getElementById('navName').textContent    = display;
+  document.getElementById('profileName').textContent = display;
+  document.getElementById('profileMeta').textContent = yr ? `BS ECE — ${yr}` : 'Department of Electronics Engineering';
+  const init = display.charAt(0).toUpperCase();
+  document.getElementById('navAvatar').textContent = init;
+  document.getElementById('bigAvatar').textContent = init;
+}
+
+document.getElementById('profileForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('saveProfileBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const name = document.getElementById('fName').value.trim();
+  const yr   = document.getElementById('fYear').value;
+  const { error } = await sb.from('profiles').upsert({ id: currentUser.id, full_name: name, year_level: yr, updated_at: new Date().toISOString() });
+  if (error) { toast('Could not save profile: ' + error.message, 'error'); }
+  else { toast('Profile saved!', 'success'); loadProfile(); }
+  btn.disabled = false; btn.textContent = 'Save Profile';
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut(); window.location.href = 'loginpage.html';
+});
+
+/* ─────────────────────────────────────────────────────────────
+   DOC STATUS BADGES
+───────────────────────────────────────────────────────────── */
+async function checkDocStatuses() {
+  for (const type of ['white', 'prospectus']) {
+    const { data } = await sb.storage.from(BUCKET).list(`student_records/${currentUser.id}`);
+    const exists = data && data.some(f => f.name === `${type}.pdf`);
+    docExistsMap[type] = !!exists;
+    const el = document.getElementById(type === 'white' ? 'whiteStatus' : 'prospectusStatus');
+    if (exists) {
+      el.textContent = '✓ Saved to cloud';
+      el.className = 'doc-status status-saved';
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DOWNLOAD
+───────────────────────────────────────────────────────────── */
+async function downloadDoc(type) {
+  toast('Preparing download…');
+  const saved = `student_records/${currentUser.id}/${type}.pdf`;
+  let { data: blob, error } = await sb.storage.from(BUCKET).download(saved);
+  if (!blob || error) {
+    const res = await sb.storage.from(BUCKET).download(TEMPLATES[type]);
+    blob = res.data;
+    if (!blob) { toast('No file found. Open and save the form first.', 'error'); return; }
+  }
+  triggerDownload(blob, `${type}_form.pdf`);
+  toast('Download started!', 'success');
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   OPEN EDITOR
+───────────────────────────────────────────────────────────── */
+async function openEditor(type) {
+  editorType = type;
+  isDirty = false;
+  setDirty(false);
+  usingBlankTemplate = false;
+
+  const modal = document.getElementById('pdfModal');
+  modal.style.display = 'flex';
+  showLoading(true, 'Loading your document…');
+
+  const titles = { white: 'Student White Form', prospectus: 'Course Evaluation Prospectus' };
+  document.getElementById('modalTitle').textContent = titles[type];
+
+  try {
+    setLoadMsg('Fetching document from cloud…');
+    const savedPath = `student_records/${currentUser.id}/${type}.pdf`;
+    let { data: blob, error: dlErr } = await sb.storage.from(BUCKET).download(savedPath);
+
+    let sourceLabel = 'continuing from your saved progress';
+
+    if (!blob || dlErr) {
+      // A missing file (first time filling this form) is expected and safe
+      // to replace with the blank template. Anything else (network blip,
+      // server error, etc.) is NOT safe to silently treat the same way -
+      // doing so could mean the user edits a blank form and then Save
+      // overwrites a perfectly good previously-saved copy with it.
+      const msg = (dlErr && dlErr.message) || '';
+      const looksMissing = !dlErr || /not.?found|404|400|does not exist/i.test(msg);
+      if (!looksMissing) {
+        throw new Error(
+          'Could not load your previously saved answers (' + msg + '). ' +
+          'Please close this and try again rather than continuing, so your saved answers are not overwritten.'
+        );
+      }
+
+      setLoadMsg('Loading blank template…');
+      const res = await sb.storage.from(BUCKET).download(TEMPLATES[type]);
+      if (!res.data) throw new Error('Template not found. Contact your administrator.');
+      blob = res.data;
+      sourceLabel = 'starting with a fresh form';
+      usingBlankTemplate = true;
     }
 
-    window.addEventListener("DOMContentLoaded", initializeProfileWorkspace);
+    // Extra guard: our records say a saved copy of this form exists, yet we
+    // ended up loading the blank template anyway. Don't let that happen
+    // quietly - confirm with the user before they risk saving over it.
+    if (usingBlankTemplate && docExistsMap[type]) {
+      showLoading(false);
+      const proceed = confirm(
+        "We couldn't retrieve your previously saved answers for this form, even though our records show a saved copy exists.\n\n" +
+        "Continuing will show a BLANK form, and clicking Save would overwrite your previous answers.\n\n" +
+        "Click Cancel and try again in a moment. Click OK only if you want to continue with a blank form anyway."
+      );
+      if (!proceed) { closeEditor(); return; }
+      showLoading(true, 'Loading your document…');
+    }
 
-    // ==========================================
-    // FORM SUBMIT HANDLER (UPDATE PROFILE)
-    // ==========================================
-    document.getElementById('profileUpdateForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
+    pdfBytes = await blob.arrayBuffer();
+    document.getElementById('modalHint').textContent =
+      `You are ${sourceLabel}. Click any blue field to edit it.`;
 
-      const saveBtn = document.getElementById('saveBtn');
-      const toast = document.getElementById('statusToast');
-      
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Saving...";
-      toast.style.display = "none";
+    setLoadMsg('Rendering pages…');
+    await renderAllPages();
 
-      const updatedName = document.getElementById('formFullName').value.trim();
-      const updatedYear = document.getElementById('formYearLevel').value;
+    showLoading(false);
+    document.getElementById('sbPages').textContent = `${(await getPdfDoc()).numPages} page(s)`;
 
-      try {
-        // Upsert standard database columns cleanly
-        const { error } = await supabaseClient
-          .from('profiles')
-          .upsert({
-            id: currentUser.id,
-            full_name: updatedName,
-            year_level: updatedYear,
-            updated_at: new Date().toISOString()
-          });
+  } catch (err) {
+    showLoading(false);
+    toast('Failed to open document: ' + err.message, 'error');
+    console.error(err);
+    closeEditor();
+  }
+}
 
-        if (error) throw error;
+/* ─────────────────────────────────────────────────────────────
+   BUILD A LOOKUP MAP & UNLOCK READ-ONLY FIELDS
+   ─────────────────────────────────────────────────────────────
+   Keyed by the widget annotation's underlying PDFDict object
+   (identity match), NOT by object number. pdf-lib's low-level
+   PDFWidgetAnnotation objects returned from acroField.getWidgets()
+   don't reliably expose a `.ref`, so the previous object-number
+   based matching produced an empty map and no field ever got an
+   overlay element rendered on top of it - that was the root cause
+   of the form being "view only".
+───────────────────────────────────────────────────────────── */
+function buildWidgetMap(pdfLibDoc) {
+  // Map<PDFDict, { field, widget }>
+  const map = new Map();
 
-        // Display Success Notification
-        toast.className = "status-toast success";
-        toast.textContent = "Profile changes saved successfully!";
-        toast.style.display = "block";
+  let form;
+  try {
+    form = pdfLibDoc.getForm();
+  } catch (e) {
+    console.error('No AcroForm found on this PDF:', e);
+    return map;
+  }
 
-        // Refresh Navigation Elements
-        document.getElementById("navProfileName").textContent = updatedName;
-        document.getElementById("profileBlockName").textContent = updatedName;
-        const initial = updatedName.charAt(0).toUpperCase();
-        document.getElementById("navAvatarLetter").textContent = initial;
-        document.getElementById("bigAvatarLetter").textContent = initial;
-        
-        if (updatedYear) {
-          document.getElementById("profileBlockMeta").textContent = `BS ECE — ${updatedYear}`;
+  let fields = [];
+  try { fields = form.getFields(); } catch (e) { fields = []; }
+
+  for (const field of fields) {
+    // Some templates ship with fields flagged read-only; unlock them
+    // so they can actually be typed into in the overlay editor.
+    try {
+      if (field.isReadOnly()) field.disableReadOnly();
+    } catch (e) { /* method may not exist on every field type */ }
+
+    let widgets = [];
+    try { widgets = field.acroField.getWidgets(); } catch (e) { continue; }
+
+    for (const widget of widgets) {
+      if (widget && widget.dict) {
+        map.set(widget.dict, { field, widget });
+      }
+    }
+  }
+
+  return map;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RENDER PAGES + OVERLAY FIELDS
+───────────────────────────────────────────────────────────── */
+async function renderAllPages() {
+  const col = document.getElementById('pdfPagesCol');
+  col.innerHTML = '';
+
+  const pdfJsDoc  = await getPdfDoc();
+  const pdfLibDoc = await PDFLib.PDFDocument.load(pdfBytes.slice(0), { ignoreEncryption: true });
+  const widgetMap = buildWidgetMap(pdfLibDoc);
+
+  let totalFields = 0;
+
+  for (let pn = 1; pn <= pdfJsDoc.numPages; pn++) {
+    const page     = await pdfJsDoc.getPage(pn);
+    const viewport = page.getViewport({ scale: currentScale });
+    const W = Math.floor(viewport.width);
+    const H = Math.floor(viewport.height);
+
+    const wrap = document.createElement('div');
+    wrap.className    = 'pdf-page-wrap';
+    wrap.style.width  = W + 'px';
+    wrap.style.height = H + 'px';
+
+    const canvas  = document.createElement('canvas');
+    canvas.width  = W;
+    canvas.height = H;
+    wrap.appendChild(canvas);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'field-overlay';
+    wrap.appendChild(overlay);
+
+    col.appendChild(wrap);
+
+    // IMPORTANT: exclude form-field (widget) appearances from the canvas
+    // render. Once a field has been saved, pdf-lib bakes its text into the
+    // field's appearance stream so it shows correctly in normal PDF viewers.
+    // If pdf.js were also allowed to paint that baked text onto the canvas,
+    // it would sit directly underneath our own HTML text box for the same
+    // field (which also shows the value) - two overlapping copies of the
+    // text. ENABLE_FORMS still renders any non-field annotations normally,
+    // it just skips form widgets, which we render ourselves via the overlay.
+    const annotationMode =
+      (pdfjsLib.AnnotationMode && pdfjsLib.AnnotationMode.ENABLE_FORMS) ?? 2;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport, annotationMode }).promise;
+
+    const libPage = pdfLibDoc.getPage(pn - 1);
+    const { width: pdfW, height: pdfH } = libPage.getSize();
+
+    const scaleX = W / pdfW;
+    const scaleY = H / pdfH;
+
+    const pageNode = pdfLibDoc.getPage(pn - 1);
+    let annotRefs = [];
+    try {
+      const annotsVal = pageNode.node.get(PDFLib.PDFName.of('Annots'));
+      if (annotsVal) {
+        const annotsArray = pdfLibDoc.context.lookup(annotsVal);
+        if (annotsArray && annotsArray.asArray) {
+          annotRefs = annotsArray.asArray();
         }
-
-      } catch (err) {
-        console.error("Profile updates save transaction failure:", err);
-        toast.className = "status-toast error";
-        toast.textContent = `Error: ${err.message || 'Could not save profile changes.'}`;
-        toast.style.display = "block";
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Save Profile Changes";
       }
-    });
+    } catch(e) { }
 
-    // ==========================================
-    // LOGOUT ACTION PROCESSOR
-    // ==========================================
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      try {
-        await supabaseClient.auth.signOut();
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = "loginpage.html";
-      } catch (error) {
-        console.error("Logout runtime context failure forced baseline fallback route redirection:", error);
-        window.location.href = "loginpage.html";
+    for (const annotRef of annotRefs) {
+      if (!annotRef) continue;
+
+      // Resolve the annotation reference to its actual PDFDict and
+      // match it against widgetMap by object identity. Because both
+      // this lookup and the widgets gathered in buildWidgetMap() come
+      // from the same pdfLibDoc.context (which caches parsed indirect
+      // objects), the same annotation dict instance is returned both
+      // times - so this match is reliable, unlike object-number math.
+      const annotObj = pdfLibDoc.context.lookup(annotRef);
+      if (!annotObj) continue;
+
+      const entry = widgetMap.get(annotObj);
+      if (!entry) continue;
+
+      const { field, widget } = entry;
+      const rect = widget.getRectangle();
+      if (!rect || rect.width < 2 || rect.height < 2) continue;
+
+      const elLeft   = rect.x                        * scaleX;
+      const elTop    = (pdfH - rect.y - rect.height) * scaleY;
+      const elWidth  = rect.width                    * scaleX;
+      const elHeight = rect.height                   * scaleY;
+
+      const fieldName = field.getName();
+      let el;
+
+      if (field instanceof PDFLib.PDFTextField) {
+        const isMulti = field.isMultiline();
+        el = document.createElement(isMulti ? 'textarea' : 'input');
+        if (!isMulti) el.type = 'text';
+        el.value = field.getText() || '';
+        el.className = 'pdf-field';
+        if (isMulti) { el.style.lineHeight = '1.4'; el.style.whiteSpace = 'pre-wrap'; }
+
+      } else if (field instanceof PDFLib.PDFCheckBox) {
+        el = document.createElement('input');
+        el.type      = 'checkbox';
+        el.className = 'pdf-field-check';
+        el.checked   = field.isChecked();
+
+      } else if (field instanceof PDFLib.PDFDropdown) {
+        el = document.createElement('select');
+        el.className = 'pdf-field';
+        const opts = field.getOptions();
+        const sel  = field.getSelected();
+        opts.forEach(opt => {
+          const o = document.createElement('option');
+          o.value = opt; o.textContent = opt;
+          if (sel.includes(opt)) o.selected = true;
+          el.appendChild(o);
+        });
+
+      } else if (field instanceof PDFLib.PDFRadioGroup) {
+        el = document.createElement('input');
+        el.type      = 'radio';
+        el.name      = fieldName;   
+        el.className = 'pdf-field-check';
+        el.value     = widget.getOnValue ? (widget.getOnValue() || 'On') : 'On';
+        el.checked   = (field.getSelected() === el.value);
+
+      } else {
+        continue; 
       }
-    });
-  </script>
+
+      el.dataset.fieldName = fieldName;
+      el.dataset.page      = pn;
+      el.style.position    = 'absolute';
+      el.style.left        = elLeft   + 'px';
+      el.style.top         = elTop    + 'px';
+      el.style.width       = elWidth  + 'px';
+      el.style.height      = elHeight + 'px';
+      el.title             = fieldName;
+
+      el.removeAttribute('disabled');
+      el.removeAttribute('readonly');
+
+      el.addEventListener('input',  () => setDirty(true));
+      el.addEventListener('change', () => setDirty(true));
+
+      overlay.appendChild(el);
+      totalFields++;
+    }
+  }
+
+  document.getElementById('sbFields').textContent =
+    totalFields > 0 ? `${totalFields} field(s)` : 'No fields found';
+  document.getElementById('zoomLabel').textContent =
+    Math.round(currentScale * 100) + '%';
+}
+
+async function getPdfDoc() {
+  return pdfjsLib.getDocument({ data: new Uint8Array(pdfBytes.slice(0)) }).promise;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ZOOM
+───────────────────────────────────────────────────────────── */
+function zoom(delta) {
+  currentScale = Math.max(0.4, Math.min(2.5, currentScale + delta));
+  renderAllPages();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COLLECT FIELD VALUES
+───────────────────────────────────────────────────────────── */
+async function buildFilledPdfBytes() {
+  const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes.slice(0), { ignoreEncryption: true });
+  const form   = pdfDoc.getForm();
+  const font   = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+  document.querySelectorAll('.pdf-field, .pdf-field-check').forEach(el => {
+    const name = el.dataset.fieldName;
+    if (!name) return;
+    try {
+      const field = form.getField(name);
+      if (field instanceof PDFLib.PDFTextField) {
+        field.setText(el.value || '');
+        field.setFontSize(10);
+      } else if (field instanceof PDFLib.PDFCheckBox) {
+        el.checked ? field.check() : field.uncheck();
+      } else if (field instanceof PDFLib.PDFDropdown) {
+        if (el.value) field.select(el.value);
+      } else if (field instanceof PDFLib.PDFRadioGroup) {
+        if (el.checked && el.value) field.select(el.value);
+      }
+    } catch(e) { }
+  });
+
+  try { form.updateFieldAppearances(font); } catch(e) { }
+  return pdfDoc.save();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SAVE
+───────────────────────────────────────────────────────────── */
+async function saveForm() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    const bytes       = await buildFilledPdfBytes();
+    const file        = new File([bytes], `${editorType}.pdf`, { type: 'application/pdf' });
+    const savePath    = `student_records/${currentUser.id}/${editorType}.pdf`;
+    const backupPath  = `student_records/${currentUser.id}/${editorType}_previous.pdf`;
+
+    // Keep one rolling backup of whatever was last saved BEFORE overwriting
+    // it. This way, even if this save turns out to be wrong (e.g. it was
+    // built from a blank-template fallback by mistake), the last good copy
+    // is still recoverable instead of being silently gone forever.
+    try { await sb.storage.from(BUCKET).copy(savePath, backupPath); }
+    catch (e) { /* nothing to back up yet (first save) - that's fine */ }
+
+    const { error } = await sb.storage.from(BUCKET).upload(savePath, file, { cacheControl: '0', upsert: true });
+    if (error) throw error;
+
+    pdfBytes = bytes.buffer;
+
+    const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(savePath);
+    const payload = { user_id: currentUser.id, updated_at: new Date().toISOString() };
+    if (editorType === 'white') payload.white_form_url = publicUrl;
+    else payload.prospectus_url = publicUrl;
+    await sb.from('student_forms').upsert(payload, { onConflict: 'user_id' });
+
+    setDirty(false);
+    toast('Form saved to cloud! ✓', 'success');
+    checkDocStatuses(); 
+  } catch (err) {
+    toast('Save failed: ' + err.message, 'error');
+    console.error(err);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save';
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DOWNLOAD CURRENT
+───────────────────────────────────────────────────────────── */
+async function downloadCurrent() {
+  const btn = document.getElementById('dlBtn');
+  btn.disabled = true; btn.textContent = '⬇ Preparing…';
+  try {
+    const bytes = await buildFilledPdfBytes();
+    const blob  = new Blob([bytes], { type: 'application/pdf' });
+    triggerDownload(blob, `${editorType}_form.pdf`);
+    toast('Download started!', 'success');
+  } catch (err) {
+    toast('Download failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '⬇ Download';
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CLOSE EDITOR
+───────────────────────────────────────────────────────────── */
+function closeEditor() {
+  if (isDirty) {
+    if (!confirm('You have unsaved changes. Close anyway?')) return;
+  }
+  document.getElementById('pdfModal').style.display = 'none';
+  document.getElementById('pdfPagesCol').innerHTML  = '';
+  pdfBytes   = null;
+  editorType = null;
+  isDirty    = false;
+}
+
+window.addEventListener('beforeunload', e => {
+  if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ─────────────────────────────────────────────────────────────
+   UI HELPERS
+───────────────────────────────────────────────────────────── */
+function showLoading(show, msg) {
+  const el = document.getElementById('pdfLoading');
+  el.style.display = show ? 'flex' : 'none';
+  if (msg) document.getElementById('loadingMsg').textContent = msg;
+}
+function setLoadMsg(msg) { document.getElementById('loadingMsg').textContent = msg; }
+
+function setDirty(dirty) {
+  isDirty = dirty;
+  document.getElementById('sbDot').className = 'sb-dot' + (dirty ? ' unsaved' : '');
+  document.getElementById('sbText').textContent = dirty ? 'Unsaved changes' : 'Saved';
+}
+
+let toastTimer = null;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'toast' + (type ? ' ' + type : '');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+</script>
+
 </body>
 </html>
