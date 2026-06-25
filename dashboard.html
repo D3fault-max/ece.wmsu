@@ -102,6 +102,11 @@
       color: #111111;
     }
 
+    /* Hide enroll option by default until authorization verification pass finishes */
+    #enrollNavItem {
+      display: none;
+    }
+
     /* Consolidated Right Side Controls Header */
     .nav-profile-controls {
       display: flex;
@@ -154,7 +159,7 @@
       display: flex;
       flex-direction: column;
       line-height: 1.2;
-      text-align: left; /* Maintains neat internal left alignment */
+      text-align: left;
     }
 
     .profile-name-string {
@@ -568,6 +573,11 @@
         display: flex;
       }
 
+      /* Allow list elements to keep block layouts smoothly under responsive styles */
+      .nav-links li#enrollNavItem.mobile-active-firstyear {
+        display: block !important;
+      }
+
       .nav-container {
         gap: 15px;
       }
@@ -656,7 +666,7 @@
           <li><a href="#">Admin</a></li>
           <li><a href="#">Shop</a></li>
           <li><a href="#">News</a></li>
-          <li><a href="enroll.html">Enroll</a></li>
+          <li id="enrollNavItem"><a href="enroll.html">Enroll</a></li>
         </ul>
       </nav>
 
@@ -785,7 +795,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <script>
-    // 2. Initialize the Supabase client directly inside the dashboard using your credentials
     const { createClient } = supabase;
     const supabaseClient = createClient(
       "https://xxzbuhvilxapebzzkmla.supabase.co",
@@ -898,10 +907,21 @@
             if (profile && !profileError) {
               displayedName = profile.full_name || "ECE Student";
               displayedYear = profile.year_level ? `Enrolled: ${profile.year_level}` : "ECE Department";
+
+              // check if the user is explicitly designated as "First Year"
+              if (profile.year_level === 'First Year') {
+                document.getElementById('enrollNavItem').style.display = 'block';
+              } else {
+                document.getElementById('enrollNavItem').style.display = 'none';
+              }
             } else {
               console.warn("No database profile found. Attempting user_metadata fallback rendering strategy.");
               if (activeUser.user_metadata?.full_name) {
                 displayedName = activeUser.user_metadata.full_name;
+              }
+              // Fallback check if profile doesn't exist yet but user_metadata holds it
+              if (activeUser.user_metadata?.year_level === 'First Year') {
+                document.getElementById('enrollNavItem').style.display = 'block';
               }
             }
 
@@ -941,7 +961,6 @@
     // ==========================================================
     document.getElementById('profileWidget').addEventListener('click', () => {
       console.log("Profile context control container activated.");
-      // You can add logic here later (e.g., toggle custom popup menus, redirect to user profiles setup page, etc.)
     });
 
     // ==========================================
@@ -959,42 +978,31 @@
         window.location.href = "homepage.html";
       }
     });
+
     // --- AUTO LOGOUT AFTER 1 HOUR OF INACTIVITY ---
+    let idleTimeout;
+    const IDLE_TIME_LIMIT = 3600000; 
 
-let idleTimeout;
+    function logoutUser() {
+      console.log("User idle for 1 hour. Triggering automatic logout...");
+      supabase.auth.signOut().then(() => {
+        alert("You have been automatically logged out due to inactivity.");
+        window.location.href = "loginpage.html";
+      });
+    }
 
-// 1 hour in milliseconds = 60 minutes * 60 seconds * 1000 ms
-const IDLE_TIME_LIMIT = 3600000; 
+    function resetIdleTimer() {
+      clearTimeout(idleTimeout);
+      idleTimeout = setTimeout(logoutUser, IDLE_TIME_LIMIT);
+    }
 
-function logoutUser() {
-  console.log("User idle for 1 hour. Triggering automatic logout...");
-  
-  // 1. Clear session from Supabase auth engine
-  supabase.auth.signOut().then(() => {
-    alert("You have been automatically logged out due to inactivity.");
-    // 2. Redirect back to your login page
-    window.location.href = "loginpage.html";
-  });
-}
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
 
-function resetIdleTimer() {
-  // Clear the old running countdown timer
-  clearTimeout(idleTimeout);
-  
-  // Start a fresh 1-hour countdown timer
-  idleTimeout = setTimeout(logoutUser, IDLE_TIME_LIMIT);
-}
+    activityEvents.forEach(event => {
+      window.addEventListener(event, resetIdleTimer, { passive: true });
+    });
 
-// Events that prove the user is actively using the device
-const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
-
-// Attach the listener to every single user action event
-activityEvents.forEach(event => {
-  window.addEventListener(event, resetIdleTimer, { passive: true });
-});
-
-// Fire the timer instantly when the page first loads up
-resetIdleTimer();
+    resetIdleTimer();
   </script>
 </body>
 </html>
