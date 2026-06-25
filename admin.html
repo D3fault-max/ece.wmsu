@@ -915,20 +915,50 @@
           }
         }
 
-        if (!requirements || requirements.length === 0) {
+        // For First Year students, list what's actually sitting in their requirements
+        // folder. This lets us match files regardless of extension (jpg/jpeg/png), and
+        // also catch any uploaded images that don't line up with a known requirement_type.
+        let firstYearFolderFiles = [];
+        if (!isUpperClassman) {
+          try {
+            const { data: folderFiles, error: listErr } = await supabaseClient
+              .storage
+              .from('requirements')
+              .list(userId, { limit: 100 });
+
+            if (!listErr && folderFiles) {
+              // Supabase can return a placeholder row for an empty folder - filter that out
+              firstYearFolderFiles = folderFiles.filter(f => f.id !== null && f.name);
+            } else if (listErr) {
+              console.warn(`Could not list requirements/${userId}:`, listErr.message);
+            }
+          } catch (listErrCatch) {
+            console.error(`Folder listing failed for requirements/${userId}:`, listErrCatch);
+          }
+        }
+
+        // Quick lookup: filename without extension (lowercased) -> actual filename on disk
+        const firstYearFileIndex = {};
+        firstYearFolderFiles.forEach(f => {
+          const baseName = f.name.replace(/\.[^/.]+$/, '').toLowerCase();
+          firstYearFileIndex[baseName] = f.name;
+        });
+        const matchedFileNames = new Set();
+
+        if ((!requirements || requirements.length === 0) && firstYearFolderFiles.length === 0) {
           reqGrid.innerHTML = '<p style="color: #666666; font-size: 13px; grid-column: span 2;">No document payloads submitted by this user.</p>';
           return;
         }
 
         // Loop through profiles sequentially and resolve each document's storage location
-        for (const doc of requirements) {
+        for (const doc of (requirements || [])) {
           const block = document.createElement('div');
           block.className = 'req-thumb-card';
           const cleanName = explicitLabels[doc.requirement_type] || doc.requirement_type.toUpperCase();
 
           let directUrl = "";
           let targetedBucket = 'requirements';
-          let finalFilePath = "";
+          let candidatePaths = [];
           let isUpperClassmanDoc = (doc.requirement_type === 'whiteform' || doc.requirement_type === 'prospectus');
 
           if (isUpperClassmanDoc) {
@@ -941,40 +971,52 @@
               directUrl = doc.file_url;
             } else if (doc.file_url) {
               // A storage path token was saved on the record - trust it
-              finalFilePath = doc.file_url;
+              candidatePaths.push(doc.file_url);
             } else {
               // Nothing saved on the record yet - fall back to the known fixed naming convention
               const fallbackName = doc.requirement_type === 'whiteform' ? 'white.pdf' : 'prospectus.pdf';
-              finalFilePath = `student_records/${userId}/${fallbackName}`.replace(/\/+/g, '/');
+              candidatePaths.push(`student_records/${userId}/${fallbackName}`.replace(/\/+/g, '/'));
             }
           } else {
-            // First Year (Freshmen): files live in the "requirements" bucket
+            // First Year (Freshmen): files live in the "requirements" bucket,
+            // under {userId}/{requirement_type}.{ext} - matched against the real folder listing
             targetedBucket = 'requirements';
 
             if (doc.file_url && doc.file_url.startsWith('http')) {
               directUrl = doc.file_url;
+            } else if (doc.file_url) {
+              // A storage path token was saved on the record - trust it
+              candidatePaths.push(doc.file_url);
             } else {
-              finalFilePath = doc.file_url || '';
+              // Nothing saved on the record - look for a matching file in the actual folder listing
+              const matchedFile = firstYearFileIndex[doc.requirement_type.toLowerCase()];
+              if (matchedFile) {
+                candidatePaths.push(`${userId}/${matchedFile}`.replace(/\/+/g, '/'));
+                matchedFileNames.add(matchedFile);
+              }
             }
           }
 
           // Resolve a working link via a SIGNED URL. Unlike getPublicUrl(), this works
-          // even when the bucket is private, and a failure here reliably means the file
-          // genuinely isn't there (no more guessing with HEAD requests).
-          if (!directUrl && finalFilePath) {
-            try {
-              const { data: signedData, error: signedErr } = await supabaseClient
-                .storage
-                .from(targetedBucket)
-                .createSignedUrl(finalFilePath, 3600);
+          // even when the bucket is private. Try each candidate path in order and stop
+          // at the first one that actually exists.
+          if (!directUrl && candidatePaths.length > 0) {
+            for (const candidatePath of candidatePaths) {
+              try {
+                const { data: signedData, error: signedErr } = await supabaseClient
+                  .storage
+                  .from(targetedBucket)
+                  .createSignedUrl(candidatePath, 3600);
 
-              if (!signedErr && signedData && signedData.signedUrl) {
-                directUrl = signedData.signedUrl;
-              } else if (signedErr) {
-                console.warn(`No file at ${targetedBucket}/${finalFilePath}:`, signedErr.message);
+                if (!signedErr && signedData && signedData.signedUrl) {
+                  directUrl = signedData.signedUrl;
+                  break;
+                } else if (signedErr) {
+                  console.warn(`No file at ${targetedBucket}/${candidatePath}:`, signedErr.message);
+                }
+              } catch (signErr) {
+                console.error(`Signed URL request failed for ${targetedBucket}/${candidatePath}:`, signErr);
               }
-            } catch (signErr) {
-              console.error(`Signed URL request failed for ${targetedBucket}/${finalFilePath}:`, signErr);
             }
           }
 
@@ -991,6 +1033,44 @@
             `;
           }
           reqGrid.appendChild(block);
+        }
+
+        // Show any other images sitting in the student's folder that didn't match
+        // a known requirement_type, so nothing uploaded ever stays hidden from admin view.
+        const leftoverFiles = firstYearFolderFiles.filter(f => !matchedFileNames.has(f.name));
+        for (const extraFile of leftoverFiles) {
+          const extraPath = `${userId}/${extraFile.name}`.replace(/\/+/g, '/');
+          let extraSignedUrl = "";
+
+          try {
+            const { data: extraSigned, error: extraErr } = await supabaseClient
+              .storage
+              .from('requirements')
+              .createSignedUrl(extraPath, 3600);
+
+            if (!extraErr && extraSigned && extraSigned.signedUrl) {
+              extraSignedUrl = extraSigned.signedUrl;
+            } else if (extraErr) {
+              console.warn(`Could not sign extra file ${extraPath}:`, extraErr.message);
+            }
+          } catch (extraSignErr) {
+            console.error(`Signed URL request failed for extra file ${extraPath}:`, extraSignErr);
+          }
+
+          if (!extraSignedUrl) continue;
+
+          const extraLabel = extraFile.name
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[_-]+/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+
+          const extraBlock = document.createElement('div');
+          extraBlock.className = 'req-thumb-card';
+          extraBlock.innerHTML = `
+            <h4>${extraLabel} (Uploaded)</h4>
+            <button class="preview-action-trigger" onclick="previewDocumentInModal('${extraSignedUrl}', '${extraLabel}')">Preview Engine &rarr;</button>
+          `;
+          reqGrid.appendChild(extraBlock);
         }
 
       } catch (err) {
