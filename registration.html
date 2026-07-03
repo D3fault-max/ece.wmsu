@@ -4,308 +4,447 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - Electronics and Communication Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
-      min-height: 100vh; 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #6b11cb57, #2575fc);
-      background-image: url("bgloginpage.png");
+      font-family: 'Poppins', 'Inter', sans-serif;
+      background-color: #111111;
+      background-image:
+        radial-gradient(ellipse at 50% 45%, rgba(44,44,44,0) 0%, rgba(17,17,17,0) 72%),
+        url('background.png');
+      background-repeat: no-repeat;
       background-size: cover;
-      padding: 40px 0; 
-    }
-
-    /* Moving background shapes */
-    .shape {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      animation: float 10s infinite ease-in-out;
-      z-index: 0;
-    }
-
-    .shape:nth-child(1) { width: 100px; height: 100px; top: 10%; left: 15%; animation-duration: 12s; }
-    .shape:nth-child(2) { width: 60px; height: 60px; bottom: 20%; right: 20%; animation-duration: 8s; }
-    .shape:nth-child(3) { width: 150px; height: 150px; top: 50%; right: 10%; animation-duration: 15s; }
-    .shape:nth-child(4) { width: 80px; height: 80px; bottom: 15%; left: 10%; animation-duration: 18s; }
-
-    @keyframes float {
-      0%   { transform: translateY(0) rotate(0); }
-      50%  { transform: translateY(-30px) rotate(180deg); }
-      100% { transform: translateY(0) rotate(360deg); }
-    }
-
-    /* Extended box */
-    .register-container {
-      background: rgba(255, 255, 255, 0.218);
-      padding: 40px;
-      border-radius: 20px;
-      width: 900px; 
-      max-width: 95%;
+      background-position: center;
+      background-attachment: fixed;
+      color: #ffffff;
+      min-height: 100vh;
+      min-height: 100dvh; /* dynamic viewport height on mobile browsers */
       display: flex;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(10px); 
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
     }
 
-    /* Left side: Info */
-    .register-info {
-      flex: 1;
-      padding: 20px;
+    /* ── CARD CONTAINER ── */
+    .register-container {
+      width: 100%;
+      max-width: 650px;
+      padding: 36px 32px;
+      background: transparent;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      background: linear-gradient(135deg, #2575fc, #6a11cb);
-      border-radius: 15px;
-      margin-right: 20px;
-      color: white;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Decorative corner brackets */
+    .aesthetic-corner {
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: #f97316;
+      border-style: solid;
+      opacity: 0.8;
+    }
+    .tl { top: 0; left: 0;   border-width: 2px 0 0 2px; }
+    .tr { top: 0; right: 0;  border-width: 2px 2px 0 0; }
+    .bl { bottom: 0; left: 0;  border-width: 0 0 2px 2px; }
+    .br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+    /* ── BRAND ── */
+    .brand-logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+    .brand-logo span { color: #f97316; }
+
+    .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #999999;
+      text-transform: uppercase;
+      letter-spacing: 2px;
       text-align: center;
+      margin-bottom: 32px;
     }
 
-    .register-info h1 {
-      margin-bottom: 15px;
-    }
-
-    .register-info p {
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    /* Right side: Form */
-    .register-form {
-      flex: 1.5; 
-      padding: 10px 20px;
-    }
-
-    .register-form h2 {
-      margin-bottom: 20px;
-      color: #6a11cb;
-      text-align: center;
-    }
-
-    /* Input Grid System for multi-column inputs */
-    .form-row {
+    /* ── FORM LAYOUT ── */
+    #registerForm {
+      width: 100%;
       display: flex;
-      gap: 15px;
+      flex-direction: column;
+      gap: 18px;
     }
 
+    /* Two-column row on desktop, single column on small screens */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+
+    /* ── INPUT GROUPS ── */
     .input-group {
-      margin-bottom: 15px;
-      text-align: left;
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0; /* prevents grid blowout on long placeholder text */
     }
 
     .input-group label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-      color: #fff; 
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
       font-weight: 500;
+      color: #bbbbbb;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    .input-group input, .input-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
+    .input-group input,
+    .input-group select {
+      font-family: 'Inter', sans-serif;
+      background-color: #161616;
+      border: 1px solid #333333;
+      color: #ffffff;
+      padding: 13px 14px;
+      border-radius: 6px;
       font-size: 14px;
-      box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    .btn {
       width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      color: white;
-      font-size: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      /* Prevent iOS zoom on focus (font-size must be ≥16px or use this) */
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Fix iOS default select arrow bleeding into text */
+    .input-group select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .input-group input::placeholder { color: #555555; }
+    .input-group select option { background-color: #161616; color: #ffffff; }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+    }
+
+    /* Remove date picker default styling on iOS/Android */
+    .input-group input[type="date"] {
+      color-scheme: dark;
+    }
+    /* On mobile, date inputs can be tricky — ensure text is visible */
+    .input-group input[type="date"]::-webkit-datetime-edit { color: #ffffff; }
+    .input-group input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.6);
       cursor: pointer;
-      transition: 0.3s;
-      font-weight: bold;
-      margin-top: 10px;
     }
 
-    .btn:hover {
-      opacity: 0.9;
+    .input-hint {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: #666666;
+      line-height: 1.4;
     }
 
+    /* ── SUBMIT BUTTON ── */
+    .btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background-color: #f97316;
+      padding: 15px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 6px;
+      width: 100%;
+      /* Ensure tap target is large enough on mobile */
+      min-height: 48px;
+      touch-action: manipulation;
+    }
+    .btn:hover  { background-color: #ea6c0e; }
+    .btn:active { background-color: #d9620d; }
+    .btn:disabled { background-color: #555555; cursor: not-allowed; }
+
+    /* ── FOOTER LINK ── */
     .extra-links {
-      margin-top: 15px;
+      font-family: 'Inter', sans-serif;
       font-size: 13px;
+      color: #888888;
       text-align: center;
-      color: white;
+      margin-top: 4px;
+    }
+    .extra-links a { color: #f97316; text-decoration: none; font-weight: 500; }
+    .extra-links a:hover { color: #ea6c0e; text-decoration: underline; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────
+       Breakpoints:
+         ≤ 540px  — stack form-row columns, tighten padding
+         ≤ 380px  — very small phones (iPhone SE, Galaxy A series)
+    ─────────────────────────────────────────────────────────── */
+    @media (max-width: 540px) {
+      body {
+        padding: 24px 16px;
+        align-items: flex-start; /* let content start near top on short viewports */
+      }
+
+      .register-container {
+        padding: 28px 20px;
+      }
+
+      .brand-logo {
+        font-size: 28px;
+        letter-spacing: 3px;
+      }
+
+      .subtitle {
+        font-size: 11px;
+        margin-bottom: 24px;
+      }
+
+      /* Stack all two-column rows into one column */
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      #registerForm {
+        gap: 16px;
+      }
+
+      /* Slightly larger font on mobile inputs prevents iOS auto-zoom */
+      .input-group input,
+      .input-group select {
+        font-size: 16px; /* iOS zooms in if < 16px on focus — this prevents it */
+        padding: 12px 13px;
+      }
+
+      .input-group select {
+        padding-right: 34px;
+      }
     }
 
-    .extra-links a {
-      color: #fdd835; 
-      text-decoration: none;
-      font-weight: bold;
+    @media (max-width: 380px) {
+      .register-container {
+        padding: 24px 14px;
+      }
+
+      .brand-logo {
+        font-size: 24px;
+        letter-spacing: 2px;
+      }
+
+      .aesthetic-corner {
+        width: 18px;
+        height: 18px;
+      }
     }
 
-    .extra-links a:hover {
-      text-decoration: underline;
+    /* Respect reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .input-group input, .input-group select { transition: none; }
     }
   </style>
 </head>
 <body>
-  <div class="shape"></div>
-  <div class="shape"></div>
-  <div class="shape"></div>
-  <div class="shape"></div>
 
   <div class="register-container">
-    <div class="register-info">
-      <h1>Join ECE Department</h1>
-      <p>Create your student profile to manage your academic track, access exclusive contents, and build your portfolio.</p>
-    </div>
+    <div class="aesthetic-corner tl"></div>
+    <div class="aesthetic-corner tr"></div>
+    <div class="aesthetic-corner bl"></div>
+    <div class="aesthetic-corner br"></div>
 
-    <div class="register-form">
-      <h2>Sign Up</h2>
-      <form id="registerForm" autocomplete="off">
-        
+    <div class="brand-logo">ECE<span>.</span></div>
+    <div class="subtitle">Student Registration</div>
+
+    <form id="registerForm" autocomplete="off">
+
+      <div class="input-group">
+        <label for="full_name">Full Name</label>
+        <input type="text" id="full_name" placeholder="First Name, M.I., Last Name" required>
+      </div>
+
+      <div class="input-group">
+        <label for="student_id">Student ID (Login Username)</label>
+        <input type="text" id="student_id" placeholder="e.g. AE202402110"
+               maxlength="11" autocomplete="off" autocorrect="off"
+               autocapitalize="characters" spellcheck="false" required>
+        <span class="input-hint">Format: 2 letters + 9 numbers. This is what you'll use to log in.</span>
+      </div>
+
+      <div class="form-row">
         <div class="input-group">
-          <label for="full_name">Full Name</label>
-          <input type="text" id="full_name" placeholder="First Name, M.I., Last Name" required>
+          <label for="gender">Gender</label>
+          <select id="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
         </div>
-
-        <div class="form-row">
-          <div class="input-group">
-            <label for="gender">Gender</label>
-            <select id="gender" required>
-              <option value="" disabled selected>Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
-          
-          <div class="input-group">
-            <label for="birthdate">Birthdate</label>
-            <input type="date" id="birthdate" required>
-          </div>
+        <div class="input-group">
+          <label for="birthdate">Birthdate</label>
+          <input type="date" id="birthdate" required>
         </div>
+      </div>
 
-        <div class="form-row">
-          <div class="input-group">
-            <label for="year_level">Year Level</label>
-            <select id="year_level" required>
-              <option value="" disabled selected>Select Year Level</option>
-              <option value="First Year">First Year</option>
-              <option value="Second Year">Second Year</option>
-              <option value="Third Year">Third Year</option>
-              <option value="Fourth Year">Fourth Year</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label for="contact">Contact Number</label>
-            <input type="tel" id="contact" placeholder="e.g. 09123456789" required>
-          </div>
+      <div class="form-row">
+        <div class="input-group">
+          <label for="year_level">Year Level</label>
+          <select id="year_level" required>
+            <option value="" disabled selected>Select Year Level</option>
+            <option value="First Year">First Year</option>
+            <option value="Second Year">Second Year</option>
+            <option value="Third Year">Third Year</option>
+            <option value="Fourth Year">Fourth Year</option>
+          </select>
         </div>
+        <div class="input-group">
+          <label for="contact">Contact Number</label>
+          <input type="tel" id="contact" placeholder="09123456789"
+                 inputmode="tel" autocomplete="tel" required>
+        </div>
+      </div>
 
+      <div class="form-row">
         <div class="input-group">
           <label for="address">Current Address</label>
           <input type="text" id="address" placeholder="House No., Street, Barangay, City" required>
         </div>
-
-        <div class="form-row">
-          <div class="input-group">
-            <label for="username">Username (For Login)</label>
-            <input type="text" id="username" placeholder="Choose a unique username" required>
-          </div>
-          
-          <div class="input-group">
-            <label for="personal_email">Personal Email Address</label>
-            <input type="email" id="personal_email" placeholder="student@email.com" required>
-          </div>
-        </div>
-
         <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Min. 6 characters" required>
+          <label for="personal_email">Personal Email</label>
+          <input type="email" id="personal_email" placeholder="student@email.com"
+                 inputmode="email" autocomplete="email" required>
         </div>
+      </div>
 
-        <button type="submit" class="btn">Register Account</button>
-        <div class="extra-links">
-          <p>Already have an account? <a href="loginpage.html">Login</a></p>
-        </div>
-      </form>
-    </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Min. 6 characters"
+               autocomplete="new-password" required>
+      </div>
+
+      <button type="submit" class="btn" id="registerBtn">Create Account</button>
+      <div class="extra-links">
+        <p>Already have an account? <a href="loginpage.html">Login</a></p>
+      </div>
+
+    </form>
   </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const SUPABASE_URL = "https://xxzbuhvilxapebzzkmla.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb";
-    
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    // Student ID format: exactly 2 letters followed by 9 digits, case-insensitive.
+    const STUDENT_ID_PATTERN = /^[A-Za-z]{2}\d{9}$/;
+
+    // Supabase Auth needs an email identity under the hood.
+    // The user never sees or types this — they log in with Student ID + password,
+    // and the login page performs the same conversion.
+    function studentIdToAuthEmail(studentId) {
+      return `${studentId.toLowerCase()}@ece.student.local`;
+    }
 
     document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const usernameInput = document.getElementById("username").value.trim().toLowerCase();
+      const registerBtn = document.getElementById("registerBtn");
+
+      const fullName      = document.getElementById("full_name").value.trim();
+      const studentIdRaw  = document.getElementById("student_id").value.trim();
+      const studentId     = studentIdRaw.toUpperCase();
+      const gender        = document.getElementById("gender").value;
+      const birthdate     = document.getElementById("birthdate").value;
+      const yearLevel     = document.getElementById("year_level").value;
+      let   phoneInput    = document.getElementById("contact").value.trim();
+      const address       = document.getElementById("address").value.trim();
       const personalEmail = document.getElementById("personal_email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      
-      const fullName = document.getElementById("full_name").value.trim();
-      const gender = document.getElementById("gender").value;
-      const birthdate = document.getElementById("birthdate").value; 
-      const yearLevel = document.getElementById("year_level").value;
-      const contactNumber = document.getElementById("contact").value.trim();
-      const address = document.getElementById("address").value.trim();
+      const password      = document.getElementById("password").value.trim();
 
-      const syntheticEmail = `${usernameInput}@ece.com`;
+      if (!STUDENT_ID_PATTERN.test(studentId)) {
+        alert("Invalid Student ID format. It must be 2 letters followed by 9 numbers (e.g. AE202402110).");
+        return;
+      }
 
-      // Pass 1: Handle secure account auth profile compilation
+      if (phoneInput.startsWith("09") && phoneInput.length === 11) {
+        phoneInput = "+63" + phoneInput.substring(1);
+      } else if (!phoneInput.startsWith("+")) {
+        phoneInput = "+" + phoneInput;
+      }
+
+      const profileData = {
+        full_name:      fullName,
+        student_id:     studentId,
+        gender:         gender,
+        birthdate:      birthdate,
+        address:        address,
+        year_level:     yearLevel,
+        contact_number: phoneInput,
+        personal_email: personalEmail
+      };
+
+      registerBtn.disabled    = true;
+      registerBtn.textContent = "Creating Account…";
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: syntheticEmail,
+        email:    studentIdToAuthEmail(studentId),
         password: password,
         options: {
-          data: {
-            full_name: fullName,
-            personal_email: personalEmail
-          }
+          data: { full_name: fullName, student_id: studentId }
         }
       });
 
       if (authError) {
         alert("Account Creation Failed: " + authError.message);
+        registerBtn.disabled    = false;
+        registerBtn.textContent = "Create Account";
         return;
       }
 
       const user = authData.user;
       if (!user) {
-        alert("Internal structural fallback error: Account creation stalled.");
+        alert("Account created, but no active session was returned. Please try logging in.");
+        window.location.href = "loginpage.html";
         return;
       }
 
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({
-          full_name: fullName,
-          gender: gender, 
-          birthdate: birthdate, 
-          address: address,
-          year_level: yearLevel,
-          contact_number: contactNumber,
-          personal_email: personalEmail
-        })
+        .update(profileData)
         .eq('id', user.id);
 
       if (profileError) {
         alert("Account created, but Profile Setup Failed: " + profileError.message);
-        console.error("Database Write Crash Context:", profileError);
       } else {
         alert("Registration Successful! Welcome to the ECE Department.");
-        window.location.href = "loginpage.html";
       }
+
+      window.location.href = "loginpage.html";
     });
   </script>
 </body>
