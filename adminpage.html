@@ -106,7 +106,10 @@
     .management-section { background-color: #161616; padding: 55px 5% 65px 5%; text-align: center; border-top: 1px solid #1f1f1f; }
     .section-title { font-size: 20px; font-weight: 500; text-align: center; margin-bottom: 8px; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; }
     .section-subtitle { font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; margin-bottom: 38px; }
-    .management-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    
+    /* MODIFIED: Explicitly forcing 4 columns to create the 4 on top, 4 on bottom look */
+    .management-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; justify-content: center; }
+    
     .management-card { background-color: #1e1e1e; padding: 28px 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: transform 0.3s, border-color 0.3s; }
     .management-card .adm-icon-circle { margin-bottom: 14px; }
     .management-card h3 { font-size: 15px; font-weight: 500; color: #cccccc; }
@@ -115,8 +118,24 @@
     .management-card:hover h3 { color: #f97316; }
 
     /* ACTIVITY */
-    .bundles-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; width: 100%; padding: 45px 5%; background-color: #111111; border-top: 1px solid #1a1a1a; }
-    .bundle-box { background-color: #161616; padding: 40px; border-radius: 8px; border: 1px solid #222222; }
+    .bundles-container { 
+      display: flex; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+      gap: 30px; 
+      width: 100%; 
+      padding: 45px 5%; 
+      background-color: #111111; 
+      border-top: 1px solid #1a1a1a; 
+    }
+    .bundle-box { 
+      background-color: #161616; 
+      padding: 40px; 
+      border-radius: 8px; 
+      border: 1px solid #222222; 
+      width: 100%; 
+      max-width: 535px; 
+    }
     .bundle-box h3 { font-size: 22px; font-weight: 500; margin-bottom: 12px; color: #ffffff; }
     .bundle-box p { font-family: 'Inter', sans-serif; font-size: 15px; color: #777777; line-height: 1.7; margin-bottom: 25px; }
     .adm-activity-list { list-style: none; margin-bottom: 25px; }
@@ -177,7 +196,7 @@
       .carousel-container { height: auto; flex-direction: column; gap: 20px; }
       .showcase-card { position: relative; width: 100%; max-width: 380px; transform: none !important; opacity: 1 !important; pointer-events: auto; }
       .management-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .bundles-container { grid-template-columns: 1fr; }
+      .bundles-container { flex-direction: column; align-items: center; } /* Updated for mobile flex */
       .footer-content { flex-direction: column; text-align: center; } .footer-right { align-items: center; }
       .editor-card { grid-template-columns: 1fr; }
       .editor-img-preview { width: 140px; margin: 0 auto; }
@@ -298,12 +317,12 @@
           <h3>Recent Registrations</h3>
           <ul class="adm-activity-list" id="activityList" hidden></ul>
           <p class="adm-activity-empty" id="activityEmpty">Loading recent activity...</p>
-          <a href="admin.html" class="bundle-link">View All Students</a>
+          <a href="admin.html" class="bundle-link" target="_blank" rel="noopener noreferrer">View All Students</a>
         </div>
         <div class="bundle-box">
           <h3>Enrollment Requests</h3>
           <p>Review and approve incoming enrollment submissions from new and returning students before the semester deadline.</p>
-          <a href="admin.html?view=freshmen" class="bundle-link">Review Requests</a>
+          <a href="admin.html?view=freshmen" class="bundle-link" target="_blank" rel="noopener noreferrer">Review Requests</a>
         </div>
       </div>
     </div> <div id="announcementsEditorView">
@@ -331,8 +350,9 @@
       <div class="footer-right">
         <span class="footer-title">Need Help?</span>
         <div class="footer-links">
-          <a href="https://www.facebook.com/JIECEPWMSU" class="footer-link"><svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg> Facebook</a>
-          <a href="mailto:jiecepwmsu@gmail.com" class="footer-link"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> jiecepwmsu@gmail.com</a>
+          <!-- Added target="_blank" to external links here -->
+          <a href="https://www.facebook.com/JIECEPWMSU" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg> Facebook</a>
+          <a href="mailto:jiecepwmsu@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> jiecepwmsu@gmail.com</a>
         </div>
       </div>
     </div>
@@ -418,6 +438,8 @@
         a.href = item.link_url || '#';
         a.className = 'showcase-card';
         a.dataset.index = index;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
         a.innerHTML = `
           <span class="card-corner tl"></span><span class="card-corner tr"></span><span class="card-corner bl"></span><span class="card-corner br"></span>
           <div class="image-container"><img src="${imgPath}" alt="${item.title}"></div>
@@ -604,6 +626,28 @@
       });
     }
 
+    function applyExternalLinkTargets(root = document) {
+      const links = root.querySelectorAll('a[href]');
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        const isMailOrTel = href.startsWith('mailto:') || href.startsWith('tel:');
+        let isExternalHttp = false;
+        if (/^https?:\/\//i.test(href)) {
+          try {
+            isExternalHttp = new URL(href, window.location.href).hostname !== window.location.hostname;
+          } catch { /* ignore malformed URLs */ }
+        }
+
+        if (isMailOrTel || isExternalHttp) {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        }
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => applyExternalLinkTargets());
     window.addEventListener("DOMContentLoaded", initializeDashboardProtection);
 
     document.getElementById('logoutBtn').addEventListener('click', async (e) => {
