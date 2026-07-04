@@ -689,18 +689,24 @@
     }
 
     function renderCarousel(announcements) {
-      const container = document.getElementById('carouselContainer');
-      const dotsContainer = document.getElementById('carouselDots');
-      
-      container.innerHTML = '';
-      dotsContainer.innerHTML = '';
+  const container = document.getElementById('carouselContainer');
+  const dotsContainer = document.getElementById('carouselDots');
+  
+  container.innerHTML = '';
+  dotsContainer.innerHTML = '';
 
-      announcements.forEach((announcement, index) => {
-        // 1. Create the Card
-        const card = document.createElement('a');
-        // Fallback to '#' if link_url is empty
-        card.href = announcement.link_url || '#'; 
-        card.className = 'showcase-card';
+  announcements.forEach((announcement, index) => {
+    // 1. Create the Card
+    const card = document.createElement('a');
+    card.href = announcement.link_url || '#'; 
+    
+    // ADD THESE TWO LINES:
+    card.target = "_blank"; 
+    card.rel = "noopener noreferrer";
+    
+    card.className = 'showcase-card';
+    
+    // ... rest of your code
         
         // Handle image URL (checks if empty, provides a fallback)
         const imgSrc = announcement.image_url || 'https://via.placeholder.com/400x400?text=No+Image';
