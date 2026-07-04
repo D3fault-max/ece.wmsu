@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
   <script>
-    // --- AUTHENTICATION SESSION GUARD & IMMEDIATE REDIRECT ---
     (function() {
       const storageKey = "sb-xxzbuhvilxapebzzkmla-auth-token"; 
       const sessionData = localStorage.getItem(storageKey);
       if (!sessionData) {
-        // Instantly throw back to loginpage if token doesn't exist
         window.location.replace("loginpage.html");
       }
     })();
@@ -171,6 +169,14 @@
       padding: 5px 14px 5px 6px;
       border-radius: 30px;
       border: 1px solid #eaeaea;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .user-profile-widget:hover {
+      background-color: #f1f3f5;
+      border-color: #dcdcdc;
+      transform: translateY(-1px);
     }
 
     .avatar-circle {
@@ -184,6 +190,14 @@
       justify-content: center;
       font-size: 13px;
       font-weight: 700;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
     .user-meta-text { display: flex; flex-direction: column; line-height: 1.2; }
@@ -702,13 +716,13 @@
     </div>
     
     <div class="nav-right-actions">
-      <div class="user-profile-widget">
-        <div class="avatar-circle">A</div>
+      <a href="profile.html" class="user-profile-widget">
+        <div class="avatar-circle" id="avatarLetter">A</div>
         <div class="user-meta-text">
-          <span class="profile-name-string">System Admin</span>
-          <span class="badge-pill">Administrator</span>
+          <span class="profile-name-string" id="profileName">Loading...</span>
+          <span class="badge-pill" id="roleBadge">Admin</span>
         </div>
-      </div>
+      </a>
       <button class="logout-top-btn" onclick="executeAdminSignOut()">Logout</button>
     </div>
   </header>
@@ -862,13 +876,27 @@
 
       const { data: profile, error: pErr } = await supabaseClient
         .from('profiles')
-        .select('role')
+        .select('full_name, role, avatar_url')
         .eq('id', session.user.id)
         .maybeSingle();
 
       if (pErr || !profile || profile.role !== 'admin') {
         alert("Access Denied: Administrative security privileges required.");
         window.location.href = "dashboard.html";
+        return;
+      }
+
+      updateAdminProfileWidget(profile);
+    }
+
+    function updateAdminProfileWidget(profile) {
+      document.getElementById("profileName").textContent = profile.full_name || "Admin";
+      document.getElementById("roleBadge").textContent = profile.role || 'Admin';
+      const avatarEl = document.getElementById("avatarLetter");
+      if (profile.avatar_url) {
+        avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="">`;
+      } else {
+        avatarEl.textContent = (profile.full_name || 'A').charAt(0).toUpperCase();
       }
     }
 
