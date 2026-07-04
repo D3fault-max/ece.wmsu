@@ -23,7 +23,7 @@
       background-attachment: fixed;
       color: #ffffff;
       min-height: 100vh;
-      min-height: 100dvh; /* dynamic viewport height on mobile browsers */
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -42,7 +42,6 @@
       position: relative;
     }
 
-    /* Decorative corner brackets */
     .aesthetic-corner {
       position: absolute;
       width: 24px; height: 24px;
@@ -87,7 +86,6 @@
       gap: 18px;
     }
 
-    /* Two-column row on desktop, single column on small screens */
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -100,7 +98,7 @@
       display: flex;
       flex-direction: column;
       gap: 7px;
-      min-width: 0; /* prevents grid blowout on long placeholder text */
+      min-width: 0;
     }
 
     .input-group label {
@@ -123,11 +121,9 @@
       font-size: 14px;
       width: 100%;
       transition: border-color 0.2s, box-shadow 0.2s;
-      /* Prevent iOS zoom on focus (font-size must be ≥16px or use this) */
       -webkit-text-size-adjust: 100%;
     }
 
-    /* Fix iOS default select arrow bleeding into text */
     .input-group select {
       appearance: none;
       -webkit-appearance: none;
@@ -147,11 +143,7 @@
       box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
     }
 
-    /* Remove date picker default styling on iOS/Android */
-    .input-group input[type="date"] {
-      color-scheme: dark;
-    }
-    /* On mobile, date inputs can be tricky — ensure text is visible */
+    .input-group input[type="date"] { color-scheme: dark; }
     .input-group input[type="date"]::-webkit-datetime-edit { color: #ffffff; }
     .input-group input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(0.6);
@@ -163,6 +155,33 @@
       font-size: 11px;
       color: #666666;
       line-height: 1.4;
+    }
+
+    /* ── PASSWORD WRAPPER ── */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .password-wrapper input {
+      padding-right: 60px; /* Make room for the toggle button */
+    }
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #888888;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0;
+    }
+    .toggle-password:hover {
+      color: #f97316;
     }
 
     /* ── SUBMIT BUTTON ── */
@@ -179,7 +198,6 @@
       transition: background-color 0.2s;
       margin-top: 6px;
       width: 100%;
-      /* Ensure tap target is large enough on mobile */
       min-height: 48px;
       touch-action: manipulation;
     }
@@ -198,72 +216,22 @@
     .extra-links a { color: #f97316; text-decoration: none; font-weight: 500; }
     .extra-links a:hover { color: #ea6c0e; text-decoration: underline; }
 
-    /* ── RESPONSIVE ───────────────────────────────────────────
-       Breakpoints:
-         ≤ 540px  — stack form-row columns, tighten padding
-         ≤ 380px  — very small phones (iPhone SE, Galaxy A series)
-    ─────────────────────────────────────────────────────────── */
+    /* ── RESPONSIVE ── */
     @media (max-width: 540px) {
-      body {
-        padding: 24px 16px;
-        align-items: flex-start; /* let content start near top on short viewports */
-      }
-
-      .register-container {
-        padding: 28px 20px;
-      }
-
-      .brand-logo {
-        font-size: 28px;
-        letter-spacing: 3px;
-      }
-
-      .subtitle {
-        font-size: 11px;
-        margin-bottom: 24px;
-      }
-
-      /* Stack all two-column rows into one column */
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-
-      #registerForm {
-        gap: 16px;
-      }
-
-      /* Slightly larger font on mobile inputs prevents iOS auto-zoom */
-      .input-group input,
-      .input-group select {
-        font-size: 16px; /* iOS zooms in if < 16px on focus — this prevents it */
-        padding: 12px 13px;
-      }
-
-      .input-group select {
-        padding-right: 34px;
-      }
+      body { padding: 24px 16px; align-items: flex-start; }
+      .register-container { padding: 28px 20px; }
+      .brand-logo { font-size: 28px; letter-spacing: 3px; }
+      .subtitle { font-size: 11px; margin-bottom: 24px; }
+      .form-row { grid-template-columns: 1fr; gap: 18px; }
+      #registerForm { gap: 16px; }
+      .input-group input, .input-group select { font-size: 16px; padding: 12px 13px; }
+      .input-group select { padding-right: 34px; }
     }
 
     @media (max-width: 380px) {
-      .register-container {
-        padding: 24px 14px;
-      }
-
-      .brand-logo {
-        font-size: 24px;
-        letter-spacing: 2px;
-      }
-
-      .aesthetic-corner {
-        width: 18px;
-        height: 18px;
-      }
-    }
-
-    /* Respect reduced motion preferences */
-    @media (prefers-reduced-motion: reduce) {
-      .btn, .input-group input, .input-group select { transition: none; }
+      .register-container { padding: 24px 14px; }
+      .brand-logo { font-size: 24px; letter-spacing: 2px; }
+      .aesthetic-corner { width: 18px; height: 18px; }
     }
   </style>
 </head>
@@ -340,8 +308,10 @@
 
       <div class="input-group">
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Min. 6 characters"
-               autocomplete="new-password" required>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="Min. 6 characters" autocomplete="new-password" required>
+          <button type="button" id="togglePassword" class="toggle-password" tabindex="-1">Show</button>
+        </div>
       </div>
 
       <button type="submit" class="btn" id="registerBtn">Create Account</button>
@@ -360,15 +330,21 @@
       "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
     );
 
-    // Student ID format: exactly 2 letters followed by 9 digits, case-insensitive.
     const STUDENT_ID_PATTERN = /^[A-Za-z]{2}\d{9}$/;
 
-    // Supabase Auth needs an email identity under the hood.
-    // The user never sees or types this — they log in with Student ID + password,
-    // and the login page performs the same conversion.
     function studentIdToAuthEmail(studentId) {
       return `${studentId.toLowerCase()}@ece.student.local`;
     }
+
+    // Toggle Password Visibility Logic
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    togglePasswordBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+      togglePasswordBtn.textContent = isPassword ? 'Hide' : 'Show';
+    });
 
     document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -384,7 +360,7 @@
       let   phoneInput    = document.getElementById("contact").value.trim();
       const address       = document.getElementById("address").value.trim();
       const personalEmail = document.getElementById("personal_email").value.trim();
-      const password      = document.getElementById("password").value.trim();
+      const password      = passwordInput.value.trim();
 
       if (!STUDENT_ID_PATTERN.test(studentId)) {
         alert("Invalid Student ID format. It must be 2 letters followed by 9 numbers (e.g. AE202402110).");
@@ -397,20 +373,10 @@
         phoneInput = "+" + phoneInput;
       }
 
-      const profileData = {
-        full_name:      fullName,
-        student_id:     studentId,
-        gender:         gender,
-        birthdate:      birthdate,
-        address:        address,
-        year_level:     yearLevel,
-        contact_number: phoneInput,
-        personal_email: personalEmail
-      };
-
       registerBtn.disabled    = true;
       registerBtn.textContent = "Creating Account…";
 
+      // 1. Create the user in Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email:    studentIdToAuthEmail(studentId),
         password: password,
@@ -433,10 +399,23 @@
         return;
       }
 
+      // 2. Prepare the Profile Data with the Auth User's UUID
+      const profileData = {
+        id:             user.id, // Explicitly link this profile row to the auth user
+        full_name:      fullName,
+        student_id:     studentId,
+        gender:         gender,
+        birthdate:      birthdate,
+        address:        address,
+        year_level:     yearLevel,
+        contact_number: phoneInput,
+        personal_email: personalEmail
+      };
+
+      // 3. Use UPSERT instead of UPDATE so it creates the row if it's missing
       const { error: profileError } = await supabase
         .from('profiles')
-        .update(profileData)
-        .eq('id', user.id);
+        .upsert(profileData); 
 
       if (profileError) {
         alert("Account created, but Profile Setup Failed: " + profileError.message);
