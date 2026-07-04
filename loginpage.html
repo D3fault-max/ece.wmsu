@@ -140,6 +140,36 @@
       color: #555555;
     }
 
+    /* ── PASSWORD WRAPPER ── */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    
+    .password-wrapper input {
+      padding-right: 60px; /* Make room for the toggle button */
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #888888;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .toggle-password:hover {
+      color: #f97316;
+    }
+
     /* ============================================
        BUTTON & REGISTRATION LINK STYLING
     ============================================ */
@@ -166,7 +196,6 @@
       transform: translateY(1px);
     }
 
-    /* Brand new styling for the clickable register text block */
     .register-prompt {
       font-family: 'Inter', sans-serif;
       font-size: 13px;
@@ -187,7 +216,6 @@
       text-decoration: underline;
     }
 
-    /* Small back link to homepage */
     .back-link {
       font-family: 'Inter', sans-serif;
       font-size: 12px;
@@ -215,15 +243,18 @@
     <form id="loginForm">
       <div class="input-group">
         <label for="username">ID Number / Username</label>
-        <input type="text" id="username" placeholder="e.g. 202601234" required>
+        <input type="text" id="username" placeholder="e.g. AE202402110" autocomplete="off" required>
       </div>
       
       <div class="input-group">
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="••••••••" required>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="••••••••" required>
+          <button type="button" id="togglePassword" class="toggle-password" tabindex="-1">Show</button>
+        </div>
       </div>
       
-      <button type="submit" class="submit-btn">Login</button>
+      <button type="submit" class="submit-btn" id="loginBtn">Login</button>
       
       <div class="register-prompt">
         Don't have an account? <a href="registration.html">Register here</a>
@@ -233,41 +264,60 @@
     <a href="index.html" class="back-link">← Return to Homepage</a>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const { createClient } = supabase;
-    const supabaseClient = createClient(
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const supabase = createClient(
       "https://xxzbuhvilxapebzzkmla.supabase.co", 
       "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
     );
 
     const loginForm = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+
+    // Toggle Password Visibility Logic
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    togglePasswordBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+      togglePasswordBtn.textContent = isPassword ? 'Hide' : 'Show';
+    });
 
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Logging in...";
+
       let usernameInput = document.getElementById("username").value.trim().toLowerCase();
       const password = document.getElementById("password").value.trim();
 
+      // Clean the input just in case they typed an @ symbol
       if (usernameInput.includes('@')) {
         usernameInput = usernameInput.split('@')[0];
       }
-      const syntheticEmail = `${usernameInput}@ece.com`;
+      
+      // FIX: Use the exact same dummy email domain you set in registration.html
+      const syntheticEmail = `${usernameInput}@ece.student.local`;
 
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: syntheticEmail,
         password: password,
       });
 
       if (error) {
         alert("Login failed: " + error.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
         return;
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
 
       try {
-        const { data: profile, error: profileError } = await supabaseClient
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
@@ -282,6 +332,7 @@
         }
       } catch (dbErr) {
         console.error("Routing error:", dbErr);
+        // Default route to dashboard if there's an issue checking the profile
         window.location.href = "dashboard.html";
       }
     });
