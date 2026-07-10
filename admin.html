@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
   <script>
+    // --- AUTHENTICATION SESSION GUARD & IMMEDIATE REDIRECT ---
     (function() {
       const storageKey = "sb-xxzbuhvilxapebzzkmla-auth-token"; 
       const sessionData = localStorage.getItem(storageKey);
       if (!sessionData) {
+        // Instantly throw back to loginpage if token doesn't exist
         window.location.replace("loginpage.html");
       }
     })();
@@ -709,9 +711,9 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="adminpage.html" >Dashboard</a></li>
         <li><a href="admin.html" class="active" aria-current="page">Students</a></li>
-        <li><a href="faculty.html">Faculty</a></li>
-        <li><a href="courses.html">Courses</a></li>
-        <li><a href="reports.html">Reports</a></li>
+        <li><a href="maintenance.html">Faculty</a></li>
+        <li><a href="maintenance.html">Courses</a></li>
+        <li><a href="maintenance.html">Reports</a></li>
       </ul>
     </div>
     
