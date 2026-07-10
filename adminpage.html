@@ -107,8 +107,8 @@
     .section-title { font-size: 20px; font-weight: 500; text-align: center; margin-bottom: 8px; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; }
     .section-subtitle { font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; margin-bottom: 38px; }
     
-    /* MODIFIED: Explicitly forcing 4 columns to create the 4 on top, 4 on bottom look */
-    .management-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; justify-content: center; }
+    /* MODIFIED: Explicitly forcing 3 columns to create the 3 on top, 3 on bottom look */
+    .management-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; justify-content: center; }
     
     .management-card { background-color: #1e1e1e; padding: 28px 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: transform 0.3s, border-color 0.3s; }
     .management-card .adm-icon-circle { margin-bottom: 14px; }
@@ -213,9 +213,9 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#" class="active" onclick="toggleView('dashboard')">Dashboard</a></li>
         <li><a href="admin.html">Students</a></li>
-        <li><a href="faculty.html">Faculty</a></li>
-        <li><a href="courses.html">Courses</a></li>
-        <li><a href="reports.html">Reports</a></li>
+        <li><a href="maintenance.html">Faculty</a></li>
+        <li><a href="maintenance.html">Courses</a></li>
+        <li><a href="maintenance.html">Reports</a></li>
       </ul>
     </div>
     <div class="nav-right">
@@ -295,20 +295,19 @@
       <section class="management-section">
         <h2 class="section-title">Management</h2>
         <p class="section-subtitle">Jump straight into managing the department</p>
+        <!-- REPLACED 4-CARD WITH 3-CARD GRID HERE -->
         <div class="management-grid">
           <a href="admin.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></div><h3>Students</h3><p>Records &amp; rosters</p></a>
-          <a href="faculty.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 3-5 7-5s7 2 7 5"/><path d="M16 5.5c1.7.3 3 1.8 3 3.5s-1.3 3.2-3 3.5"/><path d="M22 20c0-2.5-2-4.2-4.5-4.8"/></svg></div><h3>Faculty</h3><p>Staff directory</p></a>
-          <a href="courses.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M12 6c-1.5-1.5-4-2-7-2v14c3 0 5.5.5 7 2 1.5-1.5 4-2 7-2V4c-3 0-5.5.5-7 2z"/><path d="M12 6v14"/></svg></div><h3>Curriculum</h3><p>Courses &amp; sections</p></a>
-          <a href="admin.html?view=freshmen" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M9 11h6"/><path d="M9 15h6"/><path d="M9 19h3"/></svg></div><h3>Enrollment</h3><p>Requests &amp; approvals</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 3-5 7-5s7 2 7 5"/><path d="M16 5.5c1.7.3 3 1.8 3 3.5s-1.3 3.2-3 3.5"/><path d="M22 20c0-2.5-2-4.2-4.5-4.8"/></svg></div><h3>Faculty</h3><p>Staff directory</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M12 6c-1.5-1.5-4-2-7-2v14c3 0 5.5.5 7 2 1.5-1.5 4-2 7-2V4c-3 0-5.5.5-7 2z"/><path d="M12 6v14"/></svg></div><h3>Curriculum</h3><p>Courses &amp; sections</p></a>
           
           <a href="#" class="management-card" onclick="toggleView('editor'); return false;">
             <div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 001 1h2l7 4V5L6 9H4a1 1 0 00-1 1z"/><path d="M17 8a4 4 0 010 8"/><path d="M13 19l1 3h2l-1-3"/></svg></div>
             <h3>Announcements</h3><p>Edit carousel features</p>
           </a>
 
-          <a href="reports.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="7"/><line x1="19" y1="20" x2="19" y2="14"/><line x1="3" y1="21" x2="21" y2="21"/></svg></div><h3>Reports</h3><p>Analytics &amp; exports</p></a>
-          <a href="organizations.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1"/><rect x="9" y="16" width="6" height="5"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/></svg></div><h3>Organizations</h3><p>JIECEP &amp; officers</p></a>
-          <a href="settings.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><h3>Settings</h3><p>Portal configuration</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1"/><rect x="9" y="16" width="6" height="5"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/></svg></div><h3>Organizations</h3><p>JIECEP &amp; officers</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><h3>Settings</h3><p>Portal configuration</p></a>
         </div>
       </section>
 
@@ -350,7 +349,6 @@
       <div class="footer-right">
         <span class="footer-title">Need Help?</span>
         <div class="footer-links">
-          <!-- Added target="_blank" to external links here -->
           <a href="https://www.facebook.com/JIECEPWMSU" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg> Facebook</a>
           <a href="mailto:jiecepwmsu@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> jiecepwmsu@gmail.com</a>
         </div>
@@ -612,7 +610,7 @@
       supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (!session) { window.location.href = "loginpage.html"; return; }
         const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-        if (!profile || profile.role === 'student') { window.location.href = STUDENT_PORTAL_URL; return; }
+        if (!profile || profile.role === 'student') { window.location.href = "loginpage.html"; return; }
 
         document.getElementById("profileName").textContent = profile.full_name || "Admin";
         document.getElementById("welcome-name").textContent = `Welcome back, ${profile.full_name || 'Admin'}!`;
