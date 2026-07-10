@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Portal - Under Maintenance</title>
+  <style>
+    @font-face { font-family: 'Plateia'; src: url('Plateia Bold.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', 'Inter', -apple-system, sans-serif; background-color: #111111; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+    /* NAVBAR */
+    .navbar { display: flex; align-items: center; padding: 14px 5%; background-color: #ffffff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
+    .logo-area { flex: 1; display: flex; align-items: center; gap: 10px; }
+    .logo { font-family: 'Plateia', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: #000000; cursor: pointer; }
+    .admin-chip { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #f97316; background-color: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.35); padding: 3px 9px; border-radius: 20px; }
+    .nav-center { flex: 2; display: flex; justify-content: center; }
+    .nav-links { display: flex; list-style: none; gap: 36px; }
+    .nav-links a { font-family: 'Inter', sans-serif; text-decoration: none; color: #333333; font-size: 15px; font-weight: 500; position: relative; padding: 4px 0; transition: color 0.2s ease; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: #f97316; transition: width 0.3s ease; }
+    .nav-links a:hover, .nav-links a.active { color: #f97316; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+    .user-profile-widget { display: flex; align-items: center; gap: 10px; background-color: #f8f9fa; padding: 5px 12px 5px 6px; border-radius: 30px; border: 1px solid #eaeaea; cursor: pointer; text-decoration: none; transition: all 0.2s ease; }
+    .user-profile-widget:hover { background-color: #f1f3f5; border-color: #dcdcdc; transform: translateY(-1px); }
+    .avatar-circle { width: 34px; height: 34px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .avatar-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .user-meta-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .profile-name-string { font-size: 13px; font-weight: 600; color: #111111; }
+    .badge-pill { font-family: 'Inter', sans-serif; background-color: #f97316; color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; text-transform: uppercase; width: fit-content; margin-top: 2px; }
+    .logout-btn { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; background-color: #f97316; padding: 10px 26px; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.2s ease; }
+    .logout-btn:hover { background-color: #ea6c0e; }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 5px; }
+    .mobile-menu-btn svg { width: 28px; height: 28px; fill: none; stroke: #111111; stroke-width: 2; stroke-linecap: round; }
+
+    /* MAINTENANCE LAYOUT */
+    .maintenance-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 5%; background-color: #111111; position: relative; }
+    .maintenance-card { background-color: #161616; border: 1px solid #222222; border-radius: 12px; padding: 55px 40px; max-width: 580px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden; }
+    .maintenance-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #f97316, #ea580c); }
+    
+    /* COOL CONSTRUCTION ANIMATION */
+    .animation-box { position: relative; width: 120px; height: 120px; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; }
+    .warning-triangle { fill: none; stroke: #f97316; stroke-width: 4; stroke-linejoin: round; animation: pulseGlow 2s infinite ease-in-out; }
+    .gear-inner { transform-origin: 50px 55px; animation: spinGear 4s infinite linear; fill: none; stroke: #f97316; stroke-width: 3; }
+    .stripe-bar { width: 140px; height: 12px; background: repeating-linear-gradient(-45deg, #f97316, #f97316 10px, #111111 10px, #111111 20px); border-radius: 4px; margin: 0 auto 20px auto; border: 1px solid #222222; }
+
+    @keyframes spinGear { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulseGlow { 0%, 100% { filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.4)); opacity: 0.9; } 50% { filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.8)); opacity: 1; } }
+
+    /* CONTENT STRINGS */
+    .maintenance-title { font-size: 24px; font-weight: 600; letter-spacing: 1px; color: #ffffff; margin-bottom: 12px; text-transform: uppercase; }
+    .maintenance-text { font-family: 'Inter', sans-serif; font-size: 15px; color: #888888; line-height: 1.6; margin-bottom: 35px; }
+    .btn-return { font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #ffffff; background-color: transparent; border: 1px solid #333333; padding: 12px 28px; border-radius: 6px; text-decoration: none; cursor: pointer; transition: all 0.2s ease; }
+    .btn-return:hover { border-color: #f97316; color: #f97316; background-color: rgba(249, 115, 22, 0.03); transform: translateY(-1px); }
+
+    /* FOOTER */
+    .site-footer { background-color: #161616; border-top: 1px solid #222222; padding: 40px 5%; font-family: 'Inter', sans-serif; }
+    .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; max-width: 1400px; margin: 0 auto; }
+    .footer-left .footer-logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #f97316; margin-bottom: 4px; }
+    .footer-left p { font-size: 13px; color: #666666; }
+    .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+    .footer-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #f97316; }
+    .footer-links { display: flex; gap: 24px; align-items: center; }
+    .footer-link { display: flex; align-items: center; gap: 8px; color: #cccccc; text-decoration: none; font-size: 14px; transition: color 0.2s ease; }
+    .footer-link:hover { color: #f97316; }
+    .footer-link svg { width: 18px; height: 18px; fill: currentColor; }
+
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .nav-center { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: #ffffff; padding: 20px 5%; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+      .nav-center.mobile-active { display: flex; } .nav-links { flex-direction: column; gap: 16px; }
+      .profile-name-string { display: none; }
+      .footer-content { flex-direction: column; text-align: center; } .footer-right { align-items: center; }
+      .maintenance-card { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-area">
+      <div class="logo">ECE</div><span class="admin-chip">Admin</span>
+    </div>
+    <div class="nav-center" id="navCenter">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="adminpage.html">Dashboard</a></li>
+        <li><a href="admin.html">Students</a></li>
+        <li><a href="maintenance.html">Faculty</a></li>
+        <li><a href="maintenance.html">Courses</a></li>
+        <li><a href="maintenance.html">Reports</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <a href="profile.html" class="user-profile-widget">
+        <div class="avatar-circle" id="avatarLetter">A</div>
+        <div class="user-meta-text">
+          <span class="profile-name-string" id="profileName">Loading...</span>
+          <span class="badge-pill" id="roleBadge">Admin</span>
+        </div>
+      </a>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="maintenance-wrapper">
+    <div class="maintenance-card">
+      
+      <!-- Cool Construction Graphic Vector Component -->
+      <div class="animation-box">
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <!-- Animated Warning Triangle -->
+          <polygon points="50,15 90,85 10,85" class="warning-triangle"></polygon>
+          <!-- Animated Internal Engineering Gear -->
+          <path d="M50,43 C43.37,43 38,48.37 38,55 C38,61.63 43.37,67 50,67 C56.63,67 62,61.63 62,55 C62,48.37 56.63,43 50,43 Z M50,46 A2,2 0 1,1 50,46.01 M50,48 C46.13,48 43,51.13 43,55 C43,58.87 46.13,62 50,62 C53.87,62 57,58.87 57,55 C57,51.13 53.87,48 50,48 Z" class="gear-inner" transform="normalize"></path>
+          <g class="gear-inner">
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(0 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(45 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(90 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(135 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(180 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(225 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(270 50 55)"></rect>
+            <rect x="47" y="40" width="6" height="5" rx="1" transform="rotate(315 50 55)"></rect>
+          </g>
+        </svg>
+      </div>
+
+      <div class="stripe-bar"></div>
+
+      <h1 class="maintenance-title">Tab Under Maintenance</h1>
+      <p class="maintenance-text">This tab is under maintenance, please try again some time.</p>
+      
+      <a href="#" class="btn-return" onclick="history.back(); return false;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Return to Previous Page
+      </a>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <div class="footer-logo">ECE Admin Portal</div>
+        <p>&copy; 2026 Department of Electronics Engineering - WMSU. All rights reserved.</p>
+      </div>
+      <div class="footer-right">
+        <span class="footer-title">Need Help?</span>
+        <div class="footer-links">
+          <a href="https://www.facebook.com/JIECEPWMSU" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg> Facebook</a>
+          <a href="mailto:jiecepwmsu@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> jiecepwmsu@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    // --- NAVIGATION HELPERS ---
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navCenter = document.getElementById('navCenter');
+    mobileMenuBtn.addEventListener('click', () => navCenter.classList.toggle('mobile-active'));
+    document.addEventListener('click', (e) => { if (!mobileMenuBtn.contains(e.target) && !navCenter.contains(e.target)) navCenter.classList.remove('mobile-active'); });
+
+    // --- AUTH PROTECTION FLOW REUSED ---
+    function initializePortalProtection() {
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (!session) { window.location.href = "loginpage.html"; return; }
+        const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+        if (!profile || profile.role === 'student') { window.location.href = "loginpage.html"; return; }
+
+        document.getElementById("profileName").textContent = profile.full_name || "Admin";
+        document.getElementById("roleBadge").textContent = profile.role || 'Admin';
+        const av = document.getElementById("avatarLetter");
+        if(profile.avatar_url) av.innerHTML = `<img src="${profile.avatar_url}" alt="">`; else av.textContent = (profile.full_name||'A').charAt(0).toUpperCase();
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", initializePortalProtection);
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault(); await supabaseClient.auth.signOut(); localStorage.clear(); window.location.href = "loginpage.html";
+    });
+  </script>
+</body>
+</html>
