@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // --- AUTHENTICATION SESSION GUARD & IMMEDIATE REDIRECT ---
+    (function() {
+      const storageKey = "sb-xxzbuhvilxapebzzkmla-auth-token"; 
+      const sessionData = localStorage.getItem(storageKey);
+      if (!sessionData) {
+        // Instantly throw back to loginpage if token doesn't exist
+        window.location.replace("loginpage.html");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Control Panel - Admin Management Console</title>
+  
+  <style>
+    @font-face {
+      font-family: 'Plateia';
+      src: url('Plateia Bold.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --accent: #f97316;
+      --accent-dark: #ea580c;
+      --accent-soft: rgba(249, 115, 22, 0.12);
+      --bg-page: #0d0d0d;
+      --bg-panel: #161616;
+      --bg-inset: #111111;
+      --bg-raised: #1c1c1c;
+      --border-soft: #262626;
+      --border-strong: #333333;
+      --text-primary: #ffffff;
+      --text-secondary: #b3b3b3;
+      --text-muted: #7d7d7d;
+      --year-1: #38bdf8;
+      --year-2: #a78bfa;
+      --year-3: #34d399;
+      --year-4: #f97316;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-image:
+        radial-gradient(circle at 12% -10%, rgba(249, 115, 22, 0.10), transparent 40%),
+        url('background.png');
+      background-color: var(--bg-page);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center; 
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- STICKY NAVBAR --- */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 4%;
+      background-color: #ffffff; 
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12); 
+    }
+
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      font-family: 'Plateia', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #000000;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .admin-chip {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background-color: var(--accent-soft);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .nav-center {
+      flex: 2;
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+    }
+
+    .nav-links a {
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      color: #333333;
+      font-size: 15px;
+      font-weight: 500;
+      position: relative;
+      padding: 4px 0;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #f97316;
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #f97316;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-links a.active {
+      color: #f97316;
+    }
+
+    .nav-links a.active::after {
+      width: 100%;
+    }
+
+    .nav-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-profile-widget {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: #f8f9fa;
+      padding: 5px 14px 5px 6px;
+      border-radius: 30px;
+      border: 1px solid #eaeaea;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .user-profile-widget:hover {
+      background-color: #f1f3f5;
+      border-color: #dcdcdc;
+      transform: translateY(-1px);
+    }
+
+    .avatar-circle {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-meta-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .profile-name-string { font-size: 13px; font-weight: 600; color: #111111; }
+    .badge-pill {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--accent);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-top: 2px;
+    }
+
+    /* --- TOP HEADER NAVBAR LOGOUT BUTTON --- */
+    .logout-top-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background-color: var(--accent);
+      padding: 10px 26px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+    .logout-top-btn:hover {
+      background-color: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    /* --- LAYOUT CONTAINER --- */
+    .dashboard-container {
+      flex: 1;
+      max-width: 1400px;
+      width: 94%;
+      margin: 40px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .page-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .page-heading h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .page-heading p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .refresh-timestamp {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      padding: 8px 14px;
+      border-radius: 20px;
+    }
+
+    /* --- STAT SUMMARY CARDS --- */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+    }
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--bar-color, var(--accent));
+    }
+    .stat-card .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .stat-card .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 8px;
+      color: var(--text-primary);
+    }
+    .stat-card.total { --bar-color: #ffffff; }
+    .stat-card.y1 { --bar-color: var(--year-1); }
+    .stat-card.y2 { --bar-color: var(--year-2); }
+    .stat-card.y3 { --bar-color: var(--year-3); }
+    .stat-card.y4 { --bar-color: var(--year-4); }
+
+    .content-panel {
+      background-color: var(--bg-panel);
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      padding: 38px 40px 44px;
+      box-shadow: 0 4px 28px rgba(0,0,0,0.22);
+      min-height: 500px;
+    }
+
+    .panel-header {
+      border-bottom: 1px solid var(--border-soft);
+      padding-bottom: 22px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .panel-header h2 { font-size: 22px; font-weight: 600; color: var(--text-primary); }
+    .panel-header p { font-size: 13.5px; color: var(--text-muted); margin-top: 6px; }
+
+    .result-count-chip {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      background-color: var(--accent-soft);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      padding: 6px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* --- UTILITY FILTER TOOLBAR --- */
+    .toolbar-wrapper {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .search-input {
+      flex: 1;
+      font-family: 'Poppins', sans-serif;
+      padding: 13px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      font-size: 14px;
+      outline: none;
+      background-color: var(--bg-inset);
+      color: var(--text-primary);
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+      border-color: var(--accent);
+      background-color: #1a1a1a;
+    }
+
+    .filter-select {
+      font-family: 'Poppins', sans-serif;
+      padding: 13px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      font-size: 14px;
+      background-color: var(--bg-inset);
+      color: var(--text-primary);
+      outline: none;
+      min-width: 200px;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    .filter-select:focus {
+      border-color: var(--accent);
+    }
+
+    /* --- DATA MATRIX ROSTER TABLE --- */
+    .table-container {
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: var(--bg-inset);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: var(--bg-raised);
+      color: #999999;
+      font-weight: 600;
+      padding: 15px 16px;
+      text-transform: uppercase;
+      font-size: 11.5px;
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid #262626;
+      vertical-align: middle;
+      color: #cccccc;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background-color 0.15s ease; }
+    tbody tr:hover { background-color: #191919; }
+
+    .student-profile-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .student-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .student-fallback-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .year-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #dddddd;
+    }
+    .year-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--dot-color, var(--text-muted));
+    }
+
+    .inspect-action-btn {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 7px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+    .inspect-action-btn:hover { background-color: var(--accent-dark); transform: translateY(-1px); }
+
+    /* --- INSPECTOR MODAL & COLLAPSIBLE PREVIEW PANEL --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-card {
+      background-color: var(--bg-panel);
+      width: 90%;
+      max-width: 650px;
+      height: 85vh;
+      border-radius: 14px;
+      padding: 35px;
+      box-shadow: 0 20px 45px -5px rgba(0,0,0,0.55);
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0px;
+      transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-card.preview-expanded {
+      width: 96vw;
+      max-width: 1680px;
+      height: 94vh;
+      padding: 28px;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+    }
+
+    .modal-left-scroll {
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    
+    .modal-left-scroll h2 {
+      color: #ffffff;
+    }
+
+    .modal-right-preview {
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      background-color: var(--bg-inset);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+      position: relative;
+    }
+
+    .modal-right-preview.active {
+      display: flex;
+    }
+
+    .preview-header-bar {
+      background-color: var(--bg-raised);
+      padding: 12px 45px 12px 15px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cccccc;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .pdf-viewer-iframe {
+      width: 100%;
+      flex: 1;
+      border: none;
+    }
+
+    .image-viewer-container {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 15px;
+      background-color: #000000;
+    }
+
+    .image-viewer-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .close-modal-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #2a2a2a;
+      border: none;
+      font-size: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: #cccccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background-color 0.15s;
+    }
+    .close-modal-btn:hover { background-color: #3a3a3a; color: #ffffff; }
+
+    .close-preview-btn {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #777777;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .close-preview-btn:hover { color: #cccccc; }
+
+    .modal-section-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin: 25px 0 15px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-strong);
+      color: var(--accent);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .info-item label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #999999;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .info-item span { font-size: 14px; color: #ffffff; font-weight: 500; }
+
+    .req-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .req-thumb-card {
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 12px 16px;
+      background-color: var(--bg-raised);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .req-thumb-card:hover { border-color: var(--accent); }
+    .req-thumb-card h4 { font-size: 13px; color: #cccccc; font-weight: 600; }
+    
+    .preview-action-trigger {
+      font-size: 12px;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .preview-action-trigger:hover { text-underline-offset: 2px; text-decoration: underline; }
+
+    @media(max-width: 950px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .toolbar-wrapper { flex-direction: column; }
+      .navbar { flex-direction: column; gap: 10px; }
+      .content-panel { padding: 28px 22px; }
+      .modal-card.preview-expanded { max-width: 650px; grid-template-columns: 1fr; }
+      .modal-right-preview { display: none !important; }
+    }
+
+    @media(max-width: 560px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-area">
+      <a href="index.html" class="logo">ECE</a>
+      <span class="admin-chip">Admin</span>
+    </div>
+    <div class="nav-center" id="navCenter">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="adminpage.html" >Dashboard</a></li>
+        <li><a href="adstudent.html" class="active" aria-current="page">Students</a></li>
+        <li><a href="maintenance.html">Faculty</a></li>
+        <li><a href="maintenance.html">Courses</a></li>
+        <li><a href="maintenance.html">Reports</a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-right-actions">
+      <a href="profile.html" class="user-profile-widget">
+        <div class="avatar-circle" id="avatarLetter">A</div>
+        <div class="user-meta-text">
+          <span class="profile-name-string" id="profileName">Loading...</span>
+          <span class="badge-pill" id="roleBadge">Admin</span>
+        </div>
+      </a>
+      <button class="logout-top-btn" onclick="executeAdminSignOut()">Logout</button>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+
+    <div class="page-heading">
+      <div>
+        <h1>Student Records</h1>
+        <p>Complete record of enrolled students, First Year through Fourth Year.</p>
+      </div>
+      <div class="refresh-timestamp" id="lastSyncedLabel">Syncing records&hellip;</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card total">
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value" id="statTotal">&mdash;</div>
+      </div>
+      <div class="stat-card y1">
+        <div class="stat-label">First Year</div>
+        <div class="stat-value" id="statY1">&mdash;</div>
+      </div>
+      <div class="stat-card y2">
+        <div class="stat-label">Second Year</div>
+        <div class="stat-value" id="statY2">&mdash;</div>
+      </div>
+      <div class="stat-card y3">
+        <div class="stat-label">Third Year</div>
+        <div class="stat-value" id="statY3">&mdash;</div>
+      </div>
+      <div class="stat-card y4">
+        <div class="stat-label">Fourth Year</div>
+        <div class="stat-value" id="statY4">&mdash;</div>
+      </div>
+    </div>
+
+    <section class="content-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Student Records</h2>
+          <p>Search or filter to inspect an individual student's profile and submitted documents.</p>
+        </div>
+        <span class="result-count-chip" id="resultCountChip">0 students</span>
+      </div>
+
+      <div class="toolbar-wrapper">
+        <input type="text" id="adminSearch" class="search-input" placeholder="Search by full name, contact number, or email address...">
+        <select id="adminYearFilter" class="filter-select">
+          <option value="">All Year Levels</option>
+          <option value="First Year">First Year</option>
+          <option value="Second Year">Second Year</option>
+          <option value="Third Year">Third Year</option>
+          <option value="Fourth Year">Fourth Year</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Student Profile Name</th>
+              <th>Year Status</th>
+              <th>Contact Phone</th>
+              <th>Personal Email</th>
+              <th>Action Panel</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <tr>
+              <td colspan="5" style="text-align: center; color: #999999; padding: 40px;">Syncing student details...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="inspectorModal">
+    <div class="modal-card" id="modalCardFrame">
+      <button class="close-modal-btn" onclick="closeInspectorModal()">&times;</button>
+      
+      <div class="modal-left-scroll">
+        <h2>Student Workspace Payload Details</h2>
+        <p style="color: #999999; font-size: 13px; margin-top: 4px;">Comprehensive extraction of primary metadata records.</p>
+
+        <div class="modal-section-title">Profile Parameters</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Full Identity Name</label>
+            <span id="mName">---</span>
+          </div>
+          <div class="info-item">
+            <label>Year Classification</label>
+            <span id="mYear">---</span>
+          </div>
+          <div class="info-item">
+            <label>Date of Birth</label>
+            <span id="mBirth">---</span>
+          </div>
+          <div class="info-item">
+            <label>Mobile Number</label>
+            <span id="mContact">---</span>
+          </div>
+          <div class="info-item" style="grid-column: span 2;">
+            <label>Personal Email Address</label>
+            <span id="mEmail">---</span>
+          </div>
+          <div class="info-item" style="grid-column: span 2;">
+            <label>Complete Home Address Log</label>
+            <span id="mAddress">---</span>
+          </div>
+        </div>
+
+        <div class="modal-section-title">Submitted Requirement Payloads</div>
+        <div class="req-preview-grid" id="mRequirementsGrid"></div>
+      </div>
+
+      <div class="modal-right-preview" id="previewSandboxFrame">
+        <button class="close-preview-btn" onclick="collapsePreviewSandbox()">&times;</button>
+        <div class="preview-header-bar" id="pdfPreviewTitle">Document Preview Sandbox</div>
+        <div id="pdfViewerContainer" style="height: 100%; flex: 1; display: flex; flex-direction: column;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    const YEAR_DOT_COLORS = {
+      "First Year": "var(--year-1)",
+      "Second Year": "var(--year-2)",
+      "Third Year": "var(--year-3)",
+      "Fourth Year": "var(--year-4)"
+    };
+
+    let comprehensiveRosterArray = [];
+
+    async function enforceAdminPrivilegeGuard() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      
+      if (error || !session) {
+        window.location.href = "loginpage.html";
+        return;
+      }
+
+      const { data: profile, error: pErr } = await supabaseClient
+        .from('profiles')
+        .select('full_name, role, avatar_url')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (pErr || !profile || profile.role !== 'admin') {
+        alert("Access Denied: Administrative security privileges required.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      updateAdminProfileWidget(profile);
+    }
+
+    function updateAdminProfileWidget(profile) {
+      document.getElementById("profileName").textContent = profile.full_name || "Admin";
+      document.getElementById("roleBadge").textContent = profile.role || 'Admin';
+      const avatarEl = document.getElementById("avatarLetter");
+      if (profile.avatar_url) {
+        avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="">`;
+      } else {
+        avatarEl.textContent = (profile.full_name || 'A').charAt(0).toUpperCase();
+      }
+    }
+
+    async function bootstrapAdminInterface() {
+      await enforceAdminPrivilegeGuard();
+      await fetchMasterDatabaseRows();
+
+      document.getElementById('adminSearch').addEventListener('input', applyMatrixFiltering);
+      document.getElementById('adminYearFilter').addEventListener('change', applyMatrixFiltering);
+    }
+
+    async function fetchMasterDatabaseRows() {
+      try {
+        const { data: profiles, error: pErr } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .order('full_name', { ascending: true });
+
+        if (pErr) throw pErr;
+
+        const { data: details, error: dErr } = await supabaseClient
+          .from('student_details')
+          .select('*');
+
+        if (dErr) throw dErr;
+
+        comprehensiveRosterArray = (profiles || [])
+          .filter(p => p.role !== 'admin') 
+          .map(p => {
+            const detailMatch = (details || []).find(d => d.user_id === p.id) || {};
+            return {
+              ...p,
+              birthdate: detailMatch.birthdate || "",
+              contact_number: p.contact_number || "", // Fetches from 'profiles' payload
+              personal_email: detailMatch.personal_email || p.personal_email || "",
+              address: detailMatch.address || ""
+            };
+          });
+
+        updateStatCards();
+        applyMatrixFiltering();
+
+        const stamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('lastSyncedLabel').textContent = `Last synced ${stamp}`;
+      } catch (err) {
+        alert("Error mapping cloud relational schema matrices: " + err.message);
+      }
+    }
+
+    function updateStatCards() {
+      const counts = { "First Year": 0, "Second Year": 0, "Third Year": 0, "Fourth Year": 0 };
+      comprehensiveRosterArray.forEach(s => {
+        if (counts.hasOwnProperty(s.year_level)) counts[s.year_level]++;
+      });
+
+      document.getElementById('statTotal').textContent = comprehensiveRosterArray.length;
+      document.getElementById('statY1').textContent = counts["First Year"];
+      document.getElementById('statY2').textContent = counts["Second Year"];
+      document.getElementById('statY3').textContent = counts["Third Year"];
+      document.getElementById('statY4').textContent = counts["Fourth Year"];
+    }
+
+    function renderMatrixRows(dataset, tbodyElement, fallbackMessage) {
+      tbodyElement.innerHTML = '';
+
+      if (dataset.length === 0) {
+        tbodyElement.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #999999; padding: 30px;">${fallbackMessage}</td></tr>`;
+        return;
+      }
+
+      dataset.forEach(student => {
+        const row = document.createElement('tr');
+        
+        let avatarContainer = `<div class="student-fallback-avatar">${(student.full_name || 'U').charAt(0).toUpperCase()}</div>`;
+        if (student.avatar_url) {
+          avatarContainer = `<img src="${student.avatar_url}" class="student-avatar" alt="Profile View">`;
+        }
+
+        const dotColor = YEAR_DOT_COLORS[student.year_level] || "var(--text-muted)";
+        const yearLabel = student.year_level
+          ? `<span class="year-badge"><span class="year-dot" style="--dot-color:${dotColor};"></span>${student.year_level}</span>`
+          : `<span style="color:#777;">Not Configured</span>`;
+
+        row.innerHTML = `
+          <td>
+            <div class="student-profile-cell">
+              ${avatarContainer}
+              <div style="font-weight: 600; color: #ffffff;">${student.full_name || 'New Student Record'}</div>
+            </div>
+          </td>
+          <td>${yearLabel}</td>
+          <td><span>${student.contact_number || 'N/A'}</span></td>
+          <td><span>${student.personal_email || 'N/A'}</span></td>
+          <td>
+            <button class="inspect-action-btn" onclick="triggerProfileInspection('${student.id}')">Inspect Workspace</button>
+          </td>
+        `;
+        tbodyElement.appendChild(row);
+      });
+    }
+
+    function applyMatrixFiltering() {
+      const query = document.getElementById('adminSearch').value.toLowerCase().trim();
+      const filterYear = document.getElementById('adminYearFilter').value;
+
+      const globallyFiltered = comprehensiveRosterArray.filter(student => {
+        const matchesQuery = 
+          (student.full_name || '').toLowerCase().includes(query) ||
+          (student.personal_email || '').toLowerCase().includes(query) ||
+          (student.contact_number || '').toLowerCase().includes(query) ||
+          (student.address || '').toLowerCase().includes(query);
+        
+        const matchesYear = filterYear === "" || student.year_level === filterYear;
+        return matchesQuery && matchesYear;
+      });
+
+      renderMatrixRows(globallyFiltered, document.getElementById('studentTableBody'), 'No matching student records located.');
+
+      const countLabel = globallyFiltered.length === 1 ? '1 student' : `${globallyFiltered.length} students`;
+      document.getElementById('resultCountChip').textContent = countLabel;
+    }
+
+    async function executeAdminSignOut() {
+      const confirmation = confirm("Are you sure you want to sign out of the administrative workspace console?");
+      if (!confirmation) return;
+      
+      try {
+        await supabaseClient.auth.signOut();
+        window.location.href = "loginpage.html";
+      } catch (err) {
+        alert("Failed to securely terminate system session: " + err.message);
+      }
+    }
+
+    function collapsePreviewSandbox() {
+      document.getElementById('modalCardFrame').classList.remove('preview-expanded');
+      document.getElementById('previewSandboxFrame').classList.remove('active');
+      document.getElementById('pdfViewerContainer').innerHTML = '';
+    }
+
+    function previewDocumentInModal(fileUrl, docTitle) {
+      const displayContainer = document.getElementById('pdfViewerContainer');
+      document.getElementById('pdfPreviewTitle').textContent = `Preview: ${docTitle}`;
+      
+      if (!fileUrl) {
+        displayContainer.innerHTML = `<div class="pdf-placeholder-msg" style="color:#ef4444;">File path reference invalid.</div>`;
+        return;
+      }
+
+      document.getElementById('modalCardFrame').classList.add('preview-expanded');
+      document.getElementById('previewSandboxFrame').classList.add('active');
+
+      const sanitizedUrl = fileUrl.toLowerCase().split('?')[0]; 
+      const isImage = sanitizedUrl.endsWith('.png') || sanitizedUrl.endsWith('.jpg') || sanitizedUrl.endsWith('.jpeg') || sanitizedUrl.endsWith('.webp') || sanitizedUrl.endsWith('.gif');
+
+      if (isImage) {
+        displayContainer.innerHTML = `
+          <div class="image-viewer-container">
+            <img src="${fileUrl}" alt="${docTitle}">
+          </div>
+        `;
+      } else {
+        displayContainer.innerHTML = `
+          <iframe src="${fileUrl}" class="pdf-viewer-iframe" title="Document Engine"></iframe>
+        `;
+      }
+    }
+
+    async function triggerProfileInspection(userId) {
+      const student = comprehensiveRosterArray.find(item => item.id === userId);
+      if (!student) return;
+
+      document.getElementById('mName').textContent = student.full_name || 'N/A';
+      document.getElementById('mYear').textContent = student.year_level || 'N/A';
+      document.getElementById('mBirth').textContent = student.birthdate || 'N/A';
+      document.getElementById('mContact').textContent = student.contact_number || 'N/A';
+      document.getElementById('mEmail').textContent = student.personal_email || 'N/A';
+      document.getElementById('mAddress').textContent = student.address || 'N/A';
+
+      collapsePreviewSandbox();
+
+      const reqGrid = document.getElementById('mRequirementsGrid');
+      reqGrid.innerHTML = '<p style="color: #999999; font-size: 13px;">Extracting document pointer links...</p>';
+      
+      document.getElementById('inspectorModal').style.display = 'flex';
+
+      try {
+        const { data: requirements, error } = await supabaseClient
+          .from('student_requirements')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (error) throw error;
+        reqGrid.innerHTML = '';
+
+        const explicitLabels = {
+          birth_cert: "PSA Birth Certificate",
+          transcript: "Report Card (Form 138)",
+          good_moral: "Good Moral Certificate",
+          cetirr: "CET IRR Form Document",
+          eat: "Engineering Aptitude Test",
+          medcert: "Medical Certification",
+          xray: "Chest X-Ray Digital Asset",
+          whiteform: "Student Enrollment Whiteform",
+          prospectus: "Academic Checklist / Prospectus"
+        };
+
+        const isUpperClassman = student.year_level && student.year_level !== 'First Year';
+
+        if (isUpperClassman) {
+          const availableTypes = (requirements || []).map(r => r.requirement_type);
+          if (!availableTypes.includes('whiteform')) {
+            requirements.push({ requirement_type: 'whiteform', file_url: null });
+          }
+          if (!availableTypes.includes('prospectus')) {
+            requirements.push({ requirement_type: 'prospectus', file_url: null });
+          }
+        }
+
+        let firstYearFolderFiles = [];
+        if (!isUpperClassman) {
+          try {
+            const { data: folderFiles, error: listErr } = await supabaseClient
+              .storage
+              .from('requirements')
+              .list(userId, { limit: 100 });
+
+            if (!listErr && folderFiles) {
+              firstYearFolderFiles = folderFiles.filter(f => f.id !== null && f.name);
+            } else if (listErr) {
+              console.warn(`Could not list requirements/${userId}:`, listErr.message);
+            }
+          } catch (listErrCatch) {
+            console.error(`Folder listing failed for requirements/${userId}:`, listErrCatch);
+          }
+        }
+
+        const firstYearFileIndex = {};
+        firstYearFolderFiles.forEach(f => {
+          const baseName = f.name.replace(/\.[^/.]+$/, '').toLowerCase();
+          firstYearFileIndex[baseName] = f.name;
+        });
+        const matchedFileNames = new Set();
+
+        if ((!requirements || requirements.length === 0) && firstYearFolderFiles.length === 0) {
+          reqGrid.innerHTML = '<p style="color: #999999; font-size: 13px; grid-column: span 2;">No document payloads submitted by this user.</p>';
+          return;
+        }
+
+        for (const doc of (requirements || [])) {
+          const block = document.createElement('div');
+          block.className = 'req-thumb-card';
+          const cleanName = explicitLabels[doc.requirement_type] || doc.requirement_type.toUpperCase();
+
+          let directUrl = "";
+          let targetedBucket = 'requirements';
+          let candidatePaths = [];
+          let isUpperClassmanDoc = (doc.requirement_type === 'whiteform' || doc.requirement_type === 'prospectus');
+
+          if (isUpperClassmanDoc) {
+            targetedBucket = 'enrollment';
+
+            if (doc.file_url && doc.file_url.startsWith('http')) {
+              directUrl = doc.file_url;
+            } else if (doc.file_url) {
+              candidatePaths.push(doc.file_url);
+            } else {
+              const fallbackName = doc.requirement_type === 'whiteform' ? 'white.pdf' : 'prospectus.pdf';
+              candidatePaths.push(`student_records/${userId}/${fallbackName}`.replace(/\/+/g, '/'));
+            }
+          } else {
+            targetedBucket = 'requirements';
+
+            if (doc.file_url && doc.file_url.startsWith('http')) {
+              directUrl = doc.file_url;
+            } else if (doc.file_url) {
+              candidatePaths.push(doc.file_url);
+            } else {
+              const matchedFile = firstYearFileIndex[doc.requirement_type.toLowerCase()];
+              if (matchedFile) {
+                candidatePaths.push(`${userId}/${matchedFile}`.replace(/\/+/g, '/'));
+                matchedFileNames.add(matchedFile);
+              }
+            }
+          }
+
+          if (!directUrl && candidatePaths.length > 0) {
+            for (const candidatePath of candidatePaths) {
+              try {
+                const { data: signedData, error: signedErr } = await supabaseClient
+                  .storage
+                  .from(targetedBucket)
+                  .createSignedUrl(candidatePath, 3600);
+
+                if (!signedErr && signedData && signedData.signedUrl) {
+                  directUrl = signedData.signedUrl;
+                  break;
+                } else if (signedErr) {
+                  console.warn(`No file at ${targetedBucket}/${candidatePath}:`, signedErr.message);
+                }
+              } catch (signErr) {
+                console.error(`Signed URL request failed for ${targetedBucket}/${candidatePath}:`, signErr);
+              }
+            }
+          }
+
+          if (directUrl) {
+            block.innerHTML = `
+              <h4>${cleanName}</h4>
+              <button class="preview-action-trigger" onclick="previewDocumentInModal('${directUrl}', '${cleanName}')">Preview Engine &rarr;</button>
+            `;
+          } else {
+            block.innerHTML = `
+              <h4>${cleanName}</h4>
+              <span style="font-size:11px; color:#f97316; font-style:italic; font-weight:600; background-color:#331505; padding:2px 8px; border-radius:4px; border:1px solid #732a06;">No Record Found</span>
+            `;
+          }
+          reqGrid.appendChild(block);
+        }
+
+        const leftoverFiles = firstYearFolderFiles.filter(f => !matchedFileNames.has(f.name));
+        for (const extraFile of leftoverFiles) {
+          const extraPath = `${userId}/${extraFile.name}`.replace(/\/+/g, '/');
+          let extraSignedUrl = "";
+
+          try {
+            const { data: extraSigned, error: extraErr } = await supabaseClient
+              .storage
+              .from('requirements')
+              .createSignedUrl(extraPath, 3600);
+
+            if (!extraErr && extraSigned && extraSigned.signedUrl) {
+              extraSignedUrl = extraSigned.signedUrl;
+            } else if (extraErr) {
+              console.warn(`Could not sign extra file ${extraPath}:`, extraErr.message);
+            }
+          } catch (extraSignErr) {
+            console.error(`Signed URL request failed for extra file ${extraPath}:`, extraSignErr);
+          }
+
+          if (!extraSignedUrl) continue;
+
+          const extraLabel = extraFile.name
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[_-]+/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+
+          const extraBlock = document.createElement('div');
+          extraBlock.className = 'req-thumb-card';
+          extraBlock.innerHTML = `
+            <h4>${extraLabel} (Uploaded)</h4>
+            <button class="preview-action-trigger" onclick="previewDocumentInModal('${extraSignedUrl}', '${extraLabel}')">Preview Engine &rarr;</button>
+          `;
+          reqGrid.appendChild(extraBlock);
+        }
+
+      } catch (err) {
+        reqGrid.innerHTML = `<p style="color: #ef4444; font-size: 13px; grid-column: span 2;">Sync Failure: ${err.message}</p>`;
+      }
+    }
+
+    function closeInspectorModal() {
+      document.getElementById('inspectorModal').style.display = 'none';
+      collapsePreviewSandbox();
+    }
+
+    window.addEventListener('DOMContentLoaded', bootstrapAdminInterface);
+  </script>
+</body>
+</html>

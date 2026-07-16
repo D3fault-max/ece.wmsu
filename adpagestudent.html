@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Admin Portal - Dashboard</title>
+  <style>
+    @font-face { font-family: 'Plateia'; src: url('Plateia Bold.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', 'Inter', -apple-system, sans-serif; background-color: #111111; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+    /* NAVBAR */
+    .navbar { display: flex; align-items: center; padding: 14px 5%; background-color: #ffffff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
+    .logo-area { flex: 1; display: flex; align-items: center; gap: 10px; }
+    .logo { font-family: 'Plateia', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: #000000; cursor: pointer; }
+    .admin-chip { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #f97316; background-color: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.35); padding: 3px 9px; border-radius: 20px; }
+    .nav-center { flex: 2; display: flex; justify-content: center; }
+    .nav-links { display: flex; list-style: none; gap: 36px; }
+    .nav-links a { font-family: 'Inter', sans-serif; text-decoration: none; color: #333333; font-size: 15px; font-weight: 500; position: relative; padding: 4px 0; transition: color 0.2s ease; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: #f97316; transition: width 0.3s ease; }
+    .nav-links a:hover, .nav-links a.active { color: #f97316; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+    .user-profile-widget { display: flex; align-items: center; gap: 10px; background-color: #f8f9fa; padding: 5px 12px 5px 6px; border-radius: 30px; border: 1px solid #eaeaea; cursor: pointer; text-decoration: none; transition: all 0.2s ease; }
+    .user-profile-widget:hover { background-color: #f1f3f5; border-color: #dcdcdc; transform: translateY(-1px); }
+    .avatar-circle { width: 34px; height: 34px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .avatar-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .user-meta-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .profile-name-string { font-size: 13px; font-weight: 600; color: #111111; }
+    .badge-pill { font-family: 'Inter', sans-serif; background-color: #f97316; color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; text-transform: uppercase; width: fit-content; margin-top: 2px; }
+    .logout-btn { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; background-color: #f97316; padding: 10px 26px; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.2s ease; }
+    .logout-btn:hover { background-color: #ea6c0e; }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 5px; }
+    .mobile-menu-btn svg { width: 28px; height: 28px; fill: none; stroke: #111111; stroke-width: 2; stroke-linecap: round; }
+
+    /* DASHBOARD WRAPPERS */
+    .dashboard-wrapper { flex: 1; width: 100%; display: block; }
+    .dashboard-content { display: flex; flex-direction: column; width: 100%; }
+
+    /* VIEW TOGGLING */
+    #dashboardView { display: block; animation: fadeIn 0.4s ease; }
+    #announcementsEditorView { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease; background-color: #111; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* WELCOME STRIP */
+    .welcome-strip { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 26px 5%; background-color: #161616; border-bottom: 1px solid #222222; }
+    .welcome-text h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+    .welcome-text p { font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; }
+    .welcome-clock { font-family: 'Inter', sans-serif; font-size: 13px; color: #cccccc; text-align: right; border-left: 2px solid #f97316; padding-left: 14px; }
+    .welcome-clock .clock-time { display: block; font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 2px; }
+
+    /* KPI STATS */
+    .adm-kpi-section { padding: 40px 5% 10px 5%; background-color: #111111; }
+    .adm-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; max-width: 1400px; margin: 0 auto; }
+    .adm-kpi-card { position: relative; background-color: #161616; border: 1px solid #222222; border-radius: 8px; padding: 22px; display: flex; align-items: center; gap: 16px; transition: transform 0.25s, border-color 0.25s; }
+    .adm-kpi-card:hover { transform: translateY(-3px); border-color: #f97316; }
+    .adm-kpi-corner { position: absolute; width: 7px; height: 7px; background-color: #f97316; opacity: 0; transition: opacity 0.25s ease; }
+    .adm-kpi-corner.tl { top: 7px; left: 7px; } .adm-kpi-corner.br { bottom: 7px; right: 7px; }
+    .adm-kpi-card:hover .adm-kpi-corner { opacity: 1; }
+    .adm-icon-circle { width: 46px; height: 46px; border-radius: 50%; background-color: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .adm-icon-circle svg { width: 22px; height: 22px; fill: none; stroke: #f97316; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .adm-kpi-value { font-size: 26px; font-weight: 600; line-height: 1.1; }
+    .adm-kpi-label { font-family: 'Inter', sans-serif; font-size: 12px; color: #999999; margin-top: 2px; }
+
+    /* CAROUSEL */
+    .carousel-section { position: relative; background: linear-gradient(rgba(17, 17, 17, 0), rgba(17, 17, 17, 0)), url('background.png'); background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 0; overflow: hidden;}
+    .adm-section-eyebrow { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #f97316; margin-bottom: 22px; text-align: center; }
+    .corner-bracket { position: absolute; display: flex; align-items: center; justify-content: center; }
+    .corner-bracket svg { width: 34px; height: 34px; fill: none; stroke: #f97316; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .corner-bracket.top-left { top: 28px; left: 44px; } .corner-bracket.top-right { top: 28px; right: 44px; }
+    .corner-bracket.bottom-left { bottom: 60px; left: 44px; } .corner-bracket.bottom-right { bottom: 60px; right: 44px; }
+    .carousel-wrapper { position: relative; width: 100%; max-width: 1400px; padding: 10px 0; }
+    .carousel-container { position: relative; display: flex; justify-content: center; align-items: center; height: 500px; width: 100%; }
+    
+    .showcase-card { position: absolute; width: 340px; background-color: #ffffff; border-radius: 6px; overflow: hidden; text-decoration: none; color: inherit; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease; opacity: 0; pointer-events: none; }
+    .card-corner { position: absolute; width: 9px; height: 9px; background-color: #f97316; z-index: 20; display: none; }
+    .card-corner.tl { top: 8px; left: 8px; } .card-corner.tr { top: 8px; right: 8px; } .card-corner.bl { bottom: 8px; left: 8px; } .card-corner.br { bottom: 8px; right: 8px; }
+    .showcase-card.active .card-corner { display: block; }
+    .image-container { width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #eeeeee; }
+    .image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .showcase-card:hover .image-container img { transform: scale(1.06); }
+    .card-meta { padding: 20px 16px; text-align: center; background-color: #ffffff; }
+    .card-meta h3 { font-size: 16px; font-weight: 500; color: #111111; margin-bottom: 4px; }
+    .card-meta p { font-family: 'Inter', sans-serif; font-size: 11px; color: #999999; text-transform: uppercase; letter-spacing: 1.5px; }
+    
+    .showcase-card.active { transform: translateX(0) scale(1.07); opacity: 1; z-index: 10; pointer-events: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65); }
+    .showcase-card.prev-1 { transform: translateX(-320px) scale(0.87); opacity: 0.7; z-index: 5; pointer-events: auto; }
+    .showcase-card.next-1 { transform: translateX(320px) scale(0.87); opacity: 0.7; z-index: 5; pointer-events: auto; }
+    .showcase-card.prev-2 { transform: translateX(-595px) scale(0.7); opacity: 0.28; z-index: 2; }
+    .showcase-card.next-2 { transform: translateX(595px) scale(0.7); opacity: 0.28; z-index: 2; }
+    
+    .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; z-index: 100; padding: 12px; opacity: 0.45; transition: opacity 0.2s ease; }
+    .carousel-btn:hover { opacity: 1; }
+    .carousel-btn svg { width: 36px; height: 36px; fill: none; stroke: #f97316; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .left-btn { left: 3%; } .right-btn { right: 3%; }
+    .carousel-dots { display: flex; justify-content: center; gap: 10px; margin-top: 32px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.22); cursor: pointer; border: none; transition: background-color 0.3s, transform 0.3s; }
+    .dot.active { background-color: #f97316; transform: scale(1.28); }
+    .dot:hover:not(.active) { background-color: rgba(255, 255, 255, 0.5); }
+
+    /* MANAGEMENT */
+    .management-section { background-color: #161616; padding: 55px 5% 65px 5%; text-align: center; border-top: 1px solid #1f1f1f; }
+    .section-title { font-size: 20px; font-weight: 500; text-align: center; margin-bottom: 8px; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; }
+    .section-subtitle { font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; margin-bottom: 38px; }
+    
+    /* MODIFIED: Explicitly forcing 3 columns to create the 3 on top, 3 on bottom look */
+    .management-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; justify-content: center; }
+    
+    .management-card { background-color: #1e1e1e; padding: 28px 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: transform 0.3s, border-color 0.3s; }
+    .management-card .adm-icon-circle { margin-bottom: 14px; }
+    .management-card h3 { font-size: 15px; font-weight: 500; color: #cccccc; }
+    .management-card p { font-family: 'Inter', sans-serif; font-size: 11px; color: #777777; margin-top: 4px; }
+    .management-card:hover { transform: translateY(-3px); border-color: #f97316; }
+    .management-card:hover h3 { color: #f97316; }
+
+    /* ACTIVITY */
+    .bundles-container { 
+      display: flex; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+      gap: 30px; 
+      width: 100%; 
+      padding: 45px 5%; 
+      background-color: #111111; 
+      border-top: 1px solid #1a1a1a; 
+    }
+    .bundle-box { 
+      background-color: #161616; 
+      padding: 40px; 
+      border-radius: 8px; 
+      border: 1px solid #222222; 
+      width: 100%; 
+      max-width: 535px; 
+    }
+    .bundle-box h3 { font-size: 22px; font-weight: 500; margin-bottom: 12px; color: #ffffff; }
+    .bundle-box p { font-family: 'Inter', sans-serif; font-size: 15px; color: #777777; line-height: 1.7; margin-bottom: 25px; }
+    .adm-activity-list { list-style: none; margin-bottom: 25px; }
+    .adm-activity-list li { display: flex; justify-content: space-between; gap: 12px; font-family: 'Inter', sans-serif; font-size: 14px; color: #cccccc; padding: 10px 0; border-bottom: 1px solid #222222; }
+    .adm-activity-meta { color: #777777; font-size: 12px; white-space: nowrap; }
+    .adm-activity-empty { font-family: 'Inter', sans-serif; font-size: 14px; color: #666666; margin-bottom: 25px; }
+    .bundle-link { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #f97316; text-decoration: none; position: relative; padding-bottom: 4px; }
+    .bundle-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30px; height: 2px; background-color: #f97316; transition: width 0.3s ease; }
+    .bundle-box:hover .bundle-link::after { width: 100%; }
+
+    /* ANNOUNCEMENT EDITOR UI */
+    .editor-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid #2a2a2a; padding-bottom: 15px; }
+    .btn-back { display: flex; align-items: center; gap: 8px; background: none; border: none; color: #888; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; transition: color 0.2s; }
+    .btn-back:hover { color: #f97316; }
+    .editor-grid { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 900px; margin: 0 auto; }
+    .editor-card { background: #161616; border: 1px solid #222222; border-radius: 12px; padding: 24px; display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: start; }
+    .editor-img-preview { width: 100%; aspect-ratio: 1/1; background: #222; border-radius: 6px; object-fit: cover; border: 1px dashed #444; }
+    .editor-form { display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #999; letter-spacing: 0.5px; }
+    .form-group input { font-family: 'Inter', sans-serif; padding: 10px 14px; border-radius: 6px; border: 1px solid #333; background: #111; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus { border-color: #f97316; }
+    .form-group input[type="file"] { padding: 8px 10px; font-size: 13px; color: #bbb; background: transparent; border: 1px dashed #444; cursor: pointer; }
+    .btn-save-slot { align-self: flex-start; background: #f97316; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-save-slot:hover { background: #ea6c0e; }
+    .btn-save-slot:disabled { background: #555; cursor: not-allowed; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #222; color: #fff; padding: 12px 24px; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 500; border-bottom: 3px solid #16a34a; box-shadow: 0 8px 30px rgba(0,0,0,0.6); z-index: 9999; transition: transform 0.3s ease; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { border-bottom-color: #dc2626; }
+
+    /* FOOTER */
+    .site-footer { background-color: #161616; border-top: 1px solid #222222; padding: 40px 5%; font-family: 'Inter', sans-serif; }
+    .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; max-width: 1400px; margin: 0 auto; }
+    .footer-left .footer-logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #f97316; margin-bottom: 4px; }
+    .footer-left p { font-size: 13px; color: #666666; }
+    .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+    .footer-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #f97316; }
+    .footer-links { display: flex; gap: 24px; align-items: center; }
+    .footer-link { display: flex; align-items: center; gap: 8px; color: #cccccc; text-decoration: none; font-size: 14px; transition: color 0.2s ease; }
+    .footer-link:hover { color: #f97316; }
+    .footer-link svg { width: 18px; height: 18px; fill: currentColor; }
+
+    @media (max-width: 1024px) {
+      .carousel-container { height: 420px; } .showcase-card { width: 280px; }
+      .showcase-card.prev-1 { transform: translateX(-255px) scale(0.85); } .showcase-card.next-1 { transform: translateX(255px) scale(0.85); }
+      .showcase-card.prev-2 { transform: translateX(-480px) scale(0.68); } .showcase-card.next-2 { transform: translateX(480px) scale(0.68); }
+      .adm-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .nav-center { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: #ffffff; padding: 20px 5%; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+      .nav-center.mobile-active { display: flex; } .nav-links { flex-direction: column; gap: 16px; }
+      .profile-name-string, .corner-bracket, .carousel-btn { display: none; }
+      .welcome-clock { text-align: left; border-left: none; border-top: 2px solid #f97316; padding-left: 0; padding-top: 10px; width: 100%; }
+      .adm-kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .carousel-container { height: auto; flex-direction: column; gap: 20px; }
+      .showcase-card { position: relative; width: 100%; max-width: 380px; transform: none !important; opacity: 1 !important; pointer-events: auto; }
+      .management-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .bundles-container { flex-direction: column; align-items: center; } /* Updated for mobile flex */
+      .footer-content { flex-direction: column; text-align: center; } .footer-right { align-items: center; }
+      .editor-card { grid-template-columns: 1fr; }
+      .editor-img-preview { width: 140px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-area">
+      <div class="logo">ECE</div><span class="admin-chip">Admin</span>
+    </div>
+    <div class="nav-center" id="navCenter">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" class="active" onclick="toggleView('dashboard')">Dashboard</a></li>
+        <li><a href="admin.html">Students</a></li>
+        <li><a href="maintenance.html">Faculty</a></li>
+        <li><a href="maintenance.html">Courses</a></li>
+        <li><a href="adminmerch.html">Merch</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <a href="profile.html" class="user-profile-widget" style="text-decoration: none;">
+        <div class="avatar-circle" id="avatarLetter">A</div>
+        <div class="user-meta-text">
+          <span class="profile-name-string" id="profileName">Loading...</span>
+          <span class="badge-pill" id="roleBadge">Admin</span>
+        </div>
+      </a>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-wrapper">
+    
+    <div id="dashboardView" class="dashboard-content">
+      <div class="welcome-strip">
+        <div class="welcome-text">
+          <h1 id="welcome-name">Welcome back, Admin!</h1>
+          <p id="welcome-year">Accessing Engineering Portal...</p>
+        </div>
+        <div class="welcome-clock">
+          <span class="clock-time" id="clockTime">--:--</span>
+          <span id="clockDate">Loading date...</span>
+        </div>
+      </div>
+
+      <section class="adm-kpi-section">
+        <div class="adm-kpi-grid" id="kpiGrid">
+          <div class="adm-kpi-card"><span class="adm-kpi-corner tl"></span><span class="adm-kpi-corner br"></span>
+            <div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></div>
+            <div><div class="adm-kpi-value" id="kpiStudents">—</div><div class="adm-kpi-label">Total Students</div></div>
+          </div>
+          <div class="adm-kpi-card"><span class="adm-kpi-corner tl"></span><span class="adm-kpi-corner br"></span>
+            <div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 3-5 7-5s7 2 7 5"/><path d="M16 5.5c1.7.3 3 1.8 3 3.5s-1.3 3.2-3 3.5"/><path d="M22 20c0-2.5-2-4.2-4.5-4.8"/></svg></div>
+            <div><div class="adm-kpi-value" id="kpiFaculty">—</div><div class="adm-kpi-label">Faculty &amp; Staff</div></div>
+          </div>
+          <div class="adm-kpi-card"><span class="adm-kpi-corner tl"></span><span class="adm-kpi-corner br"></span>
+            <div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M12 6c-1.5-1.5-4-2-7-2v14c3 0 5.5.5 7 2 1.5-1.5 4-2 7-2V4c-3 0-5.5.5-7 2z"/><path d="M12 6v14"/></svg></div>
+            <div><div class="adm-kpi-value" id="kpiUsers">—</div><div class="adm-kpi-label">Total Portal Users</div></div>
+          </div>
+          <div class="adm-kpi-card"><span class="adm-kpi-corner tl"></span><span class="adm-kpi-corner br"></span>
+            <div class="adm-icon-circle"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M9 11h6"/><path d="M9 15h6"/><path d="M9 19h3"/></svg></div>
+            <div><div class="adm-kpi-value" id="kpiNewEnrollees">—</div><div class="adm-kpi-label">First-Year Enrollees</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="carousel-section">
+        <div class="corner-bracket top-left"><svg viewBox="0 0 24 24"><polyline points="12 3 3 3 3 12"></polyline></svg></div>
+        <div class="corner-bracket top-right"><svg viewBox="0 0 24 24"><polyline points="12 3 21 3 21 12"></polyline></svg></div>
+        <div class="corner-bracket bottom-left"><svg viewBox="0 0 24 24"><polyline points="3 12 3 21 12 21"></polyline></svg></div>
+        <div class="corner-bracket bottom-right"><svg viewBox="0 0 24 24"><polyline points="21 12 21 21 12 21"></polyline></svg></div>
+        <div class="adm-section-eyebrow">Announcements & Features</div>
+        
+        <div class="carousel-wrapper">
+          <button class="carousel-btn left-btn" id="prevBtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+          
+          <div class="carousel-container" id="carouselContainer">
+             </div>
+
+          <button class="carousel-btn right-btn" id="nextBtn"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+        </div>
+        <div class="carousel-dots" id="carouselDots">
+          <button class="dot active" data-index="0"></button>
+          <button class="dot" data-index="1"></button>
+          <button class="dot" data-index="2"></button>
+          <button class="dot" data-index="3"></button>
+          <button class="dot" data-index="4"></button>
+        </div>
+      </section>
+
+      <section class="management-section">
+        <h2 class="section-title">Management</h2>
+        <p class="section-subtitle">Jump straight into managing the department</p>
+        <!-- REPLACED 4-CARD WITH 3-CARD GRID HERE -->
+        <div class="management-grid">
+          <a href="admin.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></div><h3>Students</h3><p>Records &amp; rosters</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 3-5 7-5s7 2 7 5"/><path d="M16 5.5c1.7.3 3 1.8 3 3.5s-1.3 3.2-3 3.5"/><path d="M22 20c0-2.5-2-4.2-4.5-4.8"/></svg></div><h3>Faculty</h3><p>Staff directory</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M12 6c-1.5-1.5-4-2-7-2v14c3 0 5.5.5 7 2 1.5-1.5 4-2 7-2V4c-3 0-5.5.5-7 2z"/><path d="M12 6v14"/></svg></div><h3>Curriculum</h3><p>Courses &amp; sections</p></a>
+          
+          <a href="#" class="management-card" onclick="toggleView('editor'); return false;">
+            <div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 001 1h2l7 4V5L6 9H4a1 1 0 00-1 1z"/><path d="M17 8a4 4 0 010 8"/><path d="M13 19l1 3h2l-1-3"/></svg></div>
+            <h3>Announcements</h3><p>Edit carousel features</p>
+          </a>
+
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1"/><rect x="9" y="16" width="6" height="5"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/></svg></div><h3>Organizations</h3><p>JIECEP &amp; officers</p></a>
+          <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><h3>Settings</h3><p>Portal configuration</p></a>
+        </div>
+      </section>
+
+      <div class="bundles-container">
+        <div class="bundle-box">
+          <h3>Recent Registrations</h3>
+          <ul class="adm-activity-list" id="activityList" hidden></ul>
+          <p class="adm-activity-empty" id="activityEmpty">Loading recent activity...</p>
+          <a href="admin.html" class="bundle-link" target="_blank" rel="noopener noreferrer">View All Students</a>
+        </div>
+        <div class="bundle-box">
+          <h3>Enrollment Requests</h3>
+          <p>Review and approve incoming enrollment submissions from new and returning students before the semester deadline.</p>
+          <a href="admin.html?view=freshmen" class="bundle-link" target="_blank" rel="noopener noreferrer">Review Requests</a>
+        </div>
+      </div>
+    </div> <div id="announcementsEditorView">
+      <div class="editor-header">
+        <div>
+          <h1 class="section-title" style="text-align: left; margin-bottom: 5px;">Carousel Manager</h1>
+          <p class="section-subtitle" style="margin-bottom:0;">Update the 5 images and headlines shown on the Dashboard.</p>
+        </div>
+        <button class="btn-back" onclick="toggleView('dashboard')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Dashboard
+        </button>
+      </div>
+
+      <div class="editor-grid" id="editorGrid">
+        </div>
+    </div> </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <div class="footer-logo">ECE Admin Portal</div>
+        <p>&copy; 2026 Department of Electronics Engineering - WMSU. All rights reserved.</p>
+      </div>
+      <div class="footer-right">
+        <span class="footer-title">Need Help?</span>
+        <div class="footer-links">
+          <a href="https://www.facebook.com/JIECEPWMSU" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg> Facebook</a>
+          <a href="mailto:jiecepwmsu@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> jiecepwmsu@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co",
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    const STUDENT_PORTAL_URL = "http://58.71.15.10/";
+
+    // --- VIEW TOGGLER ---
+    function toggleView(view) {
+      if (view === 'editor') {
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('announcementsEditorView').style.display = 'block';
+        window.scrollTo(0,0);
+      } else {
+        document.getElementById('announcementsEditorView').style.display = 'none';
+        document.getElementById('dashboardView').style.display = 'block';
+        window.scrollTo(0,0);
+        loadCarouselData(); // Refresh dashboard on back
+      }
+    }
+
+    // --- UI HELPERS ---
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navCenter = document.getElementById('navCenter');
+    mobileMenuBtn.addEventListener('click', () => navCenter.classList.toggle('mobile-active'));
+    document.addEventListener('click', (e) => { if (!mobileMenuBtn.contains(e.target) && !navCenter.contains(e.target)) navCenter.classList.remove('mobile-active'); });
+
+    let toastTimer;
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast' + (isError ? ' error show' : ' show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function renderClock() {
+      const now = new Date();
+      const timeEl = document.getElementById('clockTime');
+      const dateEl = document.getElementById('clockDate');
+      if (timeEl) timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (dateEl) dateEl.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    }
+    renderClock(); setInterval(renderClock, 30000);
+
+    // --- CAROUSEL LOGIC ---
+    let carouselItems = [];
+    let currentSlide = 2; // Center slide index
+    
+    async function loadCarouselData() {
+      try {
+        const { data, error } = await supabaseClient.from('carousel_announcements').select('*').order('id');
+        if (error) throw error;
+        // Pad data if less than 5 items exist
+        carouselItems = data || [];
+        while(carouselItems.length < 5) carouselItems.push({ id: carouselItems.length+1, title: 'Blank Slot', subtitle: '-', image_url: '', link_url: '#' });
+        
+        renderDashboardCarousel();
+        renderEditorForms();
+      } catch (err) {
+        console.error("Failed loading carousel:", err);
+        showToast("Could not load announcements. Ensure the database table exists.", true);
+      }
+    }
+
+    function renderDashboardCarousel() {
+      const container = document.getElementById('carouselContainer');
+      container.innerHTML = '';
+      carouselItems.forEach((item, index) => {
+        const imgPath = item.image_url || 'https://via.placeholder.com/400x400?text=No+Image';
+        const a = document.createElement('a');
+        a.href = item.link_url || '#';
+        a.className = 'showcase-card';
+        a.dataset.index = index;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.innerHTML = `
+          <span class="card-corner tl"></span><span class="card-corner tr"></span><span class="card-corner bl"></span><span class="card-corner br"></span>
+          <div class="image-container"><img src="${imgPath}" alt="${item.title}"></div>
+          <div class="card-meta">
+            <h3>${item.title || 'Untitled'}</h3>
+            <p>${item.subtitle || ''}</p>
+          </div>
+        `;
+        // Click to center if not active (desktop)
+        a.addEventListener('click', (e) => {
+          if (index !== currentSlide && window.innerWidth > 768) {
+            e.preventDefault();
+            currentSlide = index;
+            updateCarouselDOM();
+          }
+        });
+        container.appendChild(a);
+      });
+      updateCarouselDOM();
+    }
+
+    function updateCarouselDOM() {
+      if (window.innerWidth <= 768) return; // Native stacking on mobile handles via CSS usually, but preserving 3D logic:
+      const cards = document.querySelectorAll('.showcase-card');
+      const dots = document.querySelectorAll('.dot');
+      const total = cards.length;
+      if (total === 0) return;
+
+      cards.forEach((card, i) => {
+        card.classList.remove('active', 'prev-1', 'prev-2', 'next-1', 'next-2');
+        let offset = i - currentSlide;
+        if (offset < -2) offset += total;
+        if (offset > 2)  offset -= total;
+        if (offset === 0) card.classList.add('active');
+        else if (offset === -1) card.classList.add('prev-1');
+        else if (offset === 1) card.classList.add('next-1');
+        else if (offset === -2) card.classList.add('prev-2');
+        else if (offset === 2) card.classList.add('next-2');
+      });
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => { currentSlide = currentSlide === 0 ? 4 : currentSlide - 1; updateCarouselDOM(); });
+    document.getElementById('nextBtn').addEventListener('click', () => { currentSlide = currentSlide === 4 ? 0 : currentSlide + 1; updateCarouselDOM(); });
+    document.querySelectorAll('.dot').forEach(dot => {
+      dot.addEventListener('click', () => { currentSlide = parseInt(dot.dataset.index, 10); updateCarouselDOM(); });
+    });
+    window.addEventListener('resize', updateCarouselDOM);
+
+    // --- EDITOR LOGIC ---
+    function renderEditorForms() {
+      const grid = document.getElementById('editorGrid');
+      grid.innerHTML = '';
+      carouselItems.forEach((item, index) => {
+        const slotNum = index + 1;
+        const imgPath = item.image_url || 'https://via.placeholder.com/400x400?text=No+Image';
+        const div = document.createElement('div');
+        div.className = 'editor-card';
+        div.innerHTML = `
+          <img src="${imgPath}" class="editor-img-preview" id="preview-${slotNum}" alt="Preview">
+          <form class="editor-form" id="form-${slotNum}" onsubmit="saveSlot(event, ${slotNum})">
+            <h3 style="font-family:'Poppins',sans-serif;font-size:16px;">Carousel Slot ${slotNum}</h3>
+            
+            <div class="form-group">
+              <label>Headline / Title</label>
+              <input type="text" id="title-${slotNum}" value="${item.title || ''}" required placeholder="e.g. Senior Batch">
+            </div>
+            
+            <div class="form-group">
+              <label>Subtitle / Description</label>
+              <input type="text" id="sub-${slotNum}" value="${item.subtitle || ''}" required placeholder="e.g. 4th Year • BS ECE">
+            </div>
+
+            <div class="form-group">
+              <label>Click URL (Link destination)</label>
+              <input type="text" id="link-${slotNum}" value="${item.link_url || '#'}" required placeholder="e.g. admin.html?year=Fourth Year">
+            </div>
+
+            <div class="form-group">
+              <label>Replace Image (Leave empty to keep current)</label>
+              <input type="file" id="file-${slotNum}" accept="image/png, image/jpeg, image/jpg">
+            </div>
+
+            <button type="submit" class="btn-save-slot" id="btn-save-${slotNum}">Save Slot ${slotNum}</button>
+          </form>
+        `;
+        grid.appendChild(div);
+
+        // Live image preview
+        document.getElementById(`file-${slotNum}`).addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if(file) document.getElementById(`preview-${slotNum}`).src = URL.createObjectURL(file);
+        });
+      });
+    }
+
+    async function saveSlot(event, id) {
+      event.preventDefault();
+      const btn = document.getElementById(`btn-save-${id}`);
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const title = document.getElementById(`title-${id}`).value;
+      const sub = document.getElementById(`sub-${id}`).value;
+      const link = document.getElementById(`link-${id}`).value;
+      const fileInput = document.getElementById(`file-${id}`);
+      
+      let imageUrl = carouselItems[id-1].image_url;
+
+      try {
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileName = `carousel_${id}_${Date.now()}.${file.name.split('.').pop()}`;
+          const { data: uploadData, error: uploadErr } = await supabaseClient.storage
+            .from('announcements')
+            .upload(fileName, file, { upsert: true });
+            
+          if (uploadErr) throw uploadErr;
+          
+          const { data: { publicUrl } } = supabaseClient.storage.from('announcements').getPublicUrl(fileName);
+          imageUrl = publicUrl;
+        }
+
+        const { error } = await supabaseClient.from('carousel_announcements')
+          .upsert({ id: id, title: title, subtitle: sub, link_url: link, image_url: imageUrl });
+        
+        if (error) throw error;
+
+        // Update local memory so we don't need a full DB reload right away
+        carouselItems[id-1] = { id, title, subtitle: sub, link_url: link, image_url: imageUrl };
+        showToast(`Slot ${id} saved successfully!`);
+      } catch(err) {
+        console.error("Save error:", err);
+        showToast("Error saving: " + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = `Save Slot ${id}`;
+      }
+    }
+
+    // --- KPI AND ACTIVITY LOGIC ---
+    async function loadKpiStats() {
+      const setV = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? '—'; };
+      try { const { count } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'); setV('kpiStudents', count); } catch {}
+      try { const { count } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin'); setV('kpiFaculty', count); } catch {}
+      try { const { count } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true }); setV('kpiUsers', count); } catch {}
+      try { const { count } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student').eq('year_level', 'Enrollees'); setV('kpiNewEnrollees', count); } catch {}
+    }
+
+    async function loadRecentActivity() {
+      const listEl = document.getElementById('activityList'); const emptyEl = document.getElementById('activityEmpty');
+      try {
+        const { data, error } = await supabaseClient.from('profiles').select('full_name, year_level, created_at').eq('role', 'student').order('created_at', { ascending: false }).limit(5);
+        if (error || !data || data.length === 0) throw new Error('Empty');
+        listEl.innerHTML = '';
+        data.forEach(row => {
+          const li = document.createElement('li');
+          const n = row.full_name || 'Unnamed profile';
+          li.innerHTML = `<span>${row.year_level ? n+' — '+row.year_level : n}</span><span class="adm-activity-meta">${row.created_at ? new Date(row.created_at).toLocaleDateString([], {month:'short',day:'numeric'}) : ''}</span>`;
+          listEl.appendChild(li);
+        });
+        listEl.hidden = false; emptyEl.hidden = true;
+      } catch (err) {
+        emptyEl.textContent = 'No recent activity to show yet.'; emptyEl.hidden = false; listEl.hidden = true;
+      }
+    }
+
+    // --- INIT AUTH & BOOTSTRAP ---
+    function initializeDashboardProtection() {
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (!session) { window.location.href = "loginpage.html"; return; }
+        const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+        if (!profile || profile.role === 'student') { window.location.href = "loginpage.html"; return; }
+
+        document.getElementById("profileName").textContent = profile.full_name || "Admin";
+        document.getElementById("welcome-name").textContent = `Welcome back, ${profile.full_name || 'Admin'}!`;
+        document.getElementById("roleBadge").textContent = profile.role || 'Admin';
+        const av = document.getElementById("avatarLetter");
+        if(profile.avatar_url) av.innerHTML = `<img src="${profile.avatar_url}" alt="">`; else av.textContent = (profile.full_name||'A').charAt(0).toUpperCase();
+
+        loadKpiStats();
+        loadRecentActivity();
+        loadCarouselData(); // Fetch the announcements on load!
+      });
+    }
+
+    function applyExternalLinkTargets(root = document) {
+      const links = root.querySelectorAll('a[href]');
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        const isMailOrTel = href.startsWith('mailto:') || href.startsWith('tel:');
+        let isExternalHttp = false;
+        if (/^https?:\/\//i.test(href)) {
+          try {
+            isExternalHttp = new URL(href, window.location.href).hostname !== window.location.hostname;
+          } catch { /* ignore malformed URLs */ }
+        }
+
+        if (isMailOrTel || isExternalHttp) {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        }
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => applyExternalLinkTargets());
+    window.addEventListener("DOMContentLoaded", initializeDashboardProtection);
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault(); await supabaseClient.auth.signOut(); localStorage.clear(); window.location.href = "loginpage.html";
+    });
+  </script>
+</body>
+</html>
