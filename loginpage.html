@@ -243,7 +243,7 @@
     <form id="loginForm">
       <div class="input-group">
         <label for="username">ID Number / Username</label>
-        <input type="text" id="username" placeholder="e.g. AE202402110" autocomplete="off" required>
+        <input type="text" id="username" placeholder="e.g. AE202406767" autocomplete="off" required>
       </div>
       
       <div class="input-group">
@@ -294,12 +294,12 @@
       let usernameInput = document.getElementById("username").value.trim().toLowerCase();
       const password = document.getElementById("password").value.trim();
 
-      // Clean the input just in case they typed an @ symbol
+      // Clean input in case they typed an @ symbol
       if (usernameInput.includes('@')) {
         usernameInput = usernameInput.split('@')[0];
       }
       
-      // FIX: Use the exact same dummy email domain you set in registration.html
+      // Use identical synthetic dummy email domain
       const syntheticEmail = `${usernameInput}@ece.student.local`;
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -325,14 +325,21 @@
 
         if (profileError) throw profileError;
 
-        if (profile && profile.role === 'admin') {
+        // Standardize the text role checking (lowercase + trimmed)
+        const role = (profile && profile.role) ? profile.role.toLowerCase().trim() : 'student';
+
+        if (role === 'admin') {
           window.location.href = "adminpage.html";
+        } else if (role === 'adminstudent') {
+          window.location.href = "adpagestudent.html";
         } else {
+          // Both 'student' and any unmapped fallback roles land on dashboard
           window.location.href = "dashboard.html";
         }
-      } catch (dbErr) {
-        console.error("Routing error:", dbErr);
-        // Default route to dashboard if there's an issue checking the profile
+
+      } catch (profileError) {
+        console.error("Error checking role routing:", profileError);
+        // Clean routing fallback if table fetch fails
         window.location.href = "dashboard.html";
       }
     });
