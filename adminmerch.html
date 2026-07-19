@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Merch — Orders Dashboard</title>
+  <style>
+    @font-face { font-family:'Plateia'; src:url('Plateia Bold.ttf') format('truetype'); font-weight:normal; font-style:normal; }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+    body {
+      font-family:'Poppins','Inter',-apple-system,sans-serif;
+      background:#111111; color:#ffffff;
+      min-height:100vh; display:flex; flex-direction:column;
+      overflow-x:hidden; -webkit-font-smoothing:antialiased;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar { display:flex; align-items:center; padding:14px 5%; background:#ffffff; position:sticky; top:0; z-index:1000; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+    .logo-area { flex:1; display:flex; align-items:center; }
+    .logo { font-family:'Plateia',sans-serif; font-size:26px; font-weight:900; letter-spacing:3px; text-transform:uppercase; color:#000; cursor:pointer; text-decoration:none; }
+    .nav-center { flex:2; display:flex; justify-content:center; }
+    .nav-links { display:flex; list-style:none; gap:36px; }
+    .nav-links a { font-family:'Inter',sans-serif; text-decoration:none; color:#333; font-size:15px; font-weight:500; position:relative; padding:4px 0; transition:color .2s; }
+    .nav-links a::after { content:''; position:absolute; bottom:0; left:0; width:0; height:2px; background:#f97316; transition:width .3s; }
+    .nav-links a:hover, .nav-links a.active { color:#f97316; }
+    .nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+    #enrollNavItem, .mobile-only-link { display:none; }
+    .nav-right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:14px; }
+    .user-profile-widget { display:flex; align-items:center; gap:10px; background:#f8f9fa; padding:5px 12px 5px 6px; border-radius:30px; border:1px solid #eaeaea; cursor:pointer; text-decoration:none; transition:all .2s; }
+    .user-profile-widget:hover { background:#f1f3f5; border-color:#dcdcdc; transform:translateY(-1px); }
+    .avatar-circle { width:34px; height:34px; background:linear-gradient(135deg,#f97316,#ea580c); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; overflow:hidden; }
+    .user-meta-text { display:flex; flex-direction:column; line-height:1.2; }
+    .profile-name-string { font-size:13px; font-weight:600; color:#111; }
+    .badge-pill { font-family:'Inter',sans-serif; background:#f97316; color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; text-transform:uppercase; width:fit-content; margin-top:2px; }
+    .logout-btn { font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:#fff; background:#f97316; padding:10px 26px; border-radius:6px; border:none; cursor:pointer; transition:background .2s; }
+    .logout-btn:hover { background:#ea6c0e; }
+    .mobile-menu-btn { display:none; background:none; border:none; cursor:pointer; padding:5px; }
+    .mobile-menu-btn svg { width:28px; height:28px; fill:none; stroke:#111; stroke-width:2; stroke-linecap:round; }
+
+    /* ── PAGE WRAPPER ── */
+    .page-wrapper { flex:1; }
+
+    /* ── SHOP HERO ── */
+    .shop-hero {
+      background: linear-gradient(rgba(17,17,17,.55), rgba(17,17,17,.82)),
+                  url('background.png') center/cover no-repeat;
+      padding:60px 5% 50px;
+      display:flex; flex-direction:column; align-items:center; text-align:center;
+      position:relative; overflow:hidden;
+    }
+    .corner-bracket { position:absolute; display:flex; align-items:center; justify-content:center; }
+    .corner-bracket svg { width:34px; height:34px; fill:none; stroke:#f97316; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+    .corner-bracket.tl{top:24px;left:40px} .corner-bracket.tr{top:24px;right:40px}
+    .corner-bracket.bl{bottom:24px;left:40px} .corner-bracket.br{bottom:24px;right:40px}
+
+    .hero-eyebrow { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#f97316; margin-bottom:14px; }
+    .hero-title { font-family:'Poppins',sans-serif; font-size:38px; font-weight:700; color:#fff; line-height:1.1; margin-bottom:10px; }
+    .hero-title span { color:#f97316; }
+    .hero-sub { font-family:'Inter',sans-serif; font-size:14px; color:#aaa; max-width:550px; line-height:1.6; }
+
+    /* ── DASHBOARD BODY ── */
+    .dashboard-body { padding:40px 5% 70px; background:#111; max-width:1400px; margin:0 auto; width:100%; }
+
+    /* Stats Banner */
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:40px; }
+    .stat-card { background:#161616; border:1px solid #222; border-radius:8px; padding:20px; display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden; }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; height:100%; width:3px; background:#f97316; }
+    .stat-label { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#666; }
+    .stat-value { font-family:'Poppins',sans-serif; font-size:28px; font-weight:700; color:#fff; }
+    .stat-desc { font-family:'Inter',sans-serif; font-size:11px; color:#444; }
+
+    /* Layout Navigation Tabs */
+    .tab-bar { display:flex; gap:12px; margin-bottom:30px; border-bottom:1px solid #222; padding-bottom:16px; }
+    .tab-btn {
+      font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+      background:none; border:none; color:#666; padding:8px 16px; cursor:pointer;
+      transition:color .2s, border-color .2s; text-transform:uppercase; letter-spacing:.5px;
+      position:relative;
+    }
+    .tab-btn:hover { color:#f97316; }
+    .tab-btn.active { color:#fff; }
+    .tab-btn.active::after { content:''; position:absolute; bottom:-17px; left:0; width:100%; height:2px; background:#f97316; }
+
+    /* Table & Directory Styles */
+    .section-container { display:none; }
+    .section-container.active { display:block; }
+
+    .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .section-title { font-family:'Poppins',sans-serif; font-size:20px; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; }
+    .section-title span { background:rgba(249,115,22,.15); color:#f97316; font-size:12px; padding:2px 8px; border-radius:10px; font-weight:600; }
+
+    .search-box { display:flex; align-items:center; background:#161616; border:1px solid #222; border-radius:6px; padding:8px 14px; width:280px; }
+    .search-box input { background:none; border:none; color:#fff; font-family:'Inter',sans-serif; font-size:13px; outline:none; width:100%; }
+    .search-box input::placeholder { color:#444; }
+
+    /* Directory Accordions */
+    .item-accordion { background:#161616; border:1px solid #222; border-radius:8px; margin-bottom:16px; overflow:hidden; transition:border-color .2s; }
+    .item-accordion:hover { border-color:#333; }
+    .item-accordion-header { padding:18px 24px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; user-select:none; }
+    .item-header-left { display:flex; align-items:center; gap:15px; }
+    .item-category-badge { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; color:#f97316; background:rgba(249,115,22,.1); padding:3px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:.5px; }
+    .item-title { font-family:'Poppins',sans-serif; font-size:15px; font-weight:600; color:#fff; }
+    .item-order-count { font-family:'Inter',sans-serif; font-size:12px; color:#666; }
+    .item-chevron { transition:transform .3s; }
+    .item-chevron svg { width:20px; height:20px; fill:none; stroke:#666; stroke-width:2; stroke-linecap:round; }
+    .item-accordion.open .item-chevron { transform:rotate(180deg); }
+    .item-accordion-body { display:none; border-top:1px solid #222; padding:20px; background:#161616; overflow-x:auto; }
+    .item-accordion.open .item-accordion-body { display:block; }
+
+    /* Elegant Tables */
+    .table-container { width:100%; overflow-x:auto; background:#161616; border:1px solid #222; border-radius:8px; }
+    .admin-table { width:100%; border-collapse:collapse; text-align:left; font-family:'Inter',sans-serif; }
+    .admin-table th { background:#1e1e1e; padding:14px 18px; color:#888; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid #222; }
+    .admin-table td { padding:14px 18px; color:#ccc; font-size:13px; border-bottom:1px solid #1e1e1e; vertical-align:middle; }
+    .admin-table tbody tr:last-child td { border-bottom:none; }
+    .admin-table tbody tr:hover { background:#1e1e1e; }
+
+    .bold-name { font-family:'Poppins',sans-serif; font-weight:600; color:#fff; }
+    .sub-meta { font-size:11px; color:#555; display:block; margin-top:2px; }
+    .badge-status { font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; text-transform:uppercase; width:fit-content; letter-spacing:.5px; }
+    .badge-status.pending { background:rgba(249,115,22,.1); color:#f97316; border:1px solid rgba(249,115,22,.2); }
+    .badge-status.completed { background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.2); }
+
+    /* Custom Checkbox / Checklist Style */
+    .checklist-container { display:flex; align-items:center; justify-content:center; }
+    .checklist-btn {
+      background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      width:32px; height:32px; border-radius:50%; border:1px solid #333; transition:all .2s;
+    }
+    .checklist-btn svg { width:16px; height:16px; fill:none; stroke:transparent; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; transition:all .2s; }
+    .checklist-btn:hover { border-color:#f97316; background:rgba(249,115,22,.05); }
+    .checklist-btn.checked { background:#22c55e; border-color:#22c55e; }
+    .checklist-btn.checked svg { stroke:#fff; }
+
+    /* Details styling */
+    .ordered-item-pill { display:inline-block; background:#222; padding:3px 8px; border-radius:4px; font-size:12px; border:1px solid #2a2a2a; margin:3px; color:#fff; }
+    .ordered-item-pill span { color:#f97316; font-weight:700; margin-left:4px; }
+
+    /* Empty state */
+    .empty-state { text-align:center; padding:60px 20px; background:#161616; border:1px solid #222; border-radius:8px; }
+    .empty-state svg { width:48px; height:48px; fill:none; stroke:#333; stroke-width:1.5; stroke-linecap:round; display:block; margin:0 auto 16px; }
+    .empty-state p { font-family:'Inter',sans-serif; font-size:14px; color:#555; }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:#1e293b; color:#f1f5f9; padding:12px 24px;
+      border-radius:8px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500;
+      box-shadow:0 8px 30px rgba(0,0,0,.4); z-index:9999;
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1); white-space:nowrap;
+      display:flex; align-items:center; gap:8px;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+    .toast.ok  { background:#14532d; }
+    .toast.err { background:#7f1d1d; }
+
+    /* ── FOOTER ── */
+    .site-footer { background:#161616; border-top:1px solid #222; padding:40px 5%; font-family:'Inter',sans-serif; margin-top:auto; }
+    .footer-content { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:24px; max-width:1400px; margin:0 auto; }
+    .footer-left .footer-logo { font-family:'Poppins',sans-serif; font-size:20px; font-weight:900; letter-spacing:2px; color:#f97316; margin-bottom:4px; }
+    .footer-left p { font-size:13px; color:#666; }
+    .footer-right { display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+    .footer-links { display:flex; gap:24px; align-items:center; }
+    .footer-link { display:flex; align-items:center; gap:8px; color:#ccc; text-decoration:none; font-size:14px; transition:color .2s; }
+    .footer-link:hover { color:#f97316; }
+    .footer-link svg { width:18px; height:18px; fill:currentColor; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:768px) {
+      .mobile-menu-btn { display:block; }
+      .nav-center { display:none; flex-direction:column; position:absolute; top:100%; left:0; width:100%; background:#fff; padding:20px 5%; box-shadow:0 10px 20px rgba(0,0,0,.1); border-top:1px solid #f0f0f0; z-index:999; }
+      .nav-center.mobile-active { display:flex; }
+      .nav-links { flex-direction:column; gap:16px; }
+      .nav-right .logout-btn { display:none; }
+      .mobile-only-link { display:block; }
+      .mobile-only-link a { color:#f97316 !important; font-weight:700; }
+      .profile-name-string { display:none; }
+      .hero-title { font-size:30px; }
+      .corner-bracket { display:none; }
+      .footer-content { flex-direction:column; text-align:center; }
+      .footer-right { align-items:center; }
+      .tab-bar { justify-content:center; }
+      .section-header { flex-direction:column; gap:12px; align-items:stretch; }
+      .search-box { width:100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo-area"><a href="dashboard.html" class="logo">ECE</a></div>
+  <div class="nav-center" id="navCenter">
+    <ul class="nav-links">
+      <li><a href="dashboard.html">Home</a></li>
+      <li><a href="merch.html">Shop</a></li>
+      <li><a href="admin_orders.html" class="active">Admin Orders</a></li>
+      <li><a href="http://58.71.15.10/" target="_blank">Student Portal</a></li>
+      <li class="mobile-only-link"><a href="#" id="mobileLogoutBtn">Logout</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <a href="profile.html" class="user-profile-widget" style="text-decoration:none;">
+      <div class="avatar-circle" id="avatarLetter">A</div>
+      <div class="user-meta-text">
+        <span class="profile-name-string" id="profileName">Loading...</span>
+        <span class="badge-pill" id="roleBadge">Admin</span>
+      </div>
+    </a>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shop-hero">
+  <div class="corner-bracket tl"><svg viewBox="0 0 24 24"><polyline points="12 3 3 3 3 12"/></svg></div>
+  <div class="corner-bracket tr"><svg viewBox="0 0 24 24"><polyline points="12 3 21 3 21 12"/></svg></div>
+  <div class="corner-bracket bl"><svg viewBox="0 0 24 24"><polyline points="3 12 3 21 12 21"/></svg></div>
+  <div class="corner-bracket br"><svg viewBox="0 0 24 24"><polyline points="21 12 21 21 12 21"/></svg></div>
+  <p class="hero-eyebrow">Merchandise Directory</p>
+  <h1 class="hero-title">ECE <span>Orders</span> Hub</h1>
+  <p class="hero-sub">Manage global customer purchases, track received statuses, and access catalogs by individual product.</p>
+</div>
+
+<main class="page-wrapper">
+  <div class="dashboard-body">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total Volume</span>
+        <span class="stat-value" id="statRevenue">₱0.00</span>
+        <span class="stat-desc">From all registered orders</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total Orders</span>
+        <span class="stat-value" id="statOrders">0</span>
+        <span class="stat-desc" id="statCompleted">0 completed / received</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Pending Reviews</span>
+        <span class="stat-value" id="statPending" style="color:#f97316;">0</span>
+        <span class="stat-desc">Awaiting pickup/fulfillment</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('all-orders')">All Orders List</button>
+      <button class="tab-btn" onclick="switchTab('item-directory')">Product Catalog Directory</button>
+    </div>
+
+    <div id="all-orders" class="section-container active">
+      <div class="section-header">
+        <div class="section-title">Global Orders Registry <span id="ordersCount">0</span></div>
+        <div class="search-box">
+          <input type="text" id="orderSearch" placeholder="Search by name, student ID..." oninput="filterOrders()">
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width: 5%">ID</th>
+              <th style="width: 20%">Student Details</th>
+              <th style="width: 30%">Ordered Items</th>
+              <th style="width: 10%">Date</th>
+              <th style="width: 12%">Total Due</th>
+              <th style="width: 13%">Fulfillment</th>
+              <th style="text-align: center; width: 10%">Received?</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            </tbody>
+        </table>
+      </div>
+      <div id="ordersEmptyState" class="empty-state" style="display:none;">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+        <p>No orders matched your lookup parameters or exists yet.</p>
+      </div>
+    </div>
+
+    <div id="item-directory" class="section-container">
+      <div class="section-header">
+        <div class="section-title">Item-Specific Handout Directory <span>By Product</span></div>
+      </div>
+      <div id="catalogDirectoryList">
+        </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-left">
+      <div class="footer-logo">Contact Us</div>
+      <p>&copy; 2026 Department of Electronics Engineering - WMSU. All rights reserved.</p>
+    </div>
+    <div class="footer-right">
+      <div class="footer-links">
+        <a href="https://www.facebook.com/JIECEPWMSU" target="_blank" class="footer-link">
+          <svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg>
+          Facebook
+        </a>
+        <a href="mailto:jiecepwmsu@gmail.com" class="footer-link">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          jiecepwmsu@gmail.com
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+/* ─────────────────────────────────────
+   SUPABASE INIT
+───────────────────────────────────── */
+const { createClient } = supabase;
+const sb = createClient(
+  "https://xxzbuhvilxapebzzkmla.supabase.co",
+  "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+);
+
+let currentUser = null;
+let allOrders = [];
+let allProducts = [];
+
+/* ─────────────────────────────────────
+   MOBILE MENU
+───────────────────────────────────── */
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const navCenter     = document.getElementById('navCenter');
+mobileMenuBtn.addEventListener('click', () => navCenter.classList.toggle('mobile-active'));
+document.addEventListener('click', e => {
+  if (!mobileMenuBtn.contains(e.target) && !navCenter.contains(e.target))
+    navCenter.classList.remove('mobile-active');
+});
+
+/* ─────────────────────────────────────
+   AUTH & LOAD INITIALIZER
+───────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (!session) { window.location.href = 'loginpage.html'; return; }
+
+    currentUser = session.user;
+    let name = 'Admin Portal';
+    let role = 'Admin';
+
+    try {
+      const { data: p } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+      if (p) {
+        name = p.full_name || 'Admin Portal';
+        role = p.role      || 'Admin';
+      }
+    } catch(e) {}
+
+    document.getElementById('profileName').textContent  = name;
+    document.getElementById('roleBadge').textContent    = role;
+    document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+
+    // Pull database registers
+    await syncData();
+  });
+});
+
+async function doLogout(e) {
+  e.preventDefault();
+  await sb.auth.signOut();
+  localStorage.clear(); sessionStorage.clear();
+  window.location.href = 'loginpage.html';
+}
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+document.getElementById('mobileLogoutBtn').addEventListener('click', doLogout);
+
+/* ─────────────────────────────────────
+   TAB CONTROLLER
+───────────────────────────────────── */
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+
+  const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+  if(activeBtn) activeBtn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+/* ─────────────────────────────────────
+   PULL LIVE SUPABASE DATA
+───────────────────────────────────── */
+async function syncData() {
+  try {
+    // 1. Fetch Orders
+    const { data: orders, error: ordersError } = await sb
+      .from('merch_orders')
+      .select('*')
+      .order('ordered_at', { ascending: false });
+
+    if (ordersError) throw ordersError;
+    allOrders = orders || [];
+
+    // 2. Fetch Products
+    const { data: products, error: productsError } = await sb
+      .from('merch_products')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (productsError) throw productsError;
+    allProducts = products || [];
+
+  } catch (error) {
+    console.error("Error loading Supabase registers, falling back to Demo data: ", error);
+    showToast("Error reading Supabase DB: fallbacks loaded.", "err");
+    allProducts = DEMO_PRODUCTS;
+    allOrders = DEMO_ORDERS;
+  }
+
+  calculateStats();
+  renderAllOrders();
+  renderItemDirectory();
+}
+
+/* Fallback Dataset (matches merch.html) */
+const DEMO_PRODUCTS = [
+  { id:1, name:'ECE Department Shirt', category:'apparel', price:350, sizes:['XS','S','M','L','XL','XXL'] },
+  { id:2, name:'ECE Lanyard', category:'lanyard', price:100, sizes:[] },
+  { id:3, name:'ECE Baseball Jacket', category:'apparel', price:650, sizes:['S','M','L','XL','XXL'] },
+  { id:4, name:'ECE Test Booklet', category:'supplies', price:15, sizes:[] },
+];
+
+const DEMO_ORDERS = [
+  {
+    id: 101,
+    student_name: 'John Doe',
+    student_id: 'AE202401052',
+    year_level: 'Third Year',
+    contact: '09123456789',
+    pickup_method: 'pickup',
+    notes: 'No specific notes.',
+    total_amount: 450,
+    status: 'pending',
+    items: '[{"product_id":1,"product_name":"ECE Department Shirt","size":"L","qty":1,"unit_price":350},{"product_id":2,"product_name":"ECE Lanyard","size":null,"qty":1,"unit_price":100}]',
+    ordered_at: '2026-07-15T10:14:00Z'
+  },
+  {
+    id: 102,
+    student_name: 'Alice Springs',
+    student_id: 'AE202409852',
+    year_level: 'First Year',
+    contact: '09876543210',
+    pickup_method: 'event',
+    notes: 'Will pick up during assembly.',
+    total_amount: 15,
+    status: 'completed',
+    items: '[{"product_id":4,"product_name":"ECE Test Booklet","size":null,"qty":1,"unit_price":15}]',
+    ordered_at: '2026-07-16T01:30:00Z'
+  }
+];
+
+/* ─────────────────────────────────────
+   CALCULATE SUMMARY METRICS
+───────────────────────────────────── */
+function calculateStats() {
+  const totalVolume = allOrders.reduce((acc, order) => acc + Number(order.total_amount), 0);
+  const totalCount = allOrders.length;
+  const completedCount = allOrders.filter(o => o.status === 'completed').length;
+  const pendingCount = allOrders.filter(o => o.status === 'pending').length;
+
+  document.getElementById('statRevenue').textContent = `₱${totalVolume.toFixed(2)}`;
+  document.getElementById('statOrders').textContent = totalCount;
+  document.getElementById('statCompleted').textContent = `${completedCount} completed / received`;
+  document.getElementById('statPending').textContent = pendingCount;
+}
+
+/* ─────────────────────────────────────
+   RENDER TAB 1: ALL ORDERS
+───────────────────────────────────── */
+function renderAllOrders(filteredList = null) {
+  const tBody = document.getElementById('ordersTableBody');
+  const countSpan = document.getElementById('ordersCount');
+  const emptyState = document.getElementById('ordersEmptyState');
+  tBody.innerHTML = '';
+
+  const listToRender = filteredList !== null ? filteredList : allOrders;
+  countSpan.textContent = listToRender.length;
+
+  if (listToRender.length === 0) {
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  listToRender.forEach(order => {
+    // Parse order dates
+    const dateFormatted = new Date(order.ordered_at).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
+    // Parse order item JSON arrays safely
+    let itemsParsed = [];
+    try {
+      itemsParsed = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+    } catch(e) {
+      console.error("Failure processing cart items: ", e);
+    }
+
+    // Render items badges
+    let itemsBadgeHTML = '';
+    if (Array.isArray(itemsParsed)) {
+      itemsBadgeHTML = itemsParsed.map(i => {
+        const sizeInfo = i.size ? `(${i.size})` : '';
+        return `<span class="ordered-item-pill">${i.product_name || 'Item'} ${sizeInfo} <span>× ${i.qty}</span></span>`;
+      }).join(' ');
+    }
+
+    // Status setups
+    const isCompleted = order.status === 'completed';
+    const statusClass = isCompleted ? 'completed' : 'pending';
+    const statusLabel = isCompleted ? 'Received' : 'Pending';
+
+    // Checklist button setup
+    const checkboxClass = isCompleted ? 'checklist-btn checked' : 'checklist-btn';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span style="font-weight: 600; color: #888;">#${order.id}</span></td>
+      <td>
+        <div class="bold-name">${order.student_name}</div>
+        <div class="sub-meta">${order.student_id || 'No ID'} • ${order.year_level || 'No Year'}</div>
+        <div class="sub-meta" style="color: #666;">📞 ${order.contact}</div>
+      </td>
+      <td>
+        <div style="display:flex; flex-wrap:wrap; gap:4px;">
+          ${itemsBadgeHTML}
+        </div>
+        ${order.notes ? `<div class="sub-meta" style="font-style:italic; margin-top:6px; color:#555;">💬 Notes: "${order.notes}"</div>` : ''}
+      </td>
+      <td>${dateFormatted}</td>
+      <td style="font-family:'Poppins', sans-serif; font-weight:700; color:#fff;">₱${Number(order.total_amount).toFixed(2)}</td>
+      <td>
+        <span class="badge-status ${statusClass}">${statusLabel}</span>
+        <div class="sub-meta" style="margin-top:4px; text-transform:capitalize;">📍 ${order.pickup_method === 'pickup' ? 'Office Pickup' : 'Event Pick'}</div>
+      </td>
+      <td style="text-align: center;">
+        <div class="checklist-container">
+          <button class="${checkboxClass}" onclick="toggleFulfillment(${order.id}, ${!isCompleted})" title="Mark as ${isCompleted ? 'Pending' : 'Received'}">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </td>
+    `;
+    tBody.appendChild(tr);
+  });
+}
+
+/* ─────────────────────────────────────
+   LIVE SEARCH/FILTERING (ALL ORDERS)
+───────────────────────────────────── */
+function filterOrders() {
+  const val = document.getElementById('orderSearch').value.toLowerCase().trim();
+  if(!val) {
+    renderAllOrders(allOrders);
+    return;
+  }
+
+  const filtered = allOrders.filter(o => {
+    const sName = (o.student_name || '').toLowerCase();
+    const sId   = (o.student_id || '').toLowerCase();
+    return sName.includes(val) || sId.includes(val);
+  });
+
+  renderAllOrders(filtered);
+}
+
+/* ─────────────────────────────────────
+   RENDER TAB 2: PRODUCT-BY-PRODUCT ACCORDION DIRECTORY
+───────────────────────────────────── */
+function renderItemDirectory() {
+  const container = document.getElementById('catalogDirectoryList');
+  container.innerHTML = '';
+
+  if (allProducts.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+        <p>No products available to map orders to.</p>
+      </div>`;
+    return;
+  }
+
+  // Loop through all products to construct individual directories
+  allProducts.forEach(product => {
+    // Map order rows containing the current product
+    const productOrders = [];
+
+    allOrders.forEach(o => {
+      let itemsParsed = [];
+      try {
+        itemsParsed = typeof o.items === 'string' ? JSON.parse(o.items) : o.items;
+      } catch(e) {}
+
+      if (Array.isArray(itemsParsed)) {
+        itemsParsed.forEach(item => {
+          if (Number(item.product_id) === Number(product.id)) {
+            productOrders.push({
+              orderId: o.id,
+              student_name: o.student_name,
+              student_id: o.student_id,
+              year_level: o.year_level,
+              contact: o.contact,
+              size: item.size || 'N/A',
+              qty: item.qty,
+              ordered_at: o.ordered_at,
+              status: o.status,
+              pickup: o.pickup_method
+            });
+          }
+        });
+      }
+    });
+
+    // Construct Accordion Card Layout
+    const accordion = document.createElement('div');
+    accordion.className = 'item-accordion';
+    accordion.id = `item-acc-${product.id}`;
+
+    const totalOrderedQty = productOrders.reduce((sum, order) => sum + order.qty, 0);
+
+    accordion.innerHTML = `
+      <div class="item-accordion-header" onclick="toggleAccordion(${product.id})">
+        <div class="item-header-left">
+          <span class="item-category-badge">${product.category || 'Merch'}</span>
+          <span class="item-title">${product.name}</span>
+          <span class="item-order-count">(${productOrders.length} orders total • ${totalOrderedQty} pcs)</span>
+        </div>
+        <div class="item-chevron">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="item-accordion-body">
+        ${productOrders.length === 0 
+          ? `<p style="font-size:13px; color:#555; text-align:center; padding:10px 0;">No purchase records exist for this product yet.</p>`
+          : `
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Student Info</th>
+                <th>Selected Size</th>
+                <th>Quantity</th>
+                <th>Date Ordered</th>
+                <th>Status</th>
+                <th>Preferred Pickup</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${productOrders.map(pOrder => {
+                const isCompleted = pOrder.status === 'completed';
+                const sLabel = isCompleted ? 'Received' : 'Pending';
+                const sClass = isCompleted ? 'completed' : 'pending';
+                const dateString = new Date(pOrder.ordered_at).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric'
+                });
+
+                return `
+                  <tr>
+                    <td><span style="font-weight: 600; color: #666;">#${pOrder.orderId}</span></td>
+                    <td>
+                      <div class="bold-name">${pOrder.student_name}</div>
+                      <div class="sub-meta">${pOrder.student_id || 'No ID'} • ${pOrder.year_level || 'No Year'}</div>
+                      <div class="sub-meta" style="color:#666;">📞 ${pOrder.contact}</div>
+                    </td>
+                    <td><span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">${pOrder.size}</span></td>
+                    <td><span style="font-weight:600; color:#f97316;">${pOrder.qty} pc${pOrder.qty > 1 ? 's':''}</span></td>
+                    <td>${dateString}</td>
+                    <td><span class="badge-status ${sClass}">${sLabel}</span></td>
+                    <td style="text-transform: capitalize;">📍 ${pOrder.pickup === 'pickup' ? 'Department Office' : 'Assembly / Event'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+          `
+        }
+      </div>
+    `;
+    container.appendChild(accordion);
+  });
+}
+
+function toggleAccordion(productId) {
+  const accordion = document.getElementById(`item-acc-${productId}`);
+  accordion.classList.toggle('open');
+}
+
+/* ─────────────────────────────────────
+   UPDATE FULFILLMENT STATUS (SUPABASE WRITEBACK)
+───────────────────────────────────── */
+async function toggleFulfillment(orderId, newFulfillmentState) {
+  const targetStatus = newFulfillmentState ? 'completed' : 'pending';
+
+  try {
+    const { data, error } = await sb
+      .from('merch_orders')
+      .update({ status: targetStatus })
+      .eq('id', orderId);
+
+    if (error) throw error;
+
+    showToast(`Order #${orderId} marked as ${targetStatus}!`, 'ok');
+    
+    // Instantly sync dataset and reload layout grids
+    await syncData();
+
+  } catch(e) {
+    console.error("Failed writing status update back to Supabase DB: ", e);
+    showToast(`Could not update database: ${e.message}`, 'err');
+  }
+}
+
+/* ─────────────────────────────────────
+   TOAST CONTROLLER
+───────────────────────────────────── */
+let toastTimer;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast' + (type ? ' ' + type : '');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3400);
+}
+</script>
+</body>
+</html>
