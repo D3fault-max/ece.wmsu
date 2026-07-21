@@ -212,7 +212,7 @@
     <div class="nav-center" id="navCenter">
       <ul class="nav-links" id="navLinks">
         <li><a href="#" class="active" onclick="toggleView('dashboard')">Dashboard</a></li>
-        <li><a href="admin.html">Students</a></li>
+        <li><a href="adstudent.html">Students</a></li>
         <li><a href="maintenance.html">Faculty</a></li>
         <li><a href="maintenance.html">Courses</a></li>
         <li><a href="adminmerch.html">Merch</a></li>
@@ -297,7 +297,7 @@
         <p class="section-subtitle">Jump straight into managing the department</p>
         <!-- REPLACED 4-CARD WITH 3-CARD GRID HERE -->
         <div class="management-grid">
-          <a href="admin.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></div><h3>Students</h3><p>Records &amp; rosters</p></a>
+          <a href="adstudent.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></div><h3>Students</h3><p>Records &amp; rosters</p></a>
           <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 3-5 7-5s7 2 7 5"/><path d="M16 5.5c1.7.3 3 1.8 3 3.5s-1.3 3.2-3 3.5"/><path d="M22 20c0-2.5-2-4.2-4.5-4.8"/></svg></div><h3>Faculty</h3><p>Staff directory</p></a>
           <a href="maintenance.html" class="management-card"><div class="adm-icon-circle"><svg viewBox="0 0 24 24"><path d="M12 6c-1.5-1.5-4-2-7-2v14c3 0 5.5.5 7 2 1.5-1.5 4-2 7-2V4c-3 0-5.5.5-7 2z"/><path d="M12 6v14"/></svg></div><h3>Curriculum</h3><p>Courses &amp; sections</p></a>
           
@@ -316,12 +316,12 @@
           <h3>Recent Registrations</h3>
           <ul class="adm-activity-list" id="activityList" hidden></ul>
           <p class="adm-activity-empty" id="activityEmpty">Loading recent activity...</p>
-          <a href="admin.html" class="bundle-link" target="_blank" rel="noopener noreferrer">View All Students</a>
+          <a href="adstudent.html" class="bundle-link" target="_blank" rel="noopener noreferrer">View All Students</a>
         </div>
         <div class="bundle-box">
           <h3>Enrollment Requests</h3>
           <p>Review and approve incoming enrollment submissions from new and returning students before the semester deadline.</p>
-          <a href="admin.html?view=freshmen" class="bundle-link" target="_blank" rel="noopener noreferrer">Review Requests</a>
+          <a href="adstudent.html" class="bundle-link" target="_blank" rel="noopener noreferrer">Review Requests</a>
         </div>
       </div>
     </div> <div id="announcementsEditorView">
@@ -513,7 +513,7 @@
 
             <div class="form-group">
               <label>Click URL (Link destination)</label>
-              <input type="text" id="link-${slotNum}" value="${item.link_url || '#'}" required placeholder="e.g. admin.html?year=Fourth Year">
+              <input type="text" id="link-${slotNum}" value="${item.link_url || '#'}" required placeholder="e.g. adstudent.html?year=Fourth Year">
             </div>
 
             <div class="form-group">
