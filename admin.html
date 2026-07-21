@@ -925,8 +925,12 @@
 
         if (dErr) throw dErr;
 
+        // UPDATED FILTER: Exclude both 'admin' and 'adminstudent'
         comprehensiveRosterArray = (profiles || [])
-          .filter(p => p.role !== 'admin') 
+          .filter(p => {
+            const role = (p.role || 'student').toLowerCase().trim();
+            return role !== 'admin' && role !== 'adminstudent';
+          })
           .map(p => {
             const detailMatch = (details || []).find(d => d.user_id === p.id) || {};
             return {
