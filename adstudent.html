@@ -705,7 +705,7 @@
   <header class="navbar">
     <div class="logo-area">
       <a href="index.html" class="logo">ECE</a>
-      <span class="admin-chip">Admin</span>
+      <span class="admin-chip" id="headerAdminChip">Admin</span>
     </div>
     <div class="nav-center" id="navCenter">
       <ul class="nav-links" id="navLinks">
@@ -882,9 +882,10 @@
         .eq('id', session.user.id)
         .maybeSingle();
 
-      if (pErr || !profile || profile.role !== 'admin') {
+      // FIXED: Modified conditional check to accept both 'admin' and 'adminstudent' roles
+      if (pErr || !profile || (profile.role !== 'admin' && profile.role !== 'adminstudent')) {
         alert("Access Denied: Administrative security privileges required.");
-        window.location.href = "dashboard.html";
+        window.location.href = "loginpage.html";
         return;
       }
 
@@ -892,8 +893,13 @@
     }
 
     function updateAdminProfileWidget(profile) {
-      document.getElementById("profileName").textContent = profile.full_name || "Admin";
-      document.getElementById("roleBadge").textContent = profile.role || 'Admin';
+      // Formats the displayed role nicely for UI consistency
+      const formattedRole = profile.role === 'adminstudent' ? 'Admin Student' : 'Admin';
+      
+      document.getElementById("profileName").textContent = profile.full_name || formattedRole;
+      document.getElementById("roleBadge").textContent = formattedRole;
+      document.getElementById("headerAdminChip").textContent = formattedRole;
+      
       const avatarEl = document.getElementById("avatarLetter");
       if (profile.avatar_url) {
         avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="">`;
@@ -925,14 +931,15 @@
 
         if (dErr) throw dErr;
 
+        // FIXED: Excluded both manager roles ('admin' and 'adminstudent') from showing up as lines inside the student dashboard list
         comprehensiveRosterArray = (profiles || [])
-          .filter(p => p.role !== 'admin') 
+          .filter(p => p.role !== 'admin' && p.role !== 'adminstudent') 
           .map(p => {
             const detailMatch = (details || []).find(d => d.user_id === p.id) || {};
             return {
               ...p,
               birthdate: detailMatch.birthdate || "",
-              contact_number: p.contact_number || "", // Fetches from 'profiles' payload
+              contact_number: p.contact_number || "", 
               personal_email: detailMatch.personal_email || p.personal_email || "",
               address: detailMatch.address || ""
             };
@@ -1189,7 +1196,7 @@
             for (const candidatePath of candidatePaths) {
               try {
                 const { data: signedData, error: signedErr } = await supabaseClient
-                  .storage
+                   .storage
                   .from(targetedBucket)
                   .createSignedUrl(candidatePath, 3600);
 
