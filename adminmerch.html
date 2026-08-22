@@ -117,6 +117,7 @@
     .admin-table th { background:#1e1e1e; padding:14px 18px; color:#888; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid #222; }
     .admin-table td { padding:14px 18px; color:#ccc; font-size:13px; border-bottom:1px solid #1e1e1e; vertical-align:middle; }
     .admin-table tbody tr:last-child td { border-bottom:none; }
+    .admin-table tbody tr { cursor:pointer; transition:background .15s; }
     .admin-table tbody tr:hover { background:#1e1e1e; }
 
     .bold-name { font-family:'Poppins',sans-serif; font-weight:600; color:#fff; }
@@ -124,6 +125,12 @@
     .badge-status { font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; text-transform:uppercase; width:fit-content; letter-spacing:.5px; }
     .badge-status.pending { background:rgba(249,115,22,.1); color:#f97316; border:1px solid rgba(249,115,22,.2); }
     .badge-status.completed { background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.2); }
+
+    /* Proof tags */
+    .proof-tag { font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; text-transform:uppercase; width:fit-content; display:inline-block; margin-top:4px; }
+    .proof-tag.yes { background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.2); }
+    .proof-tag.no { background:rgba(239,68,68,.1); color:#ef4444; border:1px solid rgba(239,68,68,.2); }
+    .table-proof-thumb { width:32px; height:32px; object-fit:cover; border-radius:4px; border:1px solid #333; vertical-align:middle; margin-left:6px; display:inline-block; }
 
     /* Custom Checkbox / Checklist Style */
     .checklist-container { display:flex; align-items:center; justify-content:center; }
@@ -139,6 +146,37 @@
     /* Details styling */
     .ordered-item-pill { display:inline-block; background:#222; padding:3px 8px; border-radius:4px; font-size:12px; border:1px solid #2a2a2a; margin:3px; color:#fff; }
     .ordered-item-pill span { color:#f97316; font-weight:700; margin-left:4px; }
+
+    /* ── DETAILS MODAL ── */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.75);
+      z-index:3000; display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity .25s; padding:20px;
+    }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .order-modal {
+      background:#161616; border:1px solid #2a2a2a; border-radius:12px;
+      width:100%; max-width:520px; max-height:90vh; overflow-y:auto;
+      padding:32px; transform:scale(.95); transition:transform .25s;
+    }
+    .order-modal::-webkit-scrollbar { width:4px; }
+    .order-modal::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+    .modal-overlay.open .order-modal { transform:scale(1); }
+    .order-modal h3 { font-family:'Poppins',sans-serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:4px; }
+    .order-modal .modal-sub { font-family:'Inter',sans-serif; font-size:13px; color:#666; margin-bottom:20px; }
+    
+    .om-section { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#f97316; margin:16px 0 8px; }
+    .om-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; background:#111; padding:14px; border-radius:8px; border:1px solid #222; }
+    .om-field { display:flex; flex-direction:column; gap:2px; }
+    .om-field span:first-child { font-size:10px; color:#666; text-transform:uppercase; }
+    .om-field span:last-child { font-size:13px; color:#fff; font-weight:500; }
+
+    .om-items-list { background:#111; border:1px solid #222; border-radius:8px; padding:14px; display:flex; flex-direction:column; gap:8px; }
+    .om-item-row { display:flex; justify-content:space-between; font-size:13px; color:#ccc; border-bottom:1px solid #1a1a1a; padding-bottom:6px; }
+    .om-item-row:last-child { border:none; padding-bottom:0; }
+
+    .om-close-btn { width:100%; padding:12px; background:#222; color:#fff; border:none; border-radius:7px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:24px; transition:background .2s; }
+    .om-close-btn:hover { background:#333; }
 
     /* Empty state */
     .empty-state { text-align:center; padding:60px 20px; background:#161616; border:1px solid #222; border-radius:8px; }
@@ -195,15 +233,15 @@
   <div class="logo-area"><a href="adpagestudent.html" class="logo">ECE</a></div>
   <div class="nav-center" id="navCenter">
     <ul class="nav-links">
-      <li><a href="dashboard.html">Home</a></li>
+      <li><a href="adpagestudent.html">Home</a></li>
       <li><a href="merch.html">Shop</a></li>
-      <li><a href="admin_orders.html" class="active">Admin Orders</a></li>
+      <li><a href="adminorders.html" class="active">Admin Orders</a></li>
       <li><a href="http://58.71.15.10/" target="_blank">Student Portal</a></li>
       <li class="mobile-only-link"><a href="#" id="mobileLogoutBtn">Logout</a></li>
     </ul>
   </div>
   <div class="nav-right">
-    <a href="#" class="user-profile-widget" style="text-decoration:none;">
+    <a href="profile.html" class="user-profile-widget" style="text-decoration:none;">
       <div class="avatar-circle" id="avatarLetter">A</div>
       <div class="user-meta-text">
         <span class="profile-name-string" id="profileName">Loading...</span>
@@ -264,12 +302,13 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th style="width: 5%">ID</th>
-              <th style="width: 20%">Student Details</th>
-              <th style="width: 30%">Ordered Items</th>
+              <th style="width: 5%">No.</th>
+              <th style="width: 20%">Customer Details</th>
+              <th style="width: 25%">Ordered Items</th>
               <th style="width: 10%">Date</th>
-              <th style="width: 12%">Total Due</th>
-              <th style="width: 13%">Fulfillment</th>
+              <th style="width: 10%">Total Due</th>
+              <th style="width: 10%">GCash Proof</th>
+              <th style="width: 10%">Fulfillment</th>
               <th style="text-align: center; width: 10%">Received?</th>
             </tr>
           </thead>
@@ -293,6 +332,44 @@
 
   </div>
 </main>
+
+<!-- ── ORDER DETAILS MODAL ── -->
+<div class="modal-overlay" id="orderModal">
+  <div class="order-modal">
+    <h3 id="modalOrderId">Order #000</h3>
+    <p class="modal-sub" id="modalOrderDate">Ordered on —</p>
+
+    <div class="om-section">Customer Information</div>
+    <div class="om-grid">
+      <div class="om-field"><span>Name</span><span id="modalCustName">—</span></div>
+      <div class="om-field"><span>Type / ID</span><span id="modalCustId">—</span></div>
+      <div class="om-field"><span>Contact</span><span id="modalCustContact">—</span></div>
+      <div class="om-field"><span>Email</span><span id="modalCustEmail">—</span></div>
+    </div>
+
+    <div class="om-section">Fulfillment Details</div>
+    <div class="om-grid">
+      <div class="om-field"><span>Method</span><span id="modalPickup">—</span></div>
+      <div class="om-field"><span>Status</span><span id="modalStatus">—</span></div>
+      <div class="om-field" style="grid-column: span 2;"><span>Notes / Address</span><span id="modalNotes">—</span></div>
+    </div>
+
+    <div class="om-section">GCash Proof of Payment</div>
+    <div class="om-items-list" id="modalProofContainer" style="align-items:center; text-align:center; padding:16px;">
+      <span id="modalNoProofText" style="color:#666; font-size:13px;">No proof of payment uploaded.</span>
+    </div>
+
+    <div class="om-section">Purchased Items</div>
+    <div class="om-items-list" id="modalItemsList"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid #222;">
+      <span style="font-family:'Poppins',sans-serif; font-size:15px; color:#888;">Total Amount Due</span>
+      <span style="font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; color:#fff;" id="modalTotal">₱0.00</span>
+    </div>
+
+    <button class="om-close-btn" onclick="closeOrderModal()">Close Details</button>
+  </div>
+</div>
 
 <footer class="site-footer">
   <div class="footer-content">
@@ -366,7 +443,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('roleBadge').textContent    = role;
     document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
 
-    // Pull database registers
     await syncData();
   });
 });
@@ -397,7 +473,6 @@ function switchTab(tabId) {
 ───────────────────────────────────── */
 async function syncData() {
   try {
-    // 1. Fetch Orders
     const { data: orders, error: ordersError } = await sb
       .from('merch_orders')
       .select('*')
@@ -406,7 +481,6 @@ async function syncData() {
     if (ordersError) throw ordersError;
     allOrders = orders || [];
 
-    // 2. Fetch Products
     const { data: products, error: productsError } = await sb
       .from('merch_products')
       .select('*')
@@ -416,53 +490,14 @@ async function syncData() {
     allProducts = products || [];
 
   } catch (error) {
-    console.error("Error loading Supabase registers, falling back to Demo data: ", error);
-    showToast("Error reading Supabase DB: fallbacks loaded.", "err");
-    allProducts = DEMO_PRODUCTS;
-    allOrders = DEMO_ORDERS;
+    console.error("Error loading Supabase registers: ", error);
+    showToast("Error reading Supabase DB.", "err");
   }
 
   calculateStats();
   renderAllOrders();
   renderItemDirectory();
 }
-
-/* Fallback Dataset (matches merch.html) */
-const DEMO_PRODUCTS = [
-  { id:1, name:'ECE Department Shirt', category:'apparel', price:350, sizes:['XS','S','M','L','XL','XXL'] },
-  { id:2, name:'ECE Lanyard', category:'lanyard', price:100, sizes:[] },
-  { id:3, name:'ECE Baseball Jacket', category:'apparel', price:650, sizes:['S','M','L','XL','XXL'] },
-  { id:4, name:'ECE Test Booklet', category:'supplies', price:15, sizes:[] },
-];
-
-const DEMO_ORDERS = [
-  {
-    id: 101,
-    student_name: 'John Doe',
-    student_id: 'AE202401052',
-    year_level: 'Third Year',
-    contact: '09123456789',
-    pickup_method: 'pickup',
-    notes: 'No specific notes.',
-    total_amount: 450,
-    status: 'pending',
-    items: '[{"product_id":1,"product_name":"ECE Department Shirt","size":"L","qty":1,"unit_price":350},{"product_id":2,"product_name":"ECE Lanyard","size":null,"qty":1,"unit_price":100}]',
-    ordered_at: '2026-07-15T10:14:00Z'
-  },
-  {
-    id: 102,
-    student_name: 'Alice Springs',
-    student_id: 'AE202409852',
-    year_level: 'First Year',
-    contact: '09876543210',
-    pickup_method: 'event',
-    notes: 'Will pick up during assembly.',
-    total_amount: 15,
-    status: 'completed',
-    items: '[{"product_id":4,"product_name":"ECE Test Booklet","size":null,"qty":1,"unit_price":15}]',
-    ordered_at: '2026-07-16T01:30:00Z'
-  }
-];
 
 /* ─────────────────────────────────────
    CALCULATE SUMMARY METRICS
@@ -497,23 +532,17 @@ function renderAllOrders(filteredList = null) {
   }
   emptyState.style.display = 'none';
 
-  listToRender.forEach(order => {
-    // Parse order dates
+  listToRender.forEach((order, index) => {
+    const displayNum = index + 1; // Generates clean sequential numbering: 1, 2, 3...[cite: 4]
     const dateFormatted = new Date(order.ordered_at).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+      month: 'short', day: 'numeric', year: 'numeric'
     });
 
-    // Parse order item JSON arrays safely
     let itemsParsed = [];
     try {
       itemsParsed = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-    } catch(e) {
-      console.error("Failure processing cart items: ", e);
-    }
+    } catch(e) {}
 
-    // Render items badges
     let itemsBadgeHTML = '';
     if (Array.isArray(itemsParsed)) {
       itemsBadgeHTML = itemsParsed.map(i => {
@@ -522,21 +551,28 @@ function renderAllOrders(filteredList = null) {
       }).join(' ');
     }
 
-    // Status setups
     const isCompleted = order.status === 'completed';
     const statusClass = isCompleted ? 'completed' : 'pending';
-    const statusLabel = isCompleted ? 'Received' : 'Pending';
-
-    // Checklist button setup
+    const statusLabel = isCompleted ? 'Paid' : 'Pending';
     const checkboxClass = isCompleted ? 'checklist-btn checked' : 'checklist-btn';
 
+    const displayName = order.student_name || order.guest_name || 'Guest User';
+    const displayMeta = order.student_id ? `${order.student_id} • ${order.year_level || ''}` : 'External Guest';
+
+    const hasProof = Boolean(order.proof_url);
+    const proofHTML = hasProof 
+      ? `<span class="proof-tag yes">Uploaded</span><a href="${order.proof_url}" target="_blank" onclick="event.stopPropagation()"><img src="${order.proof_url}" class="table-proof-thumb" title="Click to view full receipt"></a>`
+      : `<span class="proof-tag no">Missing</span>`;
+
     const tr = document.createElement('tr');
+    tr.addEventListener('click', () => openOrderDetailsModal(order));
+
     tr.innerHTML = `
-      <td><span style="font-weight: 600; color: #888;">#${order.id}</span></td>
+      <td><span style="font-weight: 600; color: #888;">#${displayNum}</span><div class="sub-meta" style="color:#444;">ID: ${order.id}</div></td>
       <td>
-        <div class="bold-name">${order.student_name}</div>
-        <div class="sub-meta">${order.student_id || 'No ID'} • ${order.year_level || 'No Year'}</div>
-        <div class="sub-meta" style="color: #666;">📞 ${order.contact}</div>
+        <div class="bold-name">${displayName}</div>
+        <div class="sub-meta">${displayMeta}</div>
+        <div class="sub-meta" style="color: #666;">📞 ${order.contact || 'No contact'}</div>
       </td>
       <td>
         <div style="display:flex; flex-wrap:wrap; gap:4px;">
@@ -546,11 +582,12 @@ function renderAllOrders(filteredList = null) {
       </td>
       <td>${dateFormatted}</td>
       <td style="font-family:'Poppins', sans-serif; font-weight:700; color:#fff;">₱${Number(order.total_amount).toFixed(2)}</td>
+      <td>${proofHTML}</td>
       <td>
         <span class="badge-status ${statusClass}">${statusLabel}</span>
         <div class="sub-meta" style="margin-top:4px; text-transform:capitalize;">📍 ${order.pickup_method === 'pickup' ? 'Office Pickup' : 'Event Pick'}</div>
       </td>
-      <td style="text-align: center;">
+      <td style="text-align: center;" onclick="event.stopPropagation()">
         <div class="checklist-container">
           <button class="${checkboxClass}" onclick="toggleFulfillment(${order.id}, ${!isCompleted})" title="Mark as ${isCompleted ? 'Pending' : 'Received'}">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -563,7 +600,7 @@ function renderAllOrders(filteredList = null) {
 }
 
 /* ─────────────────────────────────────
-   LIVE SEARCH/FILTERING (ALL ORDERS)
+   LIVE SEARCH/FILTERING
 ───────────────────────────────────── */
 function filterOrders() {
   const val = document.getElementById('orderSearch').value.toLowerCase().trim();
@@ -573,7 +610,7 @@ function filterOrders() {
   }
 
   const filtered = allOrders.filter(o => {
-    const sName = (o.student_name || '').toLowerCase();
+    const sName = (o.student_name || o.guest_name || '').toLowerCase();
     const sId   = (o.student_id || '').toLowerCase();
     return sName.includes(val) || sId.includes(val);
   });
@@ -582,24 +619,78 @@ function filterOrders() {
 }
 
 /* ─────────────────────────────────────
-   RENDER TAB 2: PRODUCT-BY-PRODUCT ACCORDION DIRECTORY
+   ORDER DETAILS MODAL LOGIC
+───────────────────────────────────── */
+function openOrderDetailsModal(order) {
+  document.getElementById('modalOrderId').textContent = `Order #Ref-${order.id}`;
+  document.getElementById('modalOrderDate').textContent = `Placed on ${new Date(order.ordered_at).toLocaleString()}`;
+
+  document.getElementById('modalCustName').textContent = order.student_name || order.guest_name || 'Guest User';
+  document.getElementById('modalCustId').textContent = order.student_id ? `Student ID: ${order.student_id}` : 'Guest Visitor';
+  document.getElementById('modalCustContact').textContent = order.contact || '—';
+  document.getElementById('modalCustEmail').textContent = order.email || '—';
+
+  document.getElementById('modalPickup').textContent = order.pickup_method === 'pickup' ? 'Pick up at ECE Department Office' : 'Receive during JIECEP Event';
+  document.getElementById('modalStatus').textContent = order.status === 'completed' ? 'Paid / Completed' : 'Pending Review';
+  document.getElementById('modalNotes').textContent = order.notes || 'No special instructions or delivery address provided.';
+
+  const proofContainer = document.getElementById('modalProofContainer');
+  if (order.proof_url) {
+    proofContainer.innerHTML = `
+      <a href="${order.proof_url}" target="_blank" style="display:inline-block;">
+        <img src="${order.proof_url}" style="max-width:100%; max-height:220px; border-radius:6px; border:1px solid #333; object-fit:contain;" alt="GCash Proof of Payment">
+      </a>
+      <a href="${order.proof_url}" target="_blank" style="display:block; margin-top:8px; font-size:12px; color:#f97316; text-decoration:none;">Open Full-Sized Receipt ↗</a>
+    `;
+  } else {
+    proofContainer.innerHTML = `<span style="color:#666; font-size:13px;">No proof of payment uploaded by the customer.</span>`;
+  }
+
+  const itemsListEl = document.getElementById('modalItemsList');
+  itemsListEl.innerHTML = '';
+
+  let parsedItems = [];
+  try {
+    parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+  } catch(e) {}
+
+  if (Array.isArray(parsedItems)) {
+    parsedItems.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'om-item-row';
+      row.innerHTML = `
+        <span>${item.product_name} ${item.size ? `(Size: ${item.size})` : ''} × ${item.qty}</span>
+        <span style="font-weight:600; color:#fff;">₱${Number(item.line_total || (item.unit_price * item.qty)).toFixed(2)}</span>
+      `;
+      itemsListEl.appendChild(row);
+    });
+  }
+
+  document.getElementById('modalTotal').textContent = `₱${Number(order.total_amount).toFixed(2)}`;
+  document.getElementById('orderModal').classList.add('open');
+}
+
+function closeOrderModal() {
+  document.getElementById('orderModal').classList.remove('open');
+}
+
+document.getElementById('orderModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('orderModal')) closeOrderModal();
+});
+
+/* ─────────────────────────────────────
+   RENDER TAB 2: PRODUCT DIRECTORY
 ───────────────────────────────────── */
 function renderItemDirectory() {
   const container = document.getElementById('catalogDirectoryList');
   container.innerHTML = '';
 
   if (allProducts.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-        <p>No products available to map orders to.</p>
-      </div>`;
+    container.innerHTML = `<div class="empty-state"><p>No products available.</p></div>`;
     return;
   }
 
-  // Loop through all products to construct individual directories
   allProducts.forEach(product => {
-    // Map order rows containing the current product
     const productOrders = [];
 
     allOrders.forEach(o => {
@@ -613,9 +704,9 @@ function renderItemDirectory() {
           if (Number(item.product_id) === Number(product.id)) {
             productOrders.push({
               orderId: o.id,
-              student_name: o.student_name,
-              student_id: o.student_id,
-              year_level: o.year_level,
+              customer_name: o.student_name || o.guest_name || 'Guest',
+              student_id: o.student_id || 'Guest',
+              year_level: o.year_level || '—',
               contact: o.contact,
               size: item.size || 'N/A',
               qty: item.qty,
@@ -628,11 +719,9 @@ function renderItemDirectory() {
       }
     });
 
-    // Construct Accordion Card Layout
     const accordion = document.createElement('div');
     accordion.className = 'item-accordion';
     accordion.id = `item-acc-${product.id}`;
-
     const totalOrderedQty = productOrders.reduce((sum, order) => sum + order.qty, 0);
 
     accordion.innerHTML = `
@@ -642,9 +731,7 @@ function renderItemDirectory() {
           <span class="item-title">${product.name}</span>
           <span class="item-order-count">(${productOrders.length} orders total • ${totalOrderedQty} pcs)</span>
         </div>
-        <div class="item-chevron">
-          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
+        <div class="item-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
       </div>
       <div class="item-accordion-body">
         ${productOrders.length === 0 
@@ -653,8 +740,8 @@ function renderItemDirectory() {
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Order #</th>
-                <th>Student Info</th>
+                <th>No.</th>
+                <th>Customer Info</th>
                 <th>Selected Size</th>
                 <th>Quantity</th>
                 <th>Date Ordered</th>
@@ -663,9 +750,10 @@ function renderItemDirectory() {
               </tr>
             </thead>
             <tbody>
-              ${productOrders.map(pOrder => {
+              ${productOrders.map((pOrder, pIdx) => {
+                const itemDisplayNum = pIdx + 1; // Sequential sub-numbering for product lists[cite: 4]
                 const isCompleted = pOrder.status === 'completed';
-                const sLabel = isCompleted ? 'Received' : 'Pending';
+                const sLabel = isCompleted ? 'Paid' : 'Pending';
                 const sClass = isCompleted ? 'completed' : 'pending';
                 const dateString = new Date(pOrder.ordered_at).toLocaleDateString('en-US', {
                   month: 'short', day: 'numeric', year: 'numeric'
@@ -673,10 +761,10 @@ function renderItemDirectory() {
 
                 return `
                   <tr>
-                    <td><span style="font-weight: 600; color: #666;">#${pOrder.orderId}</span></td>
+                    <td><span style="font-weight: 600; color: #666;">#${itemDisplayNum}</span><div class="sub-meta" style="color:#444;">Ref: ${pOrder.orderId}</div></td>
                     <td>
-                      <div class="bold-name">${pOrder.student_name}</div>
-                      <div class="sub-meta">${pOrder.student_id || 'No ID'} • ${pOrder.year_level || 'No Year'}</div>
+                      <div class="bold-name">${pOrder.customer_name}</div>
+                      <div class="sub-meta">${pOrder.student_id} • ${pOrder.year_level}</div>
                       <div class="sub-meta" style="color:#666;">📞 ${pOrder.contact}</div>
                     </td>
                     <td><span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">${pOrder.size}</span></td>
@@ -698,18 +786,17 @@ function renderItemDirectory() {
 }
 
 function toggleAccordion(productId) {
-  const accordion = document.getElementById(`item-acc-${productId}`);
-  accordion.classList.toggle('open');
+  document.getElementById(`item-acc-${productId}`).classList.toggle('open');
 }
 
 /* ─────────────────────────────────────
-   UPDATE FULFILLMENT STATUS (SUPABASE WRITEBACK)
+   UPDATE FULFILLMENT STATUS
 ───────────────────────────────────── */
 async function toggleFulfillment(orderId, newFulfillmentState) {
   const targetStatus = newFulfillmentState ? 'completed' : 'pending';
 
   try {
-    const { data, error } = await sb
+    const { error } = await sb
       .from('merch_orders')
       .update({ status: targetStatus })
       .eq('id', orderId);
@@ -717,12 +804,10 @@ async function toggleFulfillment(orderId, newFulfillmentState) {
     if (error) throw error;
 
     showToast(`Order #${orderId} marked as ${targetStatus}!`, 'ok');
-    
-    // Instantly sync dataset and reload layout grids
     await syncData();
 
   } catch(e) {
-    console.error("Failed writing status update back to Supabase DB: ", e);
+    console.error("Failed writing status update: ", e);
     showToast(`Could not update database: ${e.message}`, 'err');
   }
 }
