@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE Portal - Password Recovery</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Inherited Theme Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', 'Inter', -apple-system, sans-serif;
+      background-color: #111111;
+      background-image:
+        radial-gradient(ellipse at 50% 45%, rgba(44, 44, 44, 0) 0%, rgba(17, 17, 17, 0) 72%),
+        url('background.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      background: transparent; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .aesthetic-corner {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: #f97316;
+      border-style: solid;
+      opacity: 0.8;
+    }
+    .tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+    .tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+    .bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+    .br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+    .brand-logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: #ffffff;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      margin-top: 20px;
+    }
+    .brand-logo span { color: #f97316; }
+
+    .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #999999;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    #resetForm {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .input-group label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #bbbbbb;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .input-group input {
+      font-family: 'Inter', sans-serif;
+      background-color: #161616;
+      border: 1px solid #333333;
+      color: #ffffff;
+      padding: 14px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+    }
+
+    .submit-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background-color: #f97316;
+      padding: 15px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .submit-btn:hover { background-color: #ea6c0e; }
+    .submit-btn:disabled { background-color: #555555; cursor: not-allowed; }
+
+    .back-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #777777;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .back-link:hover { color: #f97316; }
+
+    .status-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+    .status-message.error { color: #ff4444; display: block; }
+    .status-message.success { color: #00C851; display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="aesthetic-corner tl"></div>
+    <div class="aesthetic-corner tr"></div>
+    <div class="aesthetic-corner bl"></div>
+    <div class="aesthetic-corner br"></div>
+
+    <div class="brand-logo">ECE<span>.</span></div>
+    <div class="subtitle">Password Recovery</div>
+
+    <form id="resetForm">
+      <div class="input-group">
+        <label for="studentId">Student ID Number</label>
+        <input type="text" id="studentId" placeholder="e.g. AE202406767" autocomplete="off" required>
+      </div>
+      
+      <div class="input-group">
+        <label for="personalEmail">Registered Personal Email</label>
+        <input type="email" id="personalEmail" placeholder="your.name@gmail.com" autocomplete="off" required>
+      </div>
+      
+      <button type="submit" class="submit-btn" id="resetBtn">Send Reset Link</button>
+      <div id="statusMessage" class="status-message"></div>
+    </form>
+
+    <a href="loginpage.html" class="back-link">← Back to Login</a>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    // Connecting to your Supabase project
+    const supabase = createClient(
+      "https://xxzbuhvilxapebzzkmla.supabase.co", 
+      "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
+    );
+
+    const resetForm = document.getElementById("resetForm");
+    const resetBtn = document.getElementById("resetBtn");
+    const statusMessage = document.getElementById("statusMessage");
+
+    resetForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      resetBtn.disabled = true;
+      resetBtn.textContent = "Sending...";
+      statusMessage.className = "status-message"; // Reset status
+
+      const studentId = document.getElementById("studentId").value.trim().toLowerCase();
+      const personalEmail = document.getElementById("personalEmail").value.trim();
+
+      try {
+        // Calling your custom backend Edge Function
+        const { data, error } = await supabase.functions.invoke('request-password-reset', {
+          body: { studentId: studentId, personalEmail: personalEmail }
+        });
+
+        if (error) throw error;
+
+        // Success state
+        statusMessage.textContent = "If the details match our records, a reset link has been sent to your email.";
+        statusMessage.classList.add("success");
+        resetForm.reset();
+
+      } catch (error) {
+        console.error("Reset request failed:", error);
+        statusMessage.textContent = "An error occurred. Please try again later.";
+        statusMessage.classList.add("error");
+      } finally {
+        resetBtn.disabled = false;
+        resetBtn.textContent = "Send Reset Link";
+      }
+    });
+  </script>
+</body>
+</html>
