@@ -58,6 +58,8 @@
     .nav-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
     .user-profile-widget { display: flex; align-items: center; gap: 10px; background-color: #f8f9fa; padding: 5px 12px 5px 6px; border-radius: 30px; border: 1px solid #eaeaea; cursor: pointer; text-decoration: none; transition: all 0.2s; }
     .user-profile-widget:hover { background-color: #f1f3f5; border-color: #dcdcdc; transform: translateY(-1px); }
+    .user-profile-widget.profile-widget-disabled { pointer-events: none; opacity: 0.55; cursor: not-allowed; }
+    .user-profile-widget.profile-widget-disabled:hover { background-color: #f8f9fa; border-color: #eaeaea; transform: none; }
     .avatar-circle { width: 34px; height: 34px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; overflow:hidden;}
     .user-meta-text { display: flex; flex-direction: column; line-height: 1.2; }
     .profile-name-string { font-size: 13px; font-weight: 600; color: #111111; }
@@ -169,7 +171,7 @@
       </ul>
     </div>
     <div class="nav-right">
-      <a href="profile.html" class="user-profile-widget" style="text-decoration: none;">
+      <a href="profile.html" id="profileLink" class="user-profile-widget" style="text-decoration: none;">
         <div class="avatar-circle" id="avatarLetter">U</div>
         <div class="user-meta-text">
           <span class="profile-name-string" id="profileName">Loading...</span>
@@ -341,6 +343,14 @@
           if (inferredRole.toLowerCase() === 'professor' || inferredRole.toLowerCase() === 'admin') {
             displayedYear = 'Faculty Staff / Admin Access Granted';
             document.getElementById("roleBadge").style.backgroundColor = "#111111";
+          } else if (inferredRole.toLowerCase() === 'guest') {
+            document.getElementById("roleBadge").style.backgroundColor = "#555555";
+            const profileLink = document.getElementById('profileLink');
+            if (profileLink) {
+              profileLink.removeAttribute('href');
+              profileLink.classList.add('profile-widget-disabled');
+              profileLink.title = 'Profile page is not available for guest accounts';
+            }
           }
         } catch (err) { console.error(err); }
 
