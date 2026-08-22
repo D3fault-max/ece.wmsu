@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   
   <style>
-    /* Inherited Theme Styles */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -81,7 +80,7 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       margin-bottom: 24px;
     }
 
@@ -115,6 +114,14 @@
       box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
     }
 
+    .divider-text {
+      text-align: center;
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
     .submit-btn {
       font-family: 'Inter', sans-serif;
       font-size: 14px;
@@ -126,7 +133,7 @@
       border: none;
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.1s ease;
-      margin-top: 8px;
+      margin-top: 4px;
       width: 100%;
     }
     .submit-btn:hover { background-color: #ea6c0e; }
@@ -165,12 +172,12 @@
 
     <form id="resetForm">
       <div class="input-group">
-        <label for="studentId">Student ID Number</label>
-        <input type="text" id="studentId" placeholder="e.g. AE202406767" autocomplete="off" required>
+        <label for="studentId">Student ID Number (For Students)</label>
+        <input type="text" id="studentId" placeholder="e.g. AE202406767" autocomplete="off">
       </div>
-      
+
       <div class="input-group">
-        <label for="personalEmail">Registered Personal Email</label>
+        <label for="personalEmail">Registered Personal Email (For Students or Guests)</label>
         <input type="email" id="personalEmail" placeholder="your.name@gmail.com" autocomplete="off" required>
       </div>
       
@@ -184,7 +191,6 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    // Connecting to your Supabase project
     const supabase = createClient(
       "https://xxzbuhvilxapebzzkmla.supabase.co", 
       "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
@@ -199,20 +205,21 @@
 
       resetBtn.disabled = true;
       resetBtn.textContent = "Sending...";
-      statusMessage.className = "status-message"; // Reset status
+      statusMessage.className = "status-message";
 
-      const studentId = document.getElementById("studentId").value.trim().toLowerCase();
+      const studentId = document.getElementById("studentId").value.trim();
       const personalEmail = document.getElementById("personalEmail").value.trim();
 
       try {
-        // Calling your custom backend Edge Function
         const { data, error } = await supabase.functions.invoke('request-password-reset', {
-          body: { studentId: studentId, personalEmail: personalEmail }
+          body: { 
+            studentId: studentId || null, 
+            personalEmail: personalEmail || null 
+          }
         });
 
         if (error) throw error;
 
-        // Success state
         statusMessage.textContent = "If the details match our records, a reset link has been sent to your email.";
         statusMessage.classList.add("success");
         resetForm.reset();
