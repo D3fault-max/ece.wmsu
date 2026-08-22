@@ -41,13 +41,14 @@
     .mobile-menu-btn { display:none; background:none; border:none; cursor:pointer; padding:5px; }
     .mobile-menu-btn svg { width:28px; height:28px; fill:none; stroke:#111; stroke-width:2; stroke-linecap:round; }
 
-    /* ── CART ICON IN NAVBAR ── */
-    .cart-nav-btn {
+    /* ── CART & MY ORDERS BUTTONS IN NAVBAR ── */
+    .nav-action-btn {
       position:relative; background:none; border:none; cursor:pointer; padding:6px;
-      display:flex; align-items:center; justify-content:center;
+      display:flex; align-items:center; justify-content:center; color:#333; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; gap:4px;
     }
-    .cart-nav-btn svg { width:24px; height:24px; fill:none; stroke:#333; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .2s; }
-    .cart-nav-btn:hover svg { stroke:#f97316; }
+    .nav-action-btn svg { width:22px; height:22px; fill:none; stroke:#333; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .2s; }
+    .nav-action-btn:hover svg { stroke:#f97316; }
+    .nav-action-btn:hover { color:#f97316; }
     .cart-badge {
       position:absolute; top:0; right:0;
       background:#f97316; color:#fff;
@@ -219,6 +220,25 @@
     .checkout-btn:hover { background:#ea6c0e; }
     .checkout-btn:disabled { background:#2a2a2a; color:#444; cursor:not-allowed; }
 
+    /* My Orders Cards */
+    .my-order-card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; padding:16px; margin-bottom:14px; }
+    .moc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .moc-id { font-weight:600; font-size:13px; color:#f97316; }
+    .moc-status { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; text-transform:uppercase; }
+    .moc-status.pending { background:rgba(249,115,22,.15); color:#f97316; }
+    .moc-status.completed { background:rgba(34,197,94,.15); color:#4ade80; }
+    .moc-body { font-size:12px; color:#aaa; margin-bottom:12px; display:flex; flex-direction:column; gap:4px; }
+    .moc-footer { display:flex; justify-content:space-between; align-items:center; border-top:1px solid #252525; padding-top:10px; }
+    .moc-total { font-weight:700; color:#fff; font-size:14px; }
+    .moc-actions { display:flex; gap:6px; }
+    .moc-edit-btn { background:#333; color:#fff; border:none; padding:6px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600; }
+    .moc-edit-btn:hover { background:#f97316; }
+    .moc-delete-btn { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); padding:6px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600; }
+    .moc-delete-btn:hover { background:#ef4444; color:#fff; }
+
+    /* Proof Image Preview Styling */
+    .proof-preview-thumb { width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #333; margin-top:4px; }
+
     /* ── SIZE PICKER MODAL ── */
     .modal-overlay {
       position:fixed; inset:0; background:rgba(0,0,0,.75);
@@ -226,13 +246,14 @@
       opacity:0; pointer-events:none; transition:opacity .25s; padding:20px;
     }
     .modal-overlay.open { opacity:1; pointer-events:all; }
-    .size-modal {
+    .size-modal, .checkout-modal, .orders-modal {
       background:#161616; border:1px solid #2a2a2a; border-radius:12px;
       width:100%; max-width:400px; padding:32px;
       transform:scale(.95); transition:transform .25s;
     }
-    .modal-overlay.open .size-modal { transform:scale(1); }
-    .size-modal h3 { font-family:'Poppins',sans-serif; font-size:18px; font-weight:600; color:#fff; margin-bottom:4px; }
+    .checkout-modal, .orders-modal { max-width:480px; max-height:90vh; overflow-y:auto; }
+    .modal-overlay.open .size-modal, .modal-overlay.open .checkout-modal, .modal-overlay.open .orders-modal { transform:scale(1); }
+    .size-modal h3, .checkout-modal h3, .orders-modal h3 { font-family:'Poppins',sans-serif; font-size:18px; font-weight:600; color:#fff; margin-bottom:4px; }
     .size-modal-price { font-family:'Inter',sans-serif; font-size:14px; color:#f97316; font-weight:600; margin-bottom:22px; }
     .size-label { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#666; margin-bottom:10px; }
     .size-pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
@@ -243,7 +264,6 @@
     }
     .size-pill:hover { border-color:#f97316; color:#f97316; }
     .size-pill.picked { background:#f97316; border-color:#f97316; color:#fff; }
-    .size-pill.unavail { opacity:.3; cursor:not-allowed; text-decoration:line-through; }
     .modal-btns { display:flex; gap:10px; margin-top:4px; }
     .modal-cancel { flex:1; padding:12px; border-radius:7px; border:1px solid #2a2a2a; background:transparent; color:#888; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
     .modal-cancel:hover { border-color:#555; color:#fff; }
@@ -251,17 +271,8 @@
     .modal-confirm:hover { background:#ea6c0e; }
     .modal-confirm:disabled { background:#2a2a2a; color:#444; cursor:not-allowed; }
 
-    /* ── CHECKOUT MODAL ── */
-    .checkout-modal {
-      background:#161616; border:1px solid #2a2a2a; border-radius:12px;
-      width:100%; max-width:480px; max-height:90vh; overflow-y:auto;
-      padding:32px;
-      transform:scale(.95); transition:transform .25s;
-    }
-    .checkout-modal::-webkit-scrollbar { width:4px; }
-    .checkout-modal::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
-    .modal-overlay.open .checkout-modal { transform:scale(1); }
-    .checkout-modal h3 { font-family:'Poppins',sans-serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:4px; }
+    /* ── CHECKOUT MODAL STYLES ── */
+    .checkout-modal h3 { font-size:20px; font-weight:700; }
     .checkout-modal .modal-sub { font-family:'Inter',sans-serif; font-size:13px; color:#666; margin-bottom:26px; }
     .co-section-title { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#f97316; margin:20px 0 12px; }
     .co-fg { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
@@ -269,12 +280,9 @@
     .co-fg input, .co-fg select, .co-fg textarea {
       font-family:'Inter',sans-serif; font-size:14px; color:#fff;
       background:#111; border:1px solid #2a2a2a; padding:11px 13px;
-      border-radius:7px; width:100%; transition:border-color .2s;
-      resize:none;
+      border-radius:7px; width:100%; transition:border-color .2s; resize:none;
     }
     .co-fg input:focus, .co-fg select:focus, .co-fg textarea:focus { outline:none; border-color:#f97316; }
-    .co-fg input::placeholder, .co-fg textarea::placeholder { color:#444; }
-    .co-fg select option { background:#161616; }
     .co-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .co-order-summary { background:#111; border:1px solid #222; border-radius:8px; padding:16px; margin:16px 0 20px; }
     .co-order-item { display:flex; justify-content:space-between; font-family:'Inter',sans-serif; font-size:13px; color:#ccc; padding:6px 0; border-bottom:1px solid #1e1e1e; }
@@ -296,7 +304,7 @@
     .toast.err { background:#7f1d1d; }
 
     /* ── FOOTER ── */
-    .site-footer { background:#161616; border-top:1px solid #222; padding:40px 5%; font-family:'Inter',sans-serif; }
+    .site-footer { background:#161616; border-top:1px solid #222; padding:40px 5%; font-family:'Inter',sans-serif; margin-top:auto; }
     .footer-content { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:24px; max-width:1400px; margin:0 auto; }
     .footer-left .footer-logo { font-family:'Poppins',sans-serif; font-size:20px; font-weight:900; letter-spacing:2px; color:#f97316; margin-bottom:4px; }
     .footer-left p { font-size:13px; color:#666; }
@@ -324,8 +332,6 @@
       .footer-right { align-items:center; }
       .cart-drawer { max-width:100%; }
     }
-    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
-    a:focus-visible, button:focus-visible { outline:2px solid #f97316; outline-offset:2px; border-radius:4px; }
   </style>
 </head>
 <body>
@@ -345,11 +351,16 @@
     </ul>
   </div>
   <div class="nav-right">
-    <button class="cart-nav-btn" id="cartNavBtn" title="View Cart">
+    <!-- My Orders Button (Visible only to logged-in students) -->
+    <button class="nav-action-btn" id="myOrdersNavBtn" title="My Orders" style="display:none;">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>My Orders</span>
+    </button>
+    <button class="nav-action-btn" id="cartNavBtn" title="View Cart">
       <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       <span class="cart-badge" id="cartBadge">0</span>
     </button>
-    <a href="profile.html" class="user-profile-widget" style="text-decoration:none;">
+    <a href="#" class="user-profile-widget" style="text-decoration:none;">
       <div class="avatar-circle" id="avatarLetter">U</div>
       <div class="user-meta-text">
         <span class="profile-name-string" id="profileName">Loading...</span>
@@ -441,6 +452,45 @@
   </div>
 </aside>
 
+<!-- ── MY ORDERS MODAL ── -->
+<div class="modal-overlay" id="myOrdersModal">
+  <div class="orders-modal">
+    <h3>My Placed Orders</h3>
+    <p class="modal-sub">View history or edit/cancel pending orders.</p>
+    <div id="myOrdersListContainer"></div>
+    <div class="modal-btns" style="margin-top:20px;">
+      <button class="modal-cancel" id="closeMyOrdersBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── EDIT ORDER MODAL ── -->
+<div class="modal-overlay" id="editOrderModal">
+  <div class="checkout-modal">
+    <h3>Edit Pending Order</h3>
+    <p class="modal-sub">Update details for order #<span id="editOrderIdLabel"></span></p>
+    <div class="co-fg"><label>Contact Number</label><input type="tel" id="editCoContact"></div>
+    <div class="co-fg">
+      <label>Pickup Preference</label>
+      <select id="editCoPickup">
+        <option value="pickup">Pick up at ECE Department Office</option>
+        <option value="event">Receive during JIECEP event</option>
+      </select>
+    </div>
+    <div class="co-fg"><label>Notes / Address</label><textarea id="editCoNotes" rows="2"></textarea></div>
+    <!-- Added Proof of Payment file input for edit window -->
+    <div class="co-fg">
+      <label>GCash Proof of Payment (Image)</label>
+      <input type="file" id="editCoProof" accept="image/*">
+      <div id="editProofPreviewContainer"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" id="cancelEditBtn">Cancel</button>
+      <button class="modal-confirm" id="saveEditBtn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── SIZE PICKER MODAL ── -->
 <div class="modal-overlay" id="sizeModal">
   <div class="size-modal">
@@ -462,12 +512,18 @@
     <p class="modal-sub">Fill in your details. The admin will confirm your order and reach out for payment.</p>
 
     <div class="co-section-title">Your Information</div>
-    <div class="co-fg"><label>Full Name</label><input type="text" id="coName" placeholder="As on your school ID" required></div>
-    <div class="co-row">
+    <div class="co-fg"><label>Full Name</label><input type="text" id="coName" placeholder="Enter your full name" required></div>
+    
+    <div class="co-fg" id="coEmailGroup" style="display:none;">
+      <label>Email Address</label>
+      <input type="email" id="coEmail" placeholder="your.email@example.com">
+    </div>
+
+    <div class="co-row" id="studentInfoRow">
       <div class="co-fg"><label>Student ID</label><input type="text" id="coStudentId" placeholder="e.g. AE202402110" readonly></div>
       <div class="co-fg"><label>Year Level</label><input type="text" id="coYear" placeholder="—" readonly></div>
     </div>
-    <div class="co-fg"><label>Contact Number</label><input type="tel" id="coContact" placeholder="09xxxxxxxxx" inputmode="tel"></div>
+    <div class="co-fg"><label>Contact Number</label><input type="tel" id="coContact" placeholder="09xxxxxxxxx" inputmode="tel" required></div>
 
     <div class="co-section-title">Pickup Preference</div>
     <div class="co-fg">
@@ -477,7 +533,14 @@
         <option value="event">Receive during JIECEP event</option>
       </select>
     </div>
-    <div class="co-fg"><label>Notes (optional)</label><textarea id="coNotes" rows="2" placeholder="Any special instructions…"></textarea></div>
+    <div class="co-fg"><label>Notes (optional / Delivery Address)</label><textarea id="coNotes" rows="2" placeholder="Please put here your jersey name and number(ex. Alawi 67)..."></textarea></div>
+
+    <!-- Added Proof of Payment file input for checkout window -->
+    <div class="co-section-title">Payment Verification</div>
+    <div class="co-fg">
+      <label>GCash Proof of Payment (Upload Screenshot)</label>
+      <input type="file" id="coProof" accept="image/*" required>
+    </div>
 
     <div class="co-section-title">Order Summary</div>
     <div class="co-order-summary" id="coOrderSummary"></div>
@@ -513,6 +576,7 @@ let activeCategory = 'all';
 let cart = [];
 let pendingProduct = null;
 let pickedSize     = null;
+let editingOrderId = null;
 
 /* ─────────────────────────────────────
    MOBILE MENU
@@ -530,9 +594,27 @@ document.addEventListener('click', e => {
 ───────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (!session) { window.location.href = 'loginpage.html'; return; }
+    if (!session) {
+      currentUser = null;
+      document.getElementById('myOrdersNavBtn').style.display = 'none';
+      document.getElementById('profileName').textContent    = 'Guest Visitor';
+      document.getElementById('roleBadge').textContent      = 'Guest';
+      document.getElementById('avatarLetter').textContent   = 'G';
+      
+      document.getElementById('logoutBtn').style.display = 'none';
+
+      document.getElementById('coName').value = '';
+      document.getElementById('coName').removeAttribute('readonly');
+      document.getElementById('coEmailGroup').style.display = 'flex';
+      document.getElementById('studentInfoRow').style.display = 'none';
+      document.getElementById('coContact').value = '';
+
+      loadProducts();
+      return;
+    }
 
     currentUser = session.user;
+    document.getElementById('myOrdersNavBtn').style.display = 'flex';
     let name  = 'ECE Student';
     let year  = 'ECE Department';
     let role  = 'Student';
@@ -557,6 +639,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('avatarLetter').textContent   = name.charAt(0).toUpperCase();
 
     document.getElementById('coName').value      = name !== 'ECE Student' ? name : '';
+    document.getElementById('coName').setAttribute('readonly', true);
+    document.getElementById('coEmailGroup').style.display = 'none';
+    document.getElementById('studentInfoRow').style.display = 'grid';
     document.getElementById('coStudentId').value = sid;
     document.getElementById('coYear').value      = year;
     document.getElementById('coContact').value   = phone;
@@ -593,7 +678,6 @@ async function loadProducts() {
   renderProducts();
 }
 
-/* Updated Demo Catalog */
 const DEMO_PRODUCTS = [
   { id:1, name:'ECE Department Shirt', description:'Official department shirt with JIECEP-WMSU logo. Comfortable daily wear.', category:'apparel', price:350, image_url:'', sizes:['XS','S','M','L','XL','XXL'], stock:50, active:true },
   { id:2, name:'ECE Lanyard', description:'Official department lanyard with embroidered ECE logo. Required for department events.', category:'lanyard', price:100, image_url:'', sizes:[], stock:30, active:true },
@@ -829,10 +913,129 @@ function updateCartTotals() {
    CART DRAWER TOGGLE
 ───────────────────────────────────── */
 function openCart()  { document.getElementById('cartDrawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
-function closeCart() { document.getElementById('cartDrawer').classList.remove('remove'); document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
+function closeCart() { document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 document.getElementById('cartNavBtn').addEventListener('click', openCart);
 document.getElementById('cartCloseBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+/* ─────────────────────────────────────
+   MY ORDERS DRAWER & EDIT/CANCEL LOGIC
+───────────────────────────────────── */
+document.getElementById('myOrdersNavBtn').addEventListener('click', async () => {
+  if (!currentUser) return;
+  await fetchAndRenderMyOrders();
+  document.getElementById('myOrdersModal').classList.add('open');
+});
+
+async function fetchAndRenderMyOrders() {
+  const container = document.getElementById('myOrdersListContainer');
+  container.innerHTML = '<p style="color:#666; text-align:center;">Loading your orders...</p>';
+
+  const { data: myOrders, error } = await sb
+    .from('merch_orders')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('ordered_at', { ascending: false });
+
+  if (error || !myOrders || myOrders.length === 0) {
+    container.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">You have no placed orders yet.</p>';
+    return;
+  }
+
+  container.innerHTML = '';
+  myOrders.forEach(order => {
+    const isPending = order.status === 'pending';
+    const card = document.createElement('div');
+    card.className = 'my-order-card';
+    card.innerHTML = `
+      <div class="moc-header">
+        <span class="moc-id">Order #${order.id}</span>
+        <span class="moc-status ${order.status}">${order.status}</span>
+      </div>
+      <div class="moc-body">
+        <span>Pickup: ${order.pickup_method}</span>
+        <span>Contact: ${order.contact}</span>
+        <span>Notes: ${order.notes || 'None'}</span>
+        ${order.proof_url ? `<span>Proof of Payment: <a href="${order.proof_url}" target="_blank" style="color:#f97316;">View Receipt</a></span><img src="${order.proof_url}" class="proof-preview-thumb">` : '<span style="color:#777;">No proof uploaded</span>'}
+      </div>
+      <div class="moc-footer">
+        <span class="moc-total">₱${Number(order.total_amount).toFixed(2)}</span>
+        <div class="moc-actions">
+          ${isPending ? `
+            <button class="moc-edit-btn" onclick="openEditOrder(${order.id}, '${order.contact}', '${order.pickup_method}', '${order.notes || ''}')">Edit / Add Proof</button>
+            <button class="moc-delete-btn" onclick="cancelOrder(${order.id})">Cancel</button>
+          ` : '<span style="font-size:11px; color:#555;">Locked (Processed)</span>'}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+document.getElementById('closeMyOrdersBtn').addEventListener('click', () => document.getElementById('myOrdersModal').classList.remove('open'));
+
+function openEditOrder(id, contact, pickup, notes) {
+  editingOrderId = id;
+  document.getElementById('editOrderIdLabel').textContent = id;
+  document.getElementById('editCoContact').value = contact;
+  document.getElementById('editCoPickup').value = pickup;
+  document.getElementById('editCoNotes').value = notes;
+  document.getElementById('editCoProof').value = '';
+  document.getElementById('editOrderModal').classList.add('open');
+}
+
+document.getElementById('cancelEditBtn').addEventListener('click', () => document.getElementById('editOrderModal').classList.remove('open'));
+
+document.getElementById('saveEditBtn').addEventListener('click', async () => {
+  const contact = document.getElementById('editCoContact').value.trim();
+  const pickup = document.getElementById('editCoPickup').value;
+  const notes = document.getElementById('editCoNotes').value.trim();
+  const proofFile = document.getElementById('editCoProof').files[0];
+
+  let proofUrl = null;
+  if (proofFile) {
+    const fileName = `proof_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+    const { data: uploadData, error: uploadErr } = await sb.storage.from('payment-proofs').upload(fileName, proofFile);
+    if (uploadErr) { showToast('Error uploading image: ' + uploadErr.message, 'err'); return; }
+    const { data: publicURLData } = sb.storage.from('payment-proofs').getPublicUrl(fileName);
+    proofUrl = publicURLData.publicUrl;
+  }
+
+  const updatePayload = { contact, pickup_method: pickup, notes };
+  if (proofUrl) updatePayload.proof_url = proofUrl;
+
+  const { error } = await sb
+    .from('merch_orders')
+    .update(updatePayload)
+    .eq('id', editingOrderId)
+    .eq('user_id', currentUser.id);
+
+  if (error) {
+    showToast('Failed to update order: ' + error.message, 'err');
+  } else {
+    showToast('Order successfully updated! ✓', 'ok');
+    document.getElementById('editOrderModal').classList.remove('open');
+    fetchAndRenderMyOrders();
+  }
+});
+
+async function cancelOrder(orderId) {
+  if (!confirm(`Are you sure you want to cancel order #${orderId}?`)) return;
+
+  const { error } = await sb
+    .from('merch_orders')
+    .delete()
+    .eq('id', orderId)
+    .eq('user_id', currentUser.id)
+    .eq('status', 'pending');
+
+  if (error) {
+    showToast('Failed to cancel order: ' + error.message, 'err');
+  } else {
+    showToast(`Order #${orderId} cancelled successfully.`, 'ok');
+    fetchAndRenderMyOrders();
+  }
+}
 
 /* ─────────────────────────────────────
    CHECKOUT MODAL
@@ -871,43 +1074,58 @@ function buildOrderSummary() {
 document.getElementById('coSubmitBtn').addEventListener('click', async () => {
   const name    = document.getElementById('coName').value.trim();
   const contact = document.getElementById('coContact').value.trim();
+  const email   = document.getElementById('coEmail')?.value.trim();
+  const proofFile = document.getElementById('coProof').files[0];
+
   if (!name)    { showToast('Please enter your full name.', 'err'); return; }
   if (!contact) { showToast('Please enter your contact number.', 'err'); return; }
+  if (!currentUser && !email) { showToast('Please enter your email address.', 'err'); return; }
+  if (!proofFile) { showToast('Please upload your GCash proof of payment.', 'err'); return; }
 
   const btn = document.getElementById('coSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Placing order…';
-
-  const total = cart.reduce((s, c) => s + c.product.price * c.qty, 0);
-
-  const orderPayload = {
-    user_id:      currentUser?.id || null,
-    student_name: name,
-    student_id:   document.getElementById('coStudentId').value || null,
-    year_level:   document.getElementById('coYear').value      || null,
-    contact:      contact,
-    pickup_method:document.getElementById('coPickup').value,
-    notes:        document.getElementById('coNotes').value.trim() || null,
-    total_amount: total,
-    status:       'pending',
-    items:        JSON.stringify(cart.map(c => ({
-      product_id:   c.product.id,
-      product_name: c.product.name,
-      size:         c.size,
-      qty:          c.qty,
-      unit_price:   c.product.price,
-      line_total:   c.product.price * c.qty,
-    }))),
-    ordered_at: new Date().toISOString(),
-  };
+  btn.disabled = true; btn.textContent = 'Uploading & Submitting...';
 
   try {
+    const fileName = `proof_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+    const { error: uploadErr } = await sb.storage.from('payment-proofs').upload(fileName, proofFile);
+    if (uploadErr) throw uploadErr;
+
+    const { data: publicURLData } = sb.storage.from('payment-proofs').getPublicUrl(fileName);
+    const proofUrl = publicURLData.publicUrl;
+
+    const total = cart.reduce((s, c) => s + c.product.price * c.qty, 0);
+
+    const orderPayload = {
+      user_id:      currentUser?.id || null,
+      student_name: name,
+      guest_name:   currentUser ? null : name,
+      email:        currentUser ? null : email,
+      student_id:   currentUser ? (document.getElementById('coStudentId').value || null) : null,
+      year_level:   currentUser ? (document.getElementById('coYear').value || null) : 'Guest',
+      contact:      contact,
+      pickup_method:document.getElementById('coPickup').value,
+      notes:        document.getElementById('coNotes').value.trim() || null,
+      total_amount: total,
+      status:       'pending',
+      proof_url:    proofUrl,
+      items:        JSON.stringify(cart.map(c => ({
+        product_id:   c.product.id,
+        product_name: c.product.name,
+        size:         c.size,
+        qty:          c.qty,
+        unit_price:   c.product.price,
+        line_total:   c.product.price * c.qty,
+      }))),
+      ordered_at: new Date().toISOString(),
+    };
+
     const { error } = await sb.from('merch_orders').insert(orderPayload);
     if (error) throw error;
 
     cart = [];
     updateCartUI();
     document.getElementById('checkoutModal').classList.remove('open');
-    showToast('Order placed! The admin will contact you for pickup. ✓', 'ok');
+    showToast('Order placed with proof of payment! ✓', 'ok');
   } catch (err) {
     console.error(err);
     showToast('Could not place order: ' + err.message, 'err');
@@ -916,9 +1134,6 @@ document.getElementById('coSubmitBtn').addEventListener('click', async () => {
   }
 });
 
-/* ─────────────────────────────────────
-   TOAST
-───────────────────────────────────── */
 let toastTimer;
 function showToast(msg, type = '') {
   const el = document.getElementById('toast');
