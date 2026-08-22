@@ -244,12 +244,12 @@
     <div class="aesthetic-corner br"></div>
 
     <div class="brand-logo">ECE<span>.</span></div>
-    <div class="subtitle">Student Portal</div>
+    <div class="subtitle">Student &amp; Guest Portal</div>
 
     <form id="loginForm">
       <div class="input-group">
-        <label for="username">ID Number / Username</label>
-        <input type="text" id="username" placeholder="e.g. AE202406767" autocomplete="off" required>
+        <label for="username">Student ID / Email</label>
+        <input type="text" id="username" placeholder="AE202406767 or you@email.com" autocomplete="off" required>
       </div>
       
       <div class="input-group">
@@ -283,6 +283,8 @@
       "sb_publishable_Bp2vcEqzfxnGDhfrm_0Nqw_ipJ79QDb"
     );
 
+    const STUDENT_ID_PATTERN = /^[A-Za-z]{2}\d{9}$/;
+
     const loginForm = document.getElementById("loginForm");
     const loginBtn = document.getElementById("loginBtn");
 
@@ -301,17 +303,18 @@
       loginBtn.disabled = true;
       loginBtn.textContent = "Logging in...";
 
-      let usernameInput = document.getElementById("username").value.trim().toLowerCase();
+      const usernameInput = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (usernameInput.includes('@')) {
-        usernameInput = usernameInput.split('@')[0];
-      }
-      
-      const syntheticEmail = `${usernameInput}@ece.student.local`;
+      // Students log in with their Student ID, which maps to a synthetic
+      // "<id>@ece.student.local" auth email. Guests log in with their real
+      // personal email directly — same address they registered with.
+      const loginEmail = STUDENT_ID_PATTERN.test(usernameInput)
+        ? `${usernameInput.toLowerCase()}@ece.student.local`
+        : usernameInput.toLowerCase();
 
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: syntheticEmail,
+        email: loginEmail,
         password: password,
       });
 
@@ -339,6 +342,8 @@
           window.location.href = "adminpage.html";
         } else if (role === 'adminstudent') {
           window.location.href = "adpagestudent.html";
+        } else if (role === 'guest') {
+          window.location.href = "dashboard.html";
         } else {
           window.location.href = "dashboard.html";
         }
