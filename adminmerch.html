@@ -172,7 +172,7 @@
     .om-field span:last-child { font-size:13px; color:#fff; font-weight:500; }
 
     .om-items-list { background:#111; border:1px solid #222; border-radius:8px; padding:14px; display:flex; flex-direction:column; gap:8px; }
-    .om-item-row { display:flex; justify-content:space-between; font-size:13px; color:#ccc; border-bottom:1px solid #1a1a1a; padding-bottom:6px; }
+    .om-item-row { display:flex; flex-direction:column; justify-content:center; font-size:13px; color:#ccc; border-bottom:1px solid #1a1a1a; padding-bottom:6px; }
     .om-item-row:last-child { border:none; padding-bottom:0; }
 
     .om-close-btn { width:100%; padding:12px; background:#222; color:#fff; border:none; border-radius:7px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:24px; transition:background .2s; }
@@ -293,7 +293,7 @@
 
     <div id="all-orders" class="section-container active">
       <div class="section-header">
-        <div class="section-title">Orders<span id="ordersCount">0</span></div>
+        <div class="section-title">Global Orders Registry <span id="ordersCount">0</span></div>
         <div class="search-box">
           <input type="text" id="orderSearch" placeholder="Search by name, student ID..." oninput="filterOrders()">
         </div>
@@ -533,7 +533,7 @@ function renderAllOrders(filteredList = null) {
   emptyState.style.display = 'none';
 
   listToRender.forEach((order, index) => {
-    const displayNum = index + 1; // Generates clean sequential numbering: 1, 2, 3...[cite: 4]
+    const displayNum = index + 1; 
     const dateFormatted = new Date(order.ordered_at).toLocaleDateString('en-US', {
       month: 'short', day: 'numeric', year: 'numeric'
     });
@@ -547,7 +547,16 @@ function renderAllOrders(filteredList = null) {
     if (Array.isArray(itemsParsed)) {
       itemsBadgeHTML = itemsParsed.map(i => {
         const sizeInfo = i.size ? `(${i.size})` : '';
-        return `<span class="ordered-item-pill">${i.product_name || 'Item'} ${sizeInfo} <span>× ${i.qty}</span></span>`;
+        let customHTML = '';
+        
+        // Build Customizations display for this item
+        if (i.customizations && i.customizations.length > 0) {
+          customHTML = `<div style="font-size:10px; font-weight:normal; color:#aaa; margin-top:4px;">` + 
+            i.customizations.map(c => `• ${c.jersey_name} (#${c.jersey_number})`).join('<br>') +
+            `</div>`;
+        }
+
+        return `<span class="ordered-item-pill" style="vertical-align:top; display:inline-block;">${i.product_name || 'Item'} ${sizeInfo} <span>× ${i.qty}</span>${customHTML}</span>`;
       }).join(' ');
     }
 
@@ -589,7 +598,7 @@ function renderAllOrders(filteredList = null) {
       </td>
       <td style="text-align: center;" onclick="event.stopPropagation()">
         <div class="checklist-container">
-          <button class="${checkboxClass}" onclick="toggleFulfillment(${order.id}, ${!isCompleted})" title="Mark as ${isCompleted ? 'Pending' : 'Received'}">
+          <button class="${checkboxClass}" onclick="toggleFulfillment(${order.id}, ${!isCompleted})" title="Mark as ${isCompleted ? 'Pending' : 'Paid'}">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
         </div>
@@ -658,9 +667,21 @@ function openOrderDetailsModal(order) {
     parsedItems.forEach(item => {
       const row = document.createElement('div');
       row.className = 'om-item-row';
+      
+      let customHTML = '';
+      if (item.customizations && item.customizations.length > 0) {
+        customHTML = `<div style="font-size:12px; color:#f97316; background:#181818; border:1px solid #282828; border-radius:6px; padding:8px 12px; margin-top:8px;">` + 
+          `<div style="font-size:10px; font-weight:700; text-transform:uppercase; color:#888; margin-bottom:4px;">Jersey Customizations:</div>` +
+          item.customizations.map((c, idx) => `• Unit ${idx + 1}: Name: <strong style="color:#fff;">${c.jersey_name}</strong> | Number: <strong style="color:#fff;">${c.jersey_number}</strong>`).join('<br>') +
+          `</div>`;
+      }
+
       row.innerHTML = `
-        <span>${item.product_name} ${item.size ? `(Size: ${item.size})` : ''} × ${item.qty}</span>
-        <span style="font-weight:600; color:#fff;">₱${Number(item.line_total || (item.unit_price * item.qty)).toFixed(2)}</span>
+        <div style="display:flex; justify-content:space-between; width:100%;">
+          <span>${item.product_name} ${item.size ? `(Size: ${item.size})` : ''} × ${item.qty}</span>
+          <span style="font-weight:600; color:#fff;">₱${Number(item.line_total || (item.unit_price * item.qty)).toFixed(2)}</span>
+        </div>
+        ${customHTML}
       `;
       itemsListEl.appendChild(row);
     });
@@ -712,7 +733,8 @@ function renderItemDirectory() {
               qty: item.qty,
               ordered_at: o.ordered_at,
               status: o.status,
-              pickup: o.pickup_method
+              pickup: o.pickup_method,
+              customizations: item.customizations || []
             });
           }
         });
@@ -742,7 +764,7 @@ function renderItemDirectory() {
               <tr>
                 <th>No.</th>
                 <th>Customer Info</th>
-                <th>Selected Size</th>
+                <th>Selected Size & Details</th>
                 <th>Quantity</th>
                 <th>Date Ordered</th>
                 <th>Status</th>
@@ -751,13 +773,20 @@ function renderItemDirectory() {
             </thead>
             <tbody>
               ${productOrders.map((pOrder, pIdx) => {
-                const itemDisplayNum = pIdx + 1; // Sequential sub-numbering for product lists[cite: 4]
+                const itemDisplayNum = pIdx + 1; 
                 const isCompleted = pOrder.status === 'completed';
                 const sLabel = isCompleted ? 'Paid' : 'Pending';
                 const sClass = isCompleted ? 'completed' : 'pending';
                 const dateString = new Date(pOrder.ordered_at).toLocaleDateString('en-US', {
                   month: 'short', day: 'numeric', year: 'numeric'
                 });
+
+                let customText = '';
+                if (pOrder.customizations && pOrder.customizations.length > 0) {
+                  customText = `<div style="font-size:10px; color:#f97316; margin-top:4px;">` +
+                    pOrder.customizations.map(c => `• ${c.jersey_name} (#${c.jersey_number})`).join('<br>') +
+                    `</div>`;
+                }
 
                 return `
                   <tr>
@@ -767,7 +796,10 @@ function renderItemDirectory() {
                       <div class="sub-meta">${pOrder.student_id} • ${pOrder.year_level}</div>
                       <div class="sub-meta" style="color:#666;">📞 ${pOrder.contact}</div>
                     </td>
-                    <td><span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">${pOrder.size}</span></td>
+                    <td>
+                      <span style="font-family:'Poppins',sans-serif; font-weight:700; color:#fff;">${pOrder.size}</span>
+                      ${customText}
+                    </td>
                     <td><span style="font-weight:600; color:#f97316;">${pOrder.qty} pc${pOrder.qty > 1 ? 's':''}</span></td>
                     <td>${dateString}</td>
                     <td><span class="badge-status ${sClass}">${sLabel}</span></td>
