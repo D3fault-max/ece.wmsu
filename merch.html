@@ -285,7 +285,10 @@
     .co-fg input:focus, .co-fg select:focus, .co-fg textarea:focus { outline:none; border-color:#f97316; }
     .co-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .co-order-summary { background:#111; border:1px solid #222; border-radius:8px; padding:16px; margin:16px 0 20px; }
-    .co-order-item { display:flex; justify-content:space-between; font-family:'Inter',sans-serif; font-size:13px; color:#ccc; padding:6px 0; border-bottom:1px solid #1e1e1e; }
+    
+    /* Modified item display for nested customizations */
+    .co-order-item { display:flex; flex-direction:column; font-family:'Inter',sans-serif; font-size:13px; color:#ccc; padding:10px 0; border-bottom:1px solid #1e1e1e; gap: 8px;}
+    .co-order-item-header { display:flex; justify-content:space-between; width:100%; }
     .co-order-item:last-child { border:none; }
     .co-order-total { display:flex; justify-content:space-between; font-family:'Poppins',sans-serif; font-size:15px; font-weight:700; color:#fff; padding-top:12px; margin-top:4px; border-top:1px solid #2a2a2a; }
     .co-note { font-family:'Inter',sans-serif; font-size:11px; color:#555; line-height:1.5; margin-bottom:20px; }
@@ -555,13 +558,13 @@
         <option value="event">Receive during JIECEP event</option>
       </select>
     </div>
-    <div class="co-fg"><label>Notes (optional / Delivery Address)</label><textarea id="coNotes" rows="2" placeholder="Please put here your jersey name and number(ex. Alawi 67)..."></textarea></div>
+    <div class="co-fg"><label>Notes (optional / Delivery Address)</label><textarea id="coNotes" rows="2" placeholder="Any additional instructions or addresses..."></textarea></div>
 
     <!-- Added Proof of Payment file input for checkout window -->
     <div class="co-section-title">Payment Verification</div>
     <div class="co-fg">
-      <label>GCash Proof of Payment (Upload Screenshot)</label>
-      <input type="file" id="coProof" accept="image/*" required>
+      <label>GCash Proof of Payment (Upload Screenshot) - <span style="color:#888; text-transform:none;">Optional (Upload later in My Orders)</span></label>
+      <input type="file" id="coProof" accept="image/*">
     </div>
 
     <div class="co-section-title">Order Summary</div>
@@ -1060,7 +1063,7 @@ async function cancelOrder(orderId) {
 }
 
 /* ─────────────────────────────────────
-   CHECKOUT MODAL
+   CHECKOUT MODAL & CUSTOM INPUTS 
 ───────────────────────────────────── */
 document.getElementById('checkoutBtn').addEventListener('click', () => {
   if (cart.length === 0) return;
@@ -1068,6 +1071,7 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
   buildOrderSummary();
   document.getElementById('checkoutModal').classList.add('open');
 });
+
 document.getElementById('coCancelBtn').addEventListener('click', () => {
   document.getElementById('checkoutModal').classList.remove('open');
   openCart();
@@ -1080,12 +1084,35 @@ document.getElementById('checkoutModal').addEventListener('click', e => {
 function buildOrderSummary() {
   const el = document.getElementById('coOrderSummary');
   el.innerHTML = '';
-  cart.forEach(item => {
+  cart.forEach((item, cartIndex) => {
     const row = document.createElement('div');
     row.className = 'co-order-item';
-    row.innerHTML = `
+    
+    // Header Part
+    const header = document.createElement('div');
+    header.className = 'co-order-item-header';
+    header.innerHTML = `
       <span>${item.product.name}${item.size ? ` (${item.size})` : ''} × ${item.qty}</span>
       <span>₱${(item.product.price * item.qty).toFixed(2)}</span>`;
+    row.appendChild(header);
+
+    // If it's an apparel/jersey, generate name & number inputs per quantity
+    if (item.product.category === 'apparel') {
+      for (let i = 0; i < item.qty; i++) {
+        const customDiv = document.createElement('div');
+        customDiv.className = 'co-fg';
+        customDiv.style.marginTop = '6px';
+        customDiv.innerHTML = `
+          <label style="color:#f97316; font-size:10px;">Jersey Details - Unit ${i + 1}</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" class="custom-name-input" data-idx="${cartIndex}" placeholder="Jersey Name (ex. ALAWi)" style="flex:2; padding:8px;" required>
+            <input type="number" class="custom-number-input" data-idx="${cartIndex}" placeholder="No. (ex. 67)" style="flex:1; padding:8px;" required>
+          </div>
+        `;
+        row.appendChild(customDiv);
+      }
+    }
+    
     el.appendChild(row);
   });
 }
@@ -1102,20 +1129,51 @@ document.getElementById('coSubmitBtn').addEventListener('click', async () => {
   if (!name)    { showToast('Please enter your full name.', 'err'); return; }
   if (!contact) { showToast('Please enter your contact number.', 'err'); return; }
   if (!currentUser && !email) { showToast('Please enter your email address.', 'err'); return; }
-  if (!proofFile) { showToast('Please upload your GCash proof of payment.', 'err'); return; }
+  // We removed the line that blocked the submission if !proofFile
 
   const btn = document.getElementById('coSubmitBtn');
   btn.disabled = true; btn.textContent = 'Uploading & Submitting...';
 
   try {
-    const fileName = `proof_${Date.now()}_${Math.random().toString(36).substring(2)}`;
-    const { error: uploadErr } = await sb.storage.from('payment-proofs').upload(fileName, proofFile);
-    if (uploadErr) throw uploadErr;
+    let proofUrl = null;
+    
+    // Only attempt to upload if the user actually attached a file
+    if (proofFile) {
+      const fileName = `proof_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+      const { error: uploadErr } = await sb.storage.from('payment-proofs').upload(fileName, proofFile);
+      if (uploadErr) throw uploadErr;
 
-    const { data: publicURLData } = sb.storage.from('payment-proofs').getPublicUrl(fileName);
-    const proofUrl = publicURLData.publicUrl;
+      const { data: publicURLData } = sb.storage.from('payment-proofs').getPublicUrl(fileName);
+      proofUrl = publicURLData.publicUrl;
+    }
 
     const total = cart.reduce((s, c) => s + c.product.price * c.qty, 0);
+
+    // Capture the custom jersey inputs and bundle it into the JSON
+    const itemsPayload = cart.map((c, idx) => {
+      const nameInputs = document.querySelectorAll(`.custom-name-input[data-idx="${idx}"]`);
+      const numInputs = document.querySelectorAll(`.custom-number-input[data-idx="${idx}"]`);
+      
+      let customizations = [];
+      for(let i = 0; i < nameInputs.length; i++) {
+        if(nameInputs[i].value.trim() || numInputs[i].value.trim()) {
+          customizations.push({
+            jersey_name: nameInputs[i].value.trim() || 'N/A',
+            jersey_number: numInputs[i].value.trim() || 'N/A'
+          });
+        }
+      }
+
+      return {
+        product_id:   c.product.id,
+        product_name: c.product.name,
+        size:         c.size,
+        qty:          c.qty,
+        unit_price:   c.product.price,
+        line_total:   c.product.price * c.qty,
+        customizations: customizations.length > 0 ? customizations : null
+      };
+    });
 
     const orderPayload = {
       user_id:      currentUser?.id || null,
@@ -1129,15 +1187,8 @@ document.getElementById('coSubmitBtn').addEventListener('click', async () => {
       notes:        document.getElementById('coNotes').value.trim() || null,
       total_amount: total,
       status:       'pending',
-      proof_url:    proofUrl,
-      items:        JSON.stringify(cart.map(c => ({
-        product_id:   c.product.id,
-        product_name: c.product.name,
-        size:         c.size,
-        qty:          c.qty,
-        unit_price:   c.product.price,
-        line_total:   c.product.price * c.qty,
-      }))),
+      proof_url:    proofUrl, // Will be null if skipped, or the URL if they uploaded one
+      items:        JSON.stringify(itemsPayload),
       ordered_at: new Date().toISOString(),
     };
 
@@ -1147,7 +1198,7 @@ document.getElementById('coSubmitBtn').addEventListener('click', async () => {
     cart = [];
     updateCartUI();
     document.getElementById('checkoutModal').classList.remove('open');
-    showToast('Order placed with proof of payment! ✓', 'ok');
+    showToast('Order placed successfully! ✓', 'ok');
   } catch (err) {
     console.error(err);
     showToast('Could not place order: ' + err.message, 'err');
