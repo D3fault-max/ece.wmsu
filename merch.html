@@ -264,6 +264,31 @@
     }
     .size-pill:hover { border-color:#f97316; color:#f97316; }
     .size-pill.picked { background:#f97316; border-color:#f97316; color:#fff; }
+    .size-chart-toggle {
+      background:none; border:none; cursor:pointer; padding:0 0 4px;
+      font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+      color:#f97316; text-decoration:underline; text-underline-offset:2px;
+      display:inline-flex; align-items:center; gap:5px; margin-bottom:16px;
+    }
+    .size-chart-toggle:hover { color:#ea6c0e; }
+    .size-chart-wrap {
+      display:none; margin:-4px 0 18px; border:1px solid #2a2a2a; border-radius:8px;
+      overflow:hidden; overflow-x:auto; background:#111;
+    }
+    .size-chart-wrap.open { display:block; }
+    .size-chart-table { width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; }
+    .size-chart-table th, .size-chart-table td { padding:9px 12px; text-align:center; white-space:nowrap; font-size:11.5px; }
+    .size-chart-table thead th {
+      background:#1c1c1c; color:#f97316; font-weight:700; text-transform:uppercase;
+      font-size:10px; letter-spacing:.6px; border-bottom:1px solid #2a2a2a;
+    }
+    .size-chart-table tbody td { color:#ccc; border-bottom:1px solid #1e1e1e; }
+    .size-chart-table tbody tr:last-child td { border-bottom:none; }
+    .size-chart-table tbody td:first-child { color:#fff; font-weight:600; text-align:left; }
+    .size-chart-unit-note {
+      font-family:'Inter',sans-serif; font-size:10px; color:#555;
+      padding:8px 12px; border-top:1px solid #1e1e1e;
+    }
     .modal-btns { display:flex; gap:10px; margin-top:4px; }
     .modal-cancel { flex:1; padding:12px; border-radius:7px; border:1px solid #2a2a2a; background:transparent; color:#888; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
     .modal-cancel:hover { border-color:#555; color:#fff; }
@@ -521,6 +546,10 @@
   <div class="size-modal">
     <h3 id="sizeModalName">Product Name</h3>
     <div class="size-modal-price" id="sizeModalPrice">₱0.00</div>
+    <button type="button" class="size-chart-toggle" id="sizeChartToggle" style="display:none;">
+      📏 <span id="sizeChartToggleLabel">View Size Chart</span>
+    </button>
+    <div class="size-chart-wrap" id="sizeChartWrap"></div>
     <div class="size-label">Select Size</div>
     <div class="size-pills" id="sizePills"></div>
     <div class="modal-btns">
@@ -812,6 +841,63 @@ function addToCart(product, size) {
 }
 
 /* ─────────────────────────────────────
+   SIZE CHARTS (Jersey & Half-Zip)
+───────────────────────────────────── */
+// Products that use the Jersey size chart
+const JERSEY_CHART_NAMES  = ['Cobalt', 'Ignite', 'Noir'];
+// Products that use the Half-Zip size chart
+const HALFZIP_CHART_NAMES = ['Zenith', 'Static'];
+
+const JERSEY_SIZE_CHART = {
+  unitNote: 'Measurements in inches.',
+  headers: ['Size', 'Length', 'Width'],
+  rows: [
+    ['XS',     '26.5', '18'],
+    ['Small',  '27.5', '19.5'],
+    ['Medium', '28.5', '20'],
+    ['Large',  '30',   '21'],
+    ['XL',     '30.5', '21.5'],
+    ['2XL',    '31.5', '23.5'],
+    ['3XL',    '32',   '24.5'],
+  ]
+};
+
+const HALFZIP_SIZE_CHART = {
+  unitNote: 'Measurements in centimeters / inches.',
+  headers: ['Size', 'Length', 'Width', 'Shoulder', 'Sleeve'],
+  rows: [
+    ['S',   '64cm / 25"', '54cm / 21"', '52cm / 20"', '52cm / 20"'],
+    ['M',   '66cm / 26"', '56cm / 22"', '54cm / 21"', '53.5cm / 21"'],
+    ['L',   '68cm / 27"', '58cm / 23"', '56cm / 22"', '55cm / 22"'],
+    ['XL',  '70cm / 28"', '60cm / 24"', '58cm / 23"', '56.5cm / 23"'],
+    ['XXL', '72cm / 29"', '62cm / 25"', '59cm / 24"', '57.5cm / 24"'],
+  ]
+};
+
+function getSizeChartForProduct(product) {
+  if (JERSEY_CHART_NAMES.includes(product.name))  return JERSEY_SIZE_CHART;
+  if (HALFZIP_CHART_NAMES.includes(product.name)) return HALFZIP_SIZE_CHART;
+  return null;
+}
+
+function renderSizeChartTable(chart) {
+  const head = chart.headers.map(h => `<th>${h}</th>`).join('');
+  const body = chart.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+  return `<table class="size-chart-table">
+      <thead><tr>${head}</tr></thead>
+      <tbody>${body}</tbody>
+    </table>
+    <div class="size-chart-unit-note">${chart.unitNote}</div>`;
+}
+
+document.getElementById('sizeChartToggle').addEventListener('click', () => {
+  const wrap  = document.getElementById('sizeChartWrap');
+  const label = document.getElementById('sizeChartToggleLabel');
+  const nowOpen = wrap.classList.toggle('open');
+  label.textContent = nowOpen ? 'Hide Size Chart' : 'View Size Chart';
+});
+
+/* ─────────────────────────────────────
    SIZE PICKER
 ───────────────────────────────────── */
 function openSizePicker(product) {
@@ -821,6 +907,20 @@ function openSizePicker(product) {
   document.getElementById('sizeModalName').textContent  = product.name;
   document.getElementById('sizeModalPrice').textContent = `₱${Number(product.price).toFixed(2)}`;
   document.getElementById('sizeConfirmBtn').disabled    = true;
+
+  // Size chart (Jersey / Half-Zip only)
+  const chart       = getSizeChartForProduct(product);
+  const chartToggle = document.getElementById('sizeChartToggle');
+  const chartWrap    = document.getElementById('sizeChartWrap');
+  chartWrap.classList.remove('open');
+  document.getElementById('sizeChartToggleLabel').textContent = 'View Size Chart';
+  if (chart) {
+    chartToggle.style.display = 'inline-flex';
+    chartWrap.innerHTML = renderSizeChartTable(chart);
+  } else {
+    chartToggle.style.display = 'none';
+    chartWrap.innerHTML = '';
+  }
 
   const pillsEl = document.getElementById('sizePills');
   pillsEl.innerHTML = '';
